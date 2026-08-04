@@ -1,0 +1,75 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Idea extends Model
+{
+    protected $fillable = [
+        'user_id', 'forked_from', 'title', 'category', 'description',
+        'feasibility', 'technologies', 'budget', 'status', 'likes_count', 'admin_notes',
+    ];
+
+    protected $casts = [
+        'technologies' => 'array',
+        'budget' => 'decimal:2',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(IdeaComment::class)->latest();
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(Idea::class, 'forked_from');
+    }
+
+    public function implementRequests()
+    {
+        return $this->hasMany(ImplementRequest::class);
+    }
+
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'idea_favorites')->withTimestamps();
+    }
+
+    public function isFavoritedBy(?User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        if (array_key_exists('is_favorited', $this->attributes)) {
+            return (bool) $this->attributes['is_favorited'];
+        }
+
+        return $this->favoritedBy()->where('user_id', $user->id)->exists();
+    }
+
+    public function categoryIcon(): string
+    {
+        return match (true) {
+            str_contains($this->category, 'ذكاء') || str_contains($this->category, 'AI') => '🧠',
+            str_contains($this->category, 'أمن') || str_contains($this->category, 'Security') => '🛡',
+            str_contains($this->category, 'جوال') || str_contains($this->category, 'موبايل') => '📱',
+            str_contains($this->category, 'Blockchain') || str_contains($this->category, 'بلوك') => '🔗',
+            str_contains($this->category, 'ويب') => '⚡',
+            default => '💡',
+        };
+    }
+
+    public function shortDesc(int $len = 140): string
+    {
+        return mb_strlen($this->description) > $len
+            ? mb_substr($this->description, 0, $len).'…'
+            : $this->description;
+    }
+}

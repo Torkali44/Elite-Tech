@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كتيب المتطلبات الفنية (PRD) - مجتمع النخبة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+    </script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.8;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2, h3 {
+            color: #0f172a;
+        }
+        h1 {
+            text-align: center;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+            font-size: 2.2rem;
+            color: #1e40af;
+        }
+        h2 {
+            border-right: 4px solid #3b82f6;
+            padding-right: 15px;
+            margin-top: 40px;
+            background: #f1f5f9;
+            padding: 10px 15px 10px 10px;
+            border-radius: 4px;
+        }
+        ul {
+            padding-right: 25px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .alert {
+            background-color: #fffbeb;
+            border-right: 4px solid #f59e0b;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+        .alert-warning {
+            background-color: #fef2f2;
+            border-right: 4px solid #ef4444;
+        }
+        .alert-info {
+            background-color: #eff6ff;
+            border-right: 4px solid #3b82f6;
+        }
+        
+        /* Fixed Mermaid Styles */
+        .mermaid {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            width: 100%;
+        }
+        /* Crucial: Force SVG to be responsive and not exceed container */
+        .mermaid svg {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+
+        /* Screen Grid Styles */
+        .screen-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 20px; 
+            margin-top: 20px; 
+        }
+        .screen-card { 
+            border: 1px solid #e2e8f0; 
+            border-radius: 8px; 
+            padding: 15px; 
+            background: white; 
+            text-align: center; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+            overflow: hidden; 
+            word-wrap: break-word; 
+            word-break: break-word;
+        }
+        .screen-card img { 
+            max-width: 100%; 
+            height: auto; 
+            object-fit: contain;
+            border-radius: 6px; 
+            border: 1px solid #cbd5e1; 
+            margin-bottom: 15px; 
+            display: block; 
+            margin-left: auto; 
+            margin-right: auto;
+        }
+        .screen-title { 
+            font-size: 15px; 
+            font-weight: bold; 
+            color: #1e293b; 
+            margin-bottom: 8px; 
+            line-height: 1.4;
+        }
+        .screen-desc { 
+            font-size: 13px; 
+            color: #64748b; 
+            line-height: 1.6; 
+        }
+
+        /* Print Styles - Fixed for Mermaid cuts and blank pages */
+        @media print { 
+            body { 
+                background-color: #ffffff; 
+                padding: 0; 
+                font-size: 11pt; 
+                color: #000;
+            } 
+            .container { 
+                box-shadow: none; 
+                padding: 0; 
+                margin: 0;
+                max-width: 100%; 
+                width: 100%;
+            } 
+            @page { 
+                margin: 1.5cm; 
+                size: A4; 
+            } 
+            h1, h2, h3 { 
+                page-break-after: avoid; 
+                break-after: avoid; 
+            }
+            p, ul, li {
+                page-break-inside: auto; 
+                break-inside: auto;
+            }
+            .alert { 
+                page-break-inside: avoid; 
+                break-inside: avoid; 
+                border: 1px solid #cbd5e1;
+            }
+            
+            /* The real fix for the Mermaid graphs during print */
+            .mermaid { 
+                page-break-inside: avoid; 
+                break-inside: avoid; 
+                border: none;
+                margin: 0;
+                padding: 0;
+                max-height: 25cm; /* Force it to not exceed A4 height */
+                overflow: hidden;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            } 
+            .mermaid svg { 
+                max-width: 100% !important;
+                max-height: 24cm !important; /* Scale down to fit inside one page */
+                height: auto !important;
+            }
+            
+            /* Gallery fix */
+            .screen-grid { 
+                display: block; 
+                width: 100%;
+            } 
+            .screen-card { 
+                display: inline-block;
+                width: 31%;
+                margin: 1%;
+                vertical-align: top;
+                box-shadow: none; 
+                border: 1px solid #cbd5e1; 
+                page-break-inside: avoid; 
+                break-inside: avoid; 
+            } 
+            #gallery-section { 
+                page-break-before: auto; 
+                break-before: auto; 
+            }
+        }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>كتيب المتطلبات الفنية والمواصفات (SRS/PRD)<br> لمشروع مجتمع النخبة (Elite Community)</h1>
+
+    <p>هذا المستند موجه لفريق التطوير ليكون المرجع الشامل لفهم فلسفة المنصة، مسارات العمل، هيكلة البيانات، والمعمارية التقنية المطلوبة للبناء.</p>
+
+    <h2>1. نظرة عامة والمعمارية التقنية</h2>
+    <p><strong>الهدف والفلسفة:</strong> منصة مجتمعية لرواد الأعمال والمطورين تهدف إلى "حرق الأفكار" وتحويلها إلى مشاريع قابلة للتنفيذ لمحاربة وهم سرقة الأفكار، من خلال بيئة تشاركية شفافة وموثوقة.</p>
+    
+    <p><strong>بيئة العمل (Tech Stack) المعتمدة:</strong></p>
+    <ul>
+        <li><strong>الواجهة الخلفية (Backend):</strong> Laravel (PHP)</li>
+        <li><strong>الواجهة الأمامية (Frontend):</strong> Blade Templates مع Tailwind CSS (و Alpine.js أو Livewire للتفاعلية).</li>
+        <li><strong>قواعد البيانات (Database):</strong> MySQL / PostgreSQL</li>
+        <li><strong>دعم اللغات:</strong> المنصة ثنائية اللغة (عربي / إنجليزي) عبر نظام (Localization) في Laravel.</li>
+    </ul>
+
+    <h2>2. مسارات المستخدمين ودورة العمل (User Workflows)</h2>
+    <p>تعتمد المنصة على توفير تجربة تصفح مرنة للزوار، ونظام توثيق الهوية (KYC) لضبط جودة وموثوقية المحتوى المنشور.</p>
+
+    <div class="mermaid">
+    graph TD
+        Visitor[زائر / بدون حساب] --> Browse[تصفح: الرئيسية، بنك الأفكار، منتدى التوظيف]
+        Browse --> Interact{محاولة التفاعل العميق؟<br>إظهار بيانات/تواصل/تعليق}
+        Interact -->|نعم| Prompt[نافذة: يرجى تسجيل الدخول / إنشاء حساب]
+        Interact -->|لا| Browse
+        
+        Prompt --> A[تسجيل حساب جديد]
+        A --> B{ما هو هدف المستخدم؟}
+        B -->|تصفح وبحث| C[مسار باحث عن أفكار]
+        B -->|نشر الأفكار| D[مسار صاحب فكرة]
+        B -->|البحث عن فرصة| E[مسار باحث عن عمل]
+        
+        C --> C1[تصفح حر للأفكار]
+        C1 --> C2{النقر على: الرغبة في التنفيذ؟}
+        C2 -->|نعم| F
+        C2 -->|لا| C1
+
+        D --> F[تعبئة نموذج KYC]
+        E --> G[استكمال الملف الشخصي + بناء CV]
+        
+        G --> H{هل يريد الانضمام لمنتدى التوظيف؟}
+        H -->|نعم| F
+        H -->|لا| L[حفظ الملف واستخراج CV كـ PDF بحرية وبدون KYC]
+        
+        F --> I[مراجعة الإدارة - Admin]
+        I -->|موافق| J[تفعيل صلاحيات التنفيذ والنشر]
+        I -->|مرفوض| K[طلب استكمال النواقص]
+    </div>
+
+    <h3>وصف المسارات:</h3>
+    <ul>
+        <li><strong>مسار الزائر (Guest Mode):</strong> يمكن لأي شخص تصفح الصفحات العامة (الرئيسية، بنك الأفكار، منتدى التوظيف) بميزات محدودة. عند محاولة التفاعل بشكل أعمق يتم إظهار نافذة تدعوه لإنشاء حساب (Gated Actions).</li>
+        <li><strong>مسار الباحث عن الأفكار:</strong> بمجرد التسجيل يتاح له تصفح "بنك الأفكار" وحفظ الأفكار بحرية. ولكن عند الضغط على زر <strong>(الرغبة في التنفيذ)</strong> داخل فكرة معينة — سواء كان التنفيذ سيتم عبر "شركة إليت تك" أو بالشراكة مع "صاحب الفكرة" — <strong>يُشترط أن يمر بمرحلة التحقق (KYC)</strong> لضمان جديته وموثوقيته قبل بدء أي عمل فعلي.</li>
+        <li><strong>مسار صاحب الفكرة:</strong> يتطلب KYC بشكل أساسي قبل نشر أي فكرة في "بنك الأفكار"، ويتيح له لاحقاً إدارة طلبات الانضمام للفريق والنقاشات.</li>
+        <li><strong>مسار الباحث عن عمل (Talent):</strong>
+            <ul>
+                <li><strong>بدون KYC (أداة حرة):</strong> يستطيع بناء سيرته الذاتية وتعديلها واستخراجها كملف PDF بشكل مجاني دون شروط التحقق.</li>
+                <li><strong>مع KYC (للظهور العام):</strong> يُشترط اجتياز مرحلة التحقق فقط لإدراج بطاقته في "منتدى التوظيف" العام لتلقي عروض العمل.</li>
+            </ul>
+        </li>
+        <li><strong>مسار الإدارة (Admin) - لوحة التحكم الشاملة (Dashboard):</strong>
+            <ul>
+                <li><strong>مسار مراجعة الحسابات وطلبات الـ KYC:</strong>
+                    <ul>
+                        <li>لوحة مخصصة لعرض الطلبات الجديدة المعلقة (Pending) تحتوي على ملخص حساب المستخدم ومستنداته المرفوعة (والتي تظهر للإدارة فقط بشكل آمن).</li>
+                        <li><strong>الإجراءات (Actions):</strong> 
+                            <br>1- <strong>موافقة (Approve):</strong> يفعل حساب المستخدم كصاحب فكرة أو يُدرجه في منتدى التوظيف.
+                            <br>2- <strong>رفض (Reject):</strong> يتطلب إجبارياً إدخال (سبب الرفض) في نافذة منبثقة، ليظهر السبب للمستخدم في لوحته ويتمكن من تصحيحه.
+                            <br>3- <strong>تعليق الحساب (Suspend):</strong> لسحب شارة الـ KYC من مستخدم موثق سابقاً وإعادته للمراجعة إجبارياً.</li>
+                        <li><strong>إدارة الملاحظات (Admin Notes):</strong> نظام يتيح للمشرفين إضافة وتعديل ملاحظات نصية داخلية خاصة بملف كل مستخدم (مخفية عن المستخدم) لتسجيل تاريخ التعامل معه (مثال: "المستخدم رفع صورة غير واضحة مرتين").</li>
+                    </ul>
+                </li>
+                <li><strong>مسار مراجعة الأفكار (Idea Moderation):</strong>
+                    <ul>
+                        <li>شاشة لمراجعة الأفكار المرسلة للنشر. يمتلك الأدمن صلاحية (نشر الفكرة للعامة)، أو (إرجاعها كمسودة) مع كتابة ملاحظة لصاحب الفكرة حول الأجزاء التي تحتاج لتوضيح.</li>
+                        <li>إمكانية التدخل وحذف التعليقات أو النقاشات المخالفة ضمن الأفكار المنشورة.</li>
+                    </ul>
+                </li>
+                <li><strong>مراقبة التفاعلات:</strong>
+                    <ul>
+                        <li>سجل يراقب طلبات "الرغبة في التنفيذ" المتبادلة بين المطورين وأصحاب الأفكار لضمان سلامة الإجراءات وخلوها من الاحتيال.</li>
+                    </ul>
+                </li>
+                <li><strong>الإحصائيات والتحليلات (Analytics):</strong>
+                    <ul>
+                        <li>رسوم بيانية توضح نمو المجتمع (مستخدمين جدد يومياً/شهرياً لكل مسار).</li>
+                        <li>مؤشرات الأداء: نسبة الأفكار المنشورة إلى الأفكار التي بدأت التنفيذ (Conversion Rate).</li>
+                        <li>إحصائيات إدارية لمعرفة متوسط سرعة استجابة فريق الإدارة لطلبات الـ KYC (SLA).</li>
+                    </ul>
+                </li>
+                <li><strong>الفلاتر المتطورة:</strong>
+                    <ul>
+                        <li>فرز الحسابات والطلبات بناءً على (رقم الهوية، حالة التوثيق، المسار، تاريخ التسجيل، مشرف الإدارة الذي وافق على الحساب، أو وجود ملاحظات داخلية سابقة).</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>7. ضوابط تعديل البيانات وإعادة التقييم (KYC Re-evaluation)</h2>
+    <div class="alert alert-warning">
+        <strong>سياسة الأمان:</strong> لتجنب التحايل، أي تعديل على بيانات حساسة يؤدي لإعادة الحساب للمراجعة.
+    </div>
+    <ul>
+        <li><strong>تعديلات لا تتطلب مراجعة (آمنة):</strong> كلمة المرور، الصورة الرمزية، إضافة مهارة ثانوية، نبذة قصيرة.</li>
+        <li><strong>تعديلات تتطلب إعادة مراجعة الـ KYC:</strong> تغيير المسمى الوظيفي الرئيسي، تعديل روابط سابقة الأعمال، أو رفع وثيقة إثبات شخصية جديدة.
+        <br><em>* الإجراء: تُسحب شارة (Verified)، يُخفى من المنتدى، ويعود لحالة (Pending Review).</em></li>
+    </ul>
+
+    
+    <h2>8. مسار إضافة الأفكار وتفرعها (Idea Publishing & Forking)</h2>
+    <p>بما أن الهدف الأساسي هو "حرق الأفكار"، فإن المنصة تشجع التفكير التشاركي والبناء على أفكار الآخرين (Forking) لتطويرها، مع الحفظ الكامل لحقوق صاحب الفكرة الأصلية.</p>
+    
+    <div class="mermaid">
+    graph TD
+        A[صاحب الفكرة يضيف فكرة جديدة] --> B{هل الفكرة مبنية على فكرة سابقة؟}
+        B -->|نعم| C[نسخ التفاصيل وربطها كـ Parent_ID]
+        B -->|لا| D[فكرة أصلية مستقلة]
+        
+        C --> E[مرحلة الصياغة والحفظ كمسودة Draft]
+        D --> E
+        
+        E --> F[إرسال للمراجعة الإدارية]
+        F --> G{هل تتوافق مع شروط النشر؟}
+        
+        G -->|مقبولة| H[نشر الفكرة Published]
+        G -->|مرفوضة| I[إعادتها للمستخدم مع أسباب الرفض]
+        
+        H --> J[الظهور في بنك الأفكار للعامة]
+    </div>
+
+    <h3>شروط وأحكام النشر والمراجعة:</h3>
+    <ul>
+        <li><strong>أهلية النشر:</strong> يجب أن يكون المستخدم قد اجتاز التحقق (KYC).</li>
+        <li><strong>معايير القبول:</strong> يجب أن يكون الوصف واضحاً، ويحتوي على (المشكلة، الحل، والمتطلبات التقنية)، وألا تحتوي الفكرة على محتوى مخالف لسياسات المنصة.</li>
+        <li><strong>آلية المراجعة:</strong> تظهر الأفكار الجديدة في لوحة تحكم الإدارة تحت حالة (قيد المراجعة). يحق للأدمن الموافقة عليها لتنشر فوراً، أو إعادتها مع كتابة (سبب الرفض) ليقوم المستخدم بتعديلها.</li>
+    </ul>
+
+    <h3>آلية النسخ والربط (Forking Mechanism):</h3>
+    <div class="alert alert-info">
+        هذه الميزة تحل مشكلة الخوف من سرقة الأفكار بتحويلها إلى بيئة شفافة ومحفزة.
+    </div>
+    <ul>
+        <li>إذا أعجبت مستخدم ما فكرة في "بنك الأفكار" ورغب بتنفيذها بزاوية مختلفة أو بميزات إضافية، يمكنه النقر على خيار <strong>(تطوير / استنساخ الفكرة)</strong>.</li>
+        <li>برمجياً: يقوم النظام بإنشاء سجل جديد في جدول <code>IDEAS</code> للمستخدم الجديد، ولكن يتم تعبئة حقل <code>parent_id</code> ليربطها برقم الفكرة الأصلية.</li>
+        <li><strong>حفظ الحقوق:</strong> عند عرض الفكرة المنسوخة في "بنك الأفكار"، سيقوم النظام برمجياً بعرض شارة واضحة تنص على: <em>(هذه الفكرة مستلهمة/مبنية على فكرة [اسم الفكرة الأصلية] لصاحبها [صاحب الفكرة])</em> لضمان التقدير الأدبي والشفافية.</li>
+    </ul>
+
+    
+    <h2>10. الصفحات القانونية والتنظيمية (Legal & Policy Pages)</h2>
+    <div class="alert alert-info">
+        هذه الصفحات ضرورية لحماية حقوق المنصة والمستخدمين، خاصة وأن المنصة تتعامل مع ملكية فكرية وبيانات شخصية (KYC). روابط هذه الصفحات ثابتة في تذييل الموقع (Footer).
+    </div>
+    <ul>
+        <li><strong>الشروط والأحكام (Terms & Conditions):</strong>
+            تحدد القواعد العامة للاستخدام، وتخلي مسؤولية شركة "إليت تك" عن النزاعات الشخصية بين أصحاب الأفكار والمطورين (إذا كان التنفيذ مستقلاً)، وتوضح قواعد النشر في "بنك الأفكار".
+        </li>
+        <li><strong>سياسة الخصوصية (Privacy Policy):</strong>
+            تشرح بالتفصيل كيفية جمع وتشفير وتخزين بيانات الـ (KYC) الحساسة، وأنها متاحة لفرق الإدارة المختصة فقط. وتوضح سياسة ظهور السيرة الذاتية للعامة.
+        </li>
+        <li><strong>اتفاقية الاستخدام (User Agreement):</strong>
+            ميثاق إلزامي يُوافق عليه عند تقديم طلب "الرغبة في التنفيذ" أو إضافة فكرة. ينص على احترام الملكية الفكرية، والالتزام الصارم بآلية (استنساخ الأفكار - Forking) لضمان حفظ الحقوق الأدبية للناشر الأصلي.
+        </li>
+    </ul>
+
+    <h2 id="gallery-section">11. معرض الشاشات (Screens Gallery)</h2>
+    <p>لقطات لشاشات المشروع المتوفرة مع شرح مبسط لدورها.</p>
+    
+    <div class="screen-grid">         <div class='screen-card'>             <img src='./assets/a_diverse_group_of_professional_developers_and_tech_enthusiasts_collaborating_screen.png' alt='Screen a_diverse_group_of_professional_developers_and_tech_enthusiasts_collaborating'>             <div class='screen-title'>شاشة (a_diverse_group_of_professional_developers_and_tech_enthusiasts_collaborating)</div>             <div class='screen-desc'>صورة ترويجية عامة (Banner) تستخدم كخلفية لصفحة الهبوط تعبر عن التعاون.</div>         </div>         <div class='screen-card'>             <img src='./assets/a_professional_high_quality_promotional_image_for_a_tech_community_platform_screen.png' alt='Screen a_professional_high_quality_promotional_image_for_a_tech_community_platform'>             <div class='screen-title'>شاشة (a_professional_high_quality_promotional_image_for_a_tech_community_platform)</div>             <div class='screen-desc'>صورة تسويقية (Banner) للمنصة لتعزيز المظهر الاحترافي للمجتمع التقني.</div>         </div>         <div class='screen-card'>             <img src='./assets/high_tech_digital_abstract_background_with_flowing_data_particles_glowing_blue_screen.png' alt='Screen high_tech_digital_abstract_background_with_flowing_data_particles_glowing_blue'>             <div class='screen-title'>شاشة (high_tech_digital_abstract_background_with_flowing_data_particles_glowing_blue)</div>             <div class='screen-desc'>خلفية تقنية مجردة تستخدم في شاشات تسجيل الدخول واللوحات الإحصائية.</div>         </div>         <div class='screen-card'>             <img src='./assets/image.png_screen.png' alt='Screen image.png'>             <div class='screen-title'>شاشة (image.png)</div>             <div class='screen-desc'>صورة أو أيقونة توضيحية تستخدم ضمن عناصر واجهة المستخدم.</div>         </div>         <div class='screen-card'>             <img src='./assets/kyc_1_screen.png' alt='Screen kyc_1'>             <div class='screen-title'>شاشة (kyc_1)</div>             <div class='screen-desc'>شاشة التحقق من الهوية (KYC) الأساسية لرفع المستندات الرسمية وإثبات الشخصية لبناء الموثوقية.</div>         </div>         <div class='screen-card'>             <img src='./assets/kyc_2_screen.png' alt='Screen kyc_2'>             <div class='screen-title'>شاشة (kyc_2)</div>             <div class='screen-desc'>الخطوة الثانية من التوثيق الأمني (KYC) لمراجعة البيانات وتأكيد الروابط المهنية.</div>         </div>         <div class='screen-card'>             <img src='./assets/otp_screen.png' alt='Screen otp'>             <div class='screen-title'>شاشة (otp)</div>             <div class='screen-desc'>شاشة إدخال رمز التحقق الثنائي (OTP) لضمان أمان الدخول وتأكيد ملكية رقم الهاتف/البريد.</div>         </div>         <div class='screen-card'>             <img src='./assets/_10_screen.png' alt='Screen _10'>             <div class='screen-title'>شاشة (_10)</div>             <div class='screen-desc'>صفحة هبوط تعريفية موجهة لرواد الأعمال والمطورين تشرح الرؤية.</div>         </div>         <div class='screen-card'>             <img src='./assets/_11_screen.png' alt='Screen _11'>             <div class='screen-title'>شاشة (_11)</div>             <div class='screen-desc'>شاشة تسجيل دخول أو توجيه مخصصة لمسار "صاحب الفكرة" لإدارة أفكاره.</div>         </div>         <div class='screen-card'>             <img src='./assets/_12_screen.png' alt='Screen _12'>             <div class='screen-title'>شاشة (_12)</div>             <div class='screen-desc'>شاشة "تصفح الأفكار" المتقدمة المزودة بفلاتر للبحث الدقيق في بنك الأفكار.</div>         </div>         <div class='screen-card'>             <img src='./assets/_13_screen.png' alt='Screen _13'>             <div class='screen-title'>شاشة (_13)</div>             <div class='screen-desc'>لوحة تحكم (Dashboard) المستخدم لعرض الإحصائيات الخاصة به وملخص نشاطه.</div>         </div>         <div class='screen-card'>             <img src='./assets/_14_screen.png' alt='Screen _14'>             <div class='screen-title'>شاشة (_14)</div>             <div class='screen-desc'>شاشة "تفاصيل الفكرة" وتعرض الوصف الشامل، المتطلبات، وزر (الرغبة في التنفيذ) أو طلب الانضمام.</div>         </div>         <div class='screen-card'>             <img src='./assets/_15_screen.png' alt='Screen _15'>             <div class='screen-title'>شاشة (_15)</div>             <div class='screen-desc'>شاشة الأخبار أو المجتمع التقني (Elite Tech Community Feed).</div>         </div>         <div class='screen-card'>             <img src='./assets/_16_screen.png' alt='Screen _16'>             <div class='screen-title'>شاشة (_16)</div>             <div class='screen-desc'>واجهة "فضاء العمل الحر" لاستعراض المشاريع التي تبحث عن مستقلين لتنفيذها.</div>         </div>         <div class='screen-card'>             <img src='./assets/_17_screen.png' alt='Screen _17'>             <div class='screen-title'>شاشة (_17)</div>             <div class='screen-desc'>شاشة "تفاصيل الفكرة" بأسلوب عرض مختلف يركز على النقاشات المفتوحة.</div>         </div>         <div class='screen-card'>             <img src='./assets/_18_screen.png' alt='Screen _18'>             <div class='screen-title'>شاشة (_18)</div>             <div class='screen-desc'>استكمال لواجهة "فضاء العمل الحر" والمشاريع الابتكارية المتاحة للمشاركة.</div>         </div>         <div class='screen-card'>             <img src='./assets/_19_screen.png' alt='Screen _19'>             <div class='screen-title'>شاشة (_19)</div>             <div class='screen-desc'>واجهة عرض محتوى عام أو إحصائيات مبسطة.</div>         </div>         <div class='screen-card'>             <img src='./assets/_1_screen.png' alt='Screen _1'>             <div class='screen-title'>شاشة (_1)</div>             <div class='screen-desc'>مثال حي للوحة تحكم مشروع استباقي (رصد التهديدات)، تستخدم كنموذج لأفكار تحولت للتنفيذ.</div>         </div>         <div class='screen-card'>             <img src='./assets/_20_screen.png' alt='Screen _20'>             <div class='screen-title'>شاشة (_20)</div>             <div class='screen-desc'>واجهة التصفح المخصصة لاستعراض المنشورات والتفاعل معها (Feed).</div>         </div>         <div class='screen-card'>             <img src='./assets/_21_screen.png' alt='Screen _21'>             <div class='screen-title'>شاشة (_21)</div>             <div class='screen-desc'>واجهة المجتمع التقني (Feed) لاستعراض الأخبار والمستجدات.</div>         </div>         <div class='screen-card'>             <img src='./assets/_22_screen.png' alt='Screen _22'>             <div class='screen-title'>شاشة (_22)</div>             <div class='screen-desc'>الواجهة الرئيسية لـ "منتدى التوظيف"، تستعرض الكفاءات التقنية المتوفرة.</div>         </div>         <div class='screen-card'>             <img src='./assets/_23_screen.png' alt='Screen _23'>             <div class='screen-title'>شاشة (_23)</div>             <div class='screen-desc'>شاشة "Elite Talent Community" للبحث السريع عن المواهب التقنية وفلترتها.</div>         </div>         <div class='screen-card'>             <img src='./assets/_24_screen.png' alt='Screen _24'>             <div class='screen-title'>شاشة (_24)</div>             <div class='screen-desc'>ملف شخصي (CV Profile) لمطور، يعرض مهاراته، خبراته، وزر للتواصل المباشر معه (يتطلب تسجيل).</div>         </div>         <div class='screen-card'>             <img src='./assets/_25_screen.png' alt='Screen _25'>             <div class='screen-title'>شاشة (_25)</div>             <div class='screen-desc'>واجهة أخرى لـ "منصة توظيف النخبة" تعرض الكفاءات بتخطيط (Grid) مختلف.</div>         </div>         <div class='screen-card'>             <img src='./assets/_26_screen.png' alt='Screen _26'>             <div class='screen-title'>شاشة (_26)</div>             <div class='screen-desc'>شاشة متخصصة للبحث عن مطورين بمجالات محددة داخل منتدى التوظيف.</div>         </div>         <div class='screen-card'>             <img src='./assets/_27_screen.png' alt='Screen _27'>             <div class='screen-title'>شاشة (_27)</div>             <div class='screen-desc'>شاشة "توظيف الكفاءات التقنية" مع أدوات فرز ووصول سريع للسير الذاتية.</div>         </div>         <div class='screen-card'>             <img src='./assets/_28_screen.png' alt='Screen _28'>             <div class='screen-title'>شاشة (_28)</div>             <div class='screen-desc'>واجهة المجتمع الرئيسية (Home) التي تجمع بين الأفكار والمواهب.</div>         </div>         <div class='screen-card'>             <img src='./assets/_29_screen.png' alt='Screen _29'>             <div class='screen-title'>شاشة (_29)</div>             <div class='screen-desc'>شاشة "بنك الأفكار التقنية" بتنسيق يركز على المشاريع المبتكرة التي تبحث عن تمويل أو فريق.</div>         </div>         <div class='screen-card'>             <img src='./assets/_2_screen.png' alt='Screen _2'>             <div class='screen-title'>شاشة (_2)</div>             <div class='screen-desc'>شاشة استعراض فكرة تقنية عميقة (رصد التهديدات السيبرانية) توضح كيف يتم عرض المشاريع الكبيرة.</div>         </div>         <div class='screen-card'>             <img src='./assets/_30_screen.png' alt='Screen _30'>             <div class='screen-title'>شاشة (_30)</div>             <div class='screen-desc'>نموذج (طلب الانضمام إلى فريق عمل) للتقديم على تنفيذ فكرة معينة، ويشترط الـ KYC لتأكيده.</div>         </div>         <div class='screen-card'>             <img src='./assets/_31_screen.png' alt='Screen _31'>             <div class='screen-title'>شاشة (_31)</div>             <div class='screen-desc'>استكمال لنموذج (طلب الانضمام إلى فريق عمل) وتحديد طبيعة المشاركة (تقني، تسويق، إدارة).</div>         </div>         <div class='screen-card'>             <img src='./assets/_32_screen.png' alt='Screen _32'>             <div class='screen-title'>شاشة (_32)</div>             <div class='screen-desc'>شاشة إدارة "المشاريع" لمتابعة الأفكار التي دخلت حيز التنفيذ الفعلي (In Progress).</div>         </div>         <div class='screen-card'>             <img src='./assets/_33_screen.png' alt='Screen _33'>             <div class='screen-title'>شاشة (_33)</div>             <div class='screen-desc'>شاشة إنشاء حساب وتسجيل الدخول بأسلوب مباشر وسريع.</div>         </div>         <div class='screen-card'>             <img src='./assets/_34_screen.png' alt='Screen _34'>             <div class='screen-title'>شاشة (_34)</div>             <div class='screen-desc'>واجهة مجتمع النخبة (Feed) وتصفح النشاطات.</div>         </div>         <div class='screen-card'>             <img src='./assets/_35_screen.png' alt='Screen _35'>             <div class='screen-title'>شاشة (_35)</div>             <div class='screen-desc'>شاشة "بنك الأفكار التقنية" بأسلوب بطاقات تفاعلية.</div>         </div>         <div class='screen-card'>             <img src='./assets/_36_screen.png' alt='Screen _36'>             <div class='screen-title'>شاشة (_36)</div>             <div class='screen-desc'>واجهة مجتمعية عامة لاستعراض النشاطات.</div>         </div>         <div class='screen-card'>             <img src='./assets/_37_screen.png' alt='Screen _37'>             <div class='screen-title'>شاشة (_37)</div>             <div class='screen-desc'>شاشة تابعة لـ "منصة التوظيف" تركز على أحدث المطورين المتاحين للعمل.</div>         </div>         <div class='screen-card'>             <img src='./assets/_3_screen.png' alt='Screen _3'>             <div class='screen-title'>شاشة (_3)</div>             <div class='screen-desc'>صفحة الهبوط (Landing Page) ترحيبية تشرح فلسفة Elite Tech ותدعو الزوار لبدء رحلتهم.</div>         </div>         <div class='screen-card'>             <img src='./assets/_4_screen.png' alt='Screen _4'>             <div class='screen-title'>شاشة (_4)</div>             <div class='screen-desc'>واجهة ترحيبية توضح فوائد المجتمع التقني وتشجع الزوار على الاستكشاف.</div>         </div>         <div class='screen-card'>             <img src='./assets/_5_screen.png' alt='Screen _5'>             <div class='screen-title'>شاشة (_5)</div>             <div class='screen-desc'>شاشة إنشاء حساب جديد (الخطوة الأولى) لجمع البيانات الأساسية وبدء مسار التوثيق الشخصي.</div>         </div>         <div class='screen-card'>             <img src='./assets/_6_screen.png' alt='Screen _6'>             <div class='screen-title'>شاشة (_6)</div>             <div class='screen-desc'>واجهة التصفح العام (Feed) لعرض آخر مستجدات مجتمع النخبة.</div>         </div>         <div class='screen-card'>             <img src='./assets/_7_screen.png' alt='Screen _7'>             <div class='screen-title'>شاشة (_7)</div>             <div class='screen-desc'>شاشة استكمال بيانات التسجيل وتحديد التوجه (باحث عن أفكار، صاحب فكرة، إلخ).</div>         </div>         <div class='screen-card'>             <img src='./assets/_8_screen.png' alt='Screen _8'>             <div class='screen-title'>شاشة (_8)</div>             <div class='screen-desc'>واجهة عامة (Feed) تحتوي على ملخصات لأبرز الأفكار والنقاشات.</div>         </div>         <div class='screen-card'>             <img src='./assets/_9_screen.png' alt='Screen _9'>             <div class='screen-title'>شاشة (_9)</div>             <div class='screen-desc'>الواجهة الرئيسية لـ "بنك الأفكار"، حيث تُعرض بطاقات الأفكار ويمكن تصفحها والتفاعل معها.</div>         </div>     </div> </div> </body> </html>
