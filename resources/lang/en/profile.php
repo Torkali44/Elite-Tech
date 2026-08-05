@@ -1,0 +1,28 @@
+<?php
+// resources/lang/en/profile.php
+return [
+    'cv_builder_title' => 'CV & Resume Builder',
+    'cv_builder_subtitle' => 'Fill in your info and skills to generate a professional CV with live preview and export it to PDF.',
+    'personal_info' => 'Personal Information',
+    'job_title' => 'Job Title / Specialization',
+    'job_title_placeholder' => 'e.g. Full Stack Laravel Developer',
+    'bio' => 'Short Bio',
+    'bio_placeholder' => 'Write a summary of your experience and career aspirations...',
+    'location' => 'City / Country',
+    'location_placeholder' => 'e.g. Cairo, Egypt',
+    'portfolio_url' => 'Portfolio / GitHub URL',
+    'portfolio_placeholder' => 'https://github.com/username',
+    'skills' => 'Skills & Technologies',
+    'experience' => 'Work Experience',
+    'education' => 'Education & Certifications',
+    'add_experience' => '+ Add Experience',
+    'add_education' => '+ Add Qualification',
+    'live_preview' => 'Live CV Preview',
+    'export_pdf' => 'Download PDF 📄',
+    'save_cv' => 'Save Info',
+    'profile_details' => 'Profile Details',
+    'available_for_hire' => 'Available for Hire / Projects',
+    'not_available' => 'Currently Unavailable',
+    'contact_info' => 'Contact Info',
+    'verified_user' => 'KYC Verified Member',
+];

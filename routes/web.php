@@ -15,8 +15,15 @@ use App\Http\Controllers\{
     ProfileController,
     SettingsController,
     NetworkController,
-    AdminController
+    AdminController,
+    LanguageController
 };
+
+Route::get('/lang/{locale}', [LanguageController::class, 'switch'])
+    ->name('lang.switch')
+    ->where('locale', 'ar|en');
+
+
 
 Route::get('/', [PageController::class, 'landing'])->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');

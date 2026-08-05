@@ -1,0 +1,26 @@
+<?php
+// resources/lang/en/network.php
+return [
+    'title' => 'Messages & Network',
+    'subtitle' => 'Connect directly with elite tech community members, idea owners, and developers.',
+    'conversations' => 'Conversations',
+    'no_conversations' => 'No prior conversations.',
+    'select_conversation' => 'Select a conversation from the list to start messaging.',
+    'send_message' => 'Send',
+    'type_message' => 'Type your message here...',
+    'start_conversation' => 'Start New Conversation',
+    'recipient' => 'Recipient',
+    'inbox' => 'Inbox',
+    'archive' => 'Archive',
+    'new_messages' => 'new',
+    'no_threads_in_section' => 'No conversations in this section yet. Start a conversation from the directory.',
+    'view_profile' => 'Profile',
+    'archive_btn' => 'Archive',
+    'start_first_message' => 'Start the conversation with your first message.',
+    'choose_conversation' => 'Select a conversation or start a new one from the directory on the side.',
+    'new_conversation_title' => 'Start New Conversation',
+    'choose_member' => 'Choose a member...',
+    'first_message_placeholder' => 'Your first message...',
+    'send_btn' => 'Send',
+    'directory_hint' => 'Use this page after logging in to connect in depth with talents or idea owners.',
+];

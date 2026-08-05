@@ -1,16 +1,16 @@
 @extends('layouts.dashboard')
-@section('title','التواصل والرسائل')
+@section('title', __('network.title'))
 @section('content')
 <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
     <div>
-        <h1 class="text-2xl lg:text-3xl font-black text-primary mb-1">التواصل والرسائل</h1>
-        <p class="text-tertiary text-sm">تواصل مع أصحاب الأفكار والمواهب الموثّقة داخل المنصة.</p>
+        <h1 class="text-2xl lg:text-3xl font-black text-primary mb-1">{{ __('network.title') }}</h1>
+        <p class="text-tertiary text-sm">{{ __('network.subtitle') }}</p>
     </div>
     <div class="flex bg-mist rounded-xl p-1 text-sm font-bold">
         <a href="{{ route('network.index', ['tab' => 'inbox']) }}"
-           class="px-4 py-2 rounded-lg {{ $tab==='inbox' ? 'bg-white shadow-soft text-primary' : 'text-tertiary' }}">الوارد</a>
+           class="px-4 py-2 rounded-lg {{ $tab==='inbox' ? 'bg-white shadow-soft text-primary' : 'text-tertiary' }}">{{ __('network.inbox') }}</a>
         <a href="{{ route('network.index', ['tab' => 'archive']) }}"
-           class="px-4 py-2 rounded-lg {{ $tab==='archive' ? 'bg-white shadow-soft text-primary' : 'text-tertiary' }}">الأرشيف</a>
+           class="px-4 py-2 rounded-lg {{ $tab==='archive' ? 'bg-white shadow-soft text-primary' : 'text-tertiary' }}">{{ __('network.archive') }}</a>
     </div>
 </div>
 
@@ -27,11 +27,11 @@
                 <div class="text-[11px] text-tertiary mb-1">{{ $t['partner']->title ?: $t['partner']->roleLabel() }}</div>
                 <p class="text-xs text-tertiary line-clamp-1">{{ $t['preview'] }}</p>
                 @if($t['unread'] > 0)
-                    <span class="badge bg-secondary text-white mt-2">{{ $t['unread'] }} جديدة</span>
+                    <span class="badge bg-secondary text-white mt-2">{{ $t['unread'] }} {{ __('network.new_messages') }}</span>
                 @endif
             </a>
         @empty
-            <div class="p-8 text-center text-sm text-tertiary">لا محادثات في هذا القسم بعد. ابدأ محادثة من الدليل.</div>
+            <div class="p-8 text-center text-sm text-tertiary">{{ __('network.no_threads_in_section') }}</div>
         @endforelse
     </div>
 
@@ -49,10 +49,10 @@
                     </div>
                 </div>
                 <div class="flex gap-2">
-                    <a href="{{ route('profile.show', $activePartner->id) }}" class="btn-ghost text-xs">الملف</a>
+                    <a href="{{ route('profile.show', $activePartner->id) }}" class="btn-ghost text-xs">{{ __('network.view_profile') }}</a>
                     @if($tab !== 'archive')
                     <form action="{{ route('network.archive', $activePartner->id) }}" method="POST">@csrf
-                        <button class="btn-outline text-xs !py-1.5">أرشفة</button>
+                        <button class="btn-outline text-xs !py-1.5">{{ __('network.archive_btn') }}</button>
                     </form>
                     @endif
                 </div>
@@ -68,37 +68,37 @@
                         </div>
                     </div>
                 @empty
-                    <p class="text-center text-sm text-tertiary py-10">ابدأ المحادثة بأول رسالة.</p>
+                    <p class="text-center text-sm text-tertiary py-10">{{ __('network.start_first_message') }}</p>
                 @endforelse
             </div>
 
             <form action="{{ route('network.reply', $activePartner->id) }}" method="POST" class="p-4 border-t border-mist flex gap-2">
                 @csrf
-                <textarea name="body" rows="2" class="input flex-1" placeholder="اكتب رسالتك..." required></textarea>
-                <button class="btn-secondary self-end !py-2">إرسال</button>
+                <textarea name="body" rows="2" class="input flex-1" placeholder="{{ __('network.type_message') }}" required></textarea>
+                <button class="btn-secondary self-end !py-2">{{ __('network.send_message') }}</button>
             </form>
         @else
             <div class="flex-1 grid place-items-center p-8 text-center text-tertiary text-sm">
-                اختر محادثة أو ابدأ تواصلاً جديداً من الدليل على اليسار.
+                {{ __('network.choose_conversation') }}
             </div>
         @endif
     </div>
 
     {{-- Directory / new message --}}
     <div class="card p-4 max-h-[70vh] overflow-y-auto">
-        <h3 class="font-bold text-primary mb-3 text-sm">بدء محادثة جديدة</h3>
+        <h3 class="font-bold text-primary mb-3 text-sm">{{ __('network.new_conversation_title') }}</h3>
         <form action="{{ route('network.start') }}" method="POST" class="space-y-3 mb-4">
             @csrf
             <select name="recipient_id" class="input text-sm" required>
-                <option value="">اختر عضواً...</option>
+                <option value="">{{ __('network.choose_member') }}</option>
                 @foreach($directory as $u)
                     <option value="{{ $u->id }}">{{ $u->name }} — {{ $u->roleLabel() }}</option>
                 @endforeach
             </select>
-            <textarea name="body" rows="3" class="input text-sm" placeholder="رسالتك الأولى..." required></textarea>
-            <button class="btn-primary w-full text-sm !py-2">إرسال</button>
+            <textarea name="body" rows="3" class="input text-sm" placeholder="{{ __('network.first_message_placeholder') }}" required></textarea>
+            <button class="btn-primary w-full text-sm !py-2">{{ __('network.send_btn') }}</button>
         </form>
-        <p class="text-[11px] text-tertiary leading-relaxed">للتواصل العميق مع المواهب أو أصحاب الأفكار استخدم هذه الصفحة بعد تسجيل الدخول.</p>
+        <p class="text-[11px] text-tertiary leading-relaxed">{{ __('network.directory_hint') }}</p>
     </div>
 </div>
 @endsection

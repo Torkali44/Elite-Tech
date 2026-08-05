@@ -14,7 +14,7 @@ class VerificationController extends Controller
         $user = $request->user();
 
         if ($user->hasRole('idea_seeker') && ! $user->hasRole('idea_owner')) {
-            return redirect()->route('dashboard')->with('ok', 'مسار باحث عن فكرة لا يتطلب توثيق الهوية (KYC).');
+            return redirect()->route('dashboard')->with('ok', __('dashboard.seeker_no_kyc'));
         }
 
         $purpose = $request->get('purpose', $user->kyc_purpose ?? 'publish_idea');
@@ -35,8 +35,8 @@ class VerificationController extends Controller
             'id_back' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
             'selfie' => 'nullable|file|mimes:jpg,jpeg,png|max:5120',
         ], [
-            'doc_type.required' => 'اختر نوع المستند.',
-            'id_front.required' => 'يرجى رفع صورة الجهة الأمامية للمستند.',
+            'doc_type.required' => app()->getLocale()==='ar' ? 'اختر نوع المستند.' : 'Select document type.',
+            'id_front.required' => app()->getLocale()==='ar' ? 'يرجى رفع صورة الجهة الأمامية للمستند.' : 'Please upload front side of the document.',
         ]);
 
         $user = $request->user();
@@ -72,8 +72,8 @@ class VerificationController extends Controller
         ])->save();
 
         $msg = $wasApproved
-            ? 'تم رفع وثيقة جديدة — سُحبت شارة التوثيق وأُخفيت من المنتدى إلى حين إعادة المراجعة.'
-            : 'تم إرسال طلب التحقق للمراجعة. ستصلك النتيجة في لوحة التحكم.';
+            ? (app()->getLocale()==='ar' ? 'تم رفع وثيقة جديدة — سُحبت شارة التوثيق وأُخفيت من المنتدى إلى حين إعادة المراجعة.' : 'New document uploaded — verification badge temporarily removed until review.')
+            : (app()->getLocale()==='ar' ? 'تم إرسال طلب التحقق للمراجعة. ستصلك النتيجة في لوحة التحكم.' : 'Verification request submitted for review. Results will appear in your dashboard.');
 
         return redirect()->route('dashboard')->with('ok', $msg);
     }

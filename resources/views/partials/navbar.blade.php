@@ -13,10 +13,10 @@
             <nav class="hidden lg:flex items-center gap-1 text-sm font-semibold">
                 @php
                     $links = [
-                        ['home', 'الرئيسية'],
-                        ['ideas.index', 'بنك الأفكار'],
-                        ['jobs', 'منتدى التوظيف'],
-                        ['about', 'عن المنصة'],
+                        ['home', __('navigation.home')],
+                        ['ideas.index', __('navigation.ideas_bank')],
+                        ['jobs', __('navigation.jobs_forum')],
+                        ['about', __('navigation.about')],
                     ];
                 @endphp
                 @foreach($links as [$route, $label])
@@ -31,21 +31,27 @@
             </nav>
 
             <div class="flex items-center gap-2 shrink-0">
+                <!-- Language Switcher -->
+                <a href="{{ route('lang.switch', app()->getLocale() === 'ar' ? 'en' : 'ar') }}"
+                   class="px-2.5 py-1.5 rounded-lg text-xs font-extrabold bg-neutral text-primary border border-mist hover:bg-mist transition flex items-center gap-1">
+                    🌐 {{ app()->getLocale() === 'ar' ? 'English' : 'العربية' }}
+                </a>
+
                 @auth
-                    <a href="{{ route('dashboard') }}" class="btn-primary text-sm !py-2 !px-4">لوحة التحكم</a>
+                    <a href="{{ route('dashboard') }}" class="btn-primary text-sm !py-2 !px-4">{{ __('navigation.dashboard') }}</a>
                     <form action="{{ route('logout') }}" method="POST" class="hidden sm:block">
                         @csrf
-                        <button class="btn-ghost text-sm !py-2">خروج</button>
+                        <button class="btn-ghost text-sm !py-2">{{ __('navigation.logout') }}</button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="btn-ghost text-sm hidden sm:inline-flex">تسجيل الدخول</a>
-                    <a href="{{ route('register') }}" class="btn-secondary text-sm !py-2 !px-4">انضم للمجتمع</a>
+                    <a href="{{ route('login') }}" class="btn-ghost text-sm hidden sm:inline-flex">{{ __('navigation.login') }}</a>
+                    <a href="{{ route('register') }}" class="btn-secondary text-sm !py-2 !px-4">{{ __('navigation.register') }}</a>
                 @endauth
 
                 <button @click="mobileOpen = !mobileOpen"
                         type="button"
                         class="lg:hidden p-2 rounded-md bg-neutral text-primary"
-                        aria-label="القائمة">
+                        aria-label="{{ __('navigation.menu') }}">
                     <svg x-show="!mobileOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                     <svg x-show="mobileOpen" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
@@ -68,14 +74,14 @@
 
             <div class="pt-3 border-t border-mist mt-1 flex flex-col gap-2">
                 @auth
-                    <a href="{{ route('dashboard') }}" class="btn-primary w-full text-center text-sm">لوحة التحكم</a>
+                    <a href="{{ route('dashboard') }}" class="btn-primary w-full text-center text-sm">{{ __('navigation.dashboard') }}</a>
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
-                        <button class="btn-ghost w-full text-center text-sm text-rose-600">تسجيل الخروج</button>
+                        <button class="btn-ghost w-full text-center text-sm text-rose-600">{{ __('navigation.logout_full') }}</button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="btn-outline w-full text-center text-sm">تسجيل الدخول</a>
-                    <a href="{{ route('register') }}" class="btn-secondary w-full text-center text-sm">انضم للمجتمع</a>
+                    <a href="{{ route('login') }}" class="btn-outline w-full text-center text-sm">{{ __('navigation.login') }}</a>
+                    <a href="{{ route('register') }}" class="btn-secondary w-full text-center text-sm">{{ __('navigation.register') }}</a>
                 @endauth
             </div>
         </nav>

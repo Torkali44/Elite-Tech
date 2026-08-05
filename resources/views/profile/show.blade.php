@@ -21,10 +21,10 @@
                 <h1 class="text-2xl font-extrabold text-primary">{{ $user->name }}</h1>
                 <p class="text-tertiary text-sm">{{ $str('title') ?: ($user->title ?: $user->roleLabel()) }}</p>
                 @if($user->isKycApproved())
-                    <span class="badge bg-emerald-50 text-emerald-700 mt-1">موثّق</span>
+                    <span class="badge bg-emerald-50 text-emerald-700 mt-1">{{ __('general.verified_badge') }}</span>
                 @endif
                 @if($user->available_for_hire)
-                    <span class="badge bg-secondary/15 text-secondary mt-1">متاح للعمل</span>
+                    <span class="badge bg-secondary/15 text-secondary mt-1">{{ __('general.available_badge') }}</span>
                 @endif
             </div>
         </div>
@@ -33,8 +33,8 @@
             @if($showEmail)<div>{{ $user->email }}</div>@endif
             @if($showPhone && $str('phone'))<div>{{ $str('phone') }}</div>@endif
             @if($str('location') || $user->location)<div>{{ $str('location') ?: $user->location }}</div>@endif
-            @if($str('years_experience'))<div>خبرة: {{ $str('years_experience') }}</div>@endif
-            @if($str('availability'))<div>التوفر: {{ $str('availability') }}</div>@endif
+            @if($str('years_experience'))<div>{{ __('general.experience_label') }}: {{ $str('years_experience') }}</div>@endif
+            @if($str('availability'))<div>{{ __('general.availability_label') }}: {{ $str('availability') }}</div>@endif
             @if(!empty($vis['employment_type']))
                 <div>{{ $empLabels[$vis['employment_type']] ?? '' }}@if(!empty($vis['work_style'])) · {{ $workLabels[$vis['work_style']] ?? '' }}@endif</div>
             @endif
@@ -45,30 +45,30 @@
             </div>
         </div>
 
-        <p class="text-sm text-tertiary leading-relaxed mb-6 whitespace-pre-line">{{ $str('summary') ?: ($user->bio ?: 'عضو في مجتمع Elite Tech.') }}</p>
+        <p class="text-sm text-tertiary leading-relaxed mb-6 whitespace-pre-line">{{ $str('summary') ?: ($user->bio ?: __('general.community_member')) }}</p>
 
         @if(count($list('skills')))
-            <h3 class="font-bold text-primary text-sm mb-2">المهارات</h3>
+            <h3 class="font-bold text-primary text-sm mb-2">{{ __('general.skills_label') }}</h3>
             <div class="flex flex-wrap gap-2 mb-5">
                 @foreach($list('skills') as $skill)<span class="badge bg-mist text-primary">{{ $skill }}</span>@endforeach
             </div>
         @endif
 
         @if($str('experience'))
-            <h3 class="font-bold text-primary text-sm mb-1">الخبرات</h3>
+            <h3 class="font-bold text-primary text-sm mb-1">{{ __('general.experience_section') }}</h3>
             <p class="text-sm text-tertiary whitespace-pre-line mb-5">{{ $str('experience') }}</p>
         @endif
 
         @if($str('projects'))
-            <h3 class="font-bold text-primary text-sm mb-1">المشاريع</h3>
+            <h3 class="font-bold text-primary text-sm mb-1">{{ __('general.projects_section') }}</h3>
             <p class="text-sm text-tertiary whitespace-pre-line mb-5">{{ $str('projects') }}</p>
         @endif
 
         @auth
             @if(auth()->id() !== $user->id)
-                <a href="{{ route('network.index', ['with' => $user->id]) }}" class="btn-secondary text-sm">تواصل</a>
+                <a href="{{ route('network.index', ['with' => $user->id]) }}" class="btn-secondary text-sm">{{ __('general.connect_btn') }}</a>
             @else
-                <a href="{{ route('profile.cv') }}" class="btn-outline text-sm">تعديل سيرتي</a>
+                <a href="{{ route('profile.cv') }}" class="btn-outline text-sm">{{ __('general.edit_cv_btn') }}</a>
             @endif
         @endauth
     </div>

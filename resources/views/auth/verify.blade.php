@@ -1,9 +1,9 @@
 @extends('layouts.auth')
-@section('title','التحقق من الحساب')
+@section('title', __('auth.verify_title'))
 @section('content')
-<h2 class="text-2xl font-black text-primary mb-1">تأكيد البريد</h2>
+<h2 class="text-2xl font-black text-primary mb-1">{{ __('auth.verify_title') }}</h2>
 <p class="text-sm text-tertiary mb-6">
-    أدخل رمز التحقق المكوّن من 6 أرقام المرسل إلى:<br>
+    {{ __('auth.verify_subtitle') }}<br>
     <span class="text-primary font-bold">{{ auth()->user()->email ?? '' }}</span>
 </p>
 
@@ -17,15 +17,15 @@
 <form action="{{ route('auth.verify') }}" method="POST" class="space-y-5">
     @csrf
     <div>
-        <label class="block text-sm font-bold text-primary mb-1.5">رمز التحقق</label>
+        <label class="block text-sm font-bold text-primary mb-1.5">{{ __('auth.otp_label') }}</label>
         <input type="text" name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6"
-               class="input text-center text-2xl font-black tracking-[0.4em]" placeholder="••••••" required autofocus>
+               class="input text-center text-2xl font-black tracking-[0.4em]" placeholder="{{ __('auth.otp_placeholder') }}" required autofocus>
     </div>
-    <button type="submit" class="btn-primary w-full">تأكيد والمتابعة</button>
+    <button type="submit" class="btn-primary w-full">{{ __('auth.submit_verify') }}</button>
 </form>
 
 <p class="text-center text-sm text-tertiary mt-6">
-    لم تستلم الرمز؟
-    <a href="{{ route('auth.verify', ['resend' => 1]) }}" class="text-secondary font-bold hover:underline">إعادة إرسال الرمز</a>
+    {{ __('auth.no_code_received') }}
+    <a href="{{ route('auth.verify', ['resend' => 1]) }}" class="text-secondary font-bold hover:underline">{{ __('auth.resend_code') }}</a>
 </p>
 @endsection

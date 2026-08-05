@@ -246,11 +246,15 @@ class AuthController extends Controller
 
         $email = $request->user()->email;
 
-        Mail::raw(
-            "رمز التحقق لحسابك في Elite Tech Community: {$code}\nصالح لمدة 15 دقيقة.",
-            function ($message) use ($email) {
-                $message->to($email)->subject('رمز التحقق — Elite Tech Community');
-            }
-        );
+        try {
+            Mail::raw(
+                "رمز التحقق لحسابك في Elite Tech Community: {$code}\nصالح لمدة 15 دقيقة.",
+                function ($message) use ($email) {
+                    $message->to($email)->subject('رمز التحقق — Elite Tech Community');
+                }
+            );
+        } catch (\Throwable $e) {
+            logger()->error('Failed to send OTP mail: ' . $e->getMessage());
+        }
     }
 }

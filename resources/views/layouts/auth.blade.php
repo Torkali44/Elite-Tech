@@ -1,12 +1,18 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title','مصادقة') — Elite Tech</title>
+    <title>@yield('title', __('auth.welcome')) — Elite Tech</title>
     @include('partials.styles')
 </head>
-<body class="min-h-screen bg-neutral">
+<body class="min-h-screen bg-neutral relative">
+<div class="absolute top-4 {{ app()->getLocale() === 'ar' ? 'left-4' : 'right-4' }} z-50">
+    <a href="{{ route('lang.switch', app()->getLocale() === 'ar' ? 'en' : 'ar') }}"
+       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold bg-white border border-mist text-primary hover:bg-neutral transition shadow-sm">
+        🌐 {{ app()->getLocale() === 'ar' ? 'English' : 'العربية' }}
+    </a>
+</div>
 <div class="min-h-screen grid lg:grid-cols-2">
     <aside class="hidden lg:block relative overflow-hidden">
         <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1200&q=80"
@@ -20,14 +26,14 @@
                 </div>
             </div>
             <div class="max-w-md">
-                <h1 class="text-3xl font-extrabold mb-3 leading-tight">أهلاً بك في Elite Tech</h1>
+                <h1 class="text-3xl font-extrabold mb-3 leading-tight">{{ __('auth.welcome') }}</h1>
                 <p class="text-white/80 leading-relaxed text-sm">
-                    منصة تشاركية شفافة — تصفح بحرية، وتفاعل بعد التوثيق.
+                    {{ __('auth.tagline') }}
                 </p>
             </div>
             <div class="flex gap-4 text-xs text-white/70">
-                <a href="{{ route('privacy') }}" class="hover:text-white">سياسة الخصوصية</a>
-                <a href="{{ route('terms') }}" class="hover:text-white">الشروط والأحكام</a>
+                <a href="{{ route('privacy') }}" class="hover:text-white">{{ __('navigation.privacy') }}</a>
+                <a href="{{ route('terms') }}" class="hover:text-white">{{ __('navigation.terms') }}</a>
             </div>
         </div>
     </aside>

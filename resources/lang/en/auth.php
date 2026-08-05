@@ -1,0 +1,56 @@
+<?php
+// resources/lang/en/auth.php
+return [
+    'welcome' => 'Welcome to Elite Tech',
+    'tagline' => 'A transparent collaborative platform — browse freely, interact after verification.',
+    'login_title' => 'Sign In',
+    'login_subtitle' => 'Sign in to continue to your path in the community',
+    'new_account' => 'New Account',
+    'email' => 'Email Address',
+    'password' => 'Password',
+    'forgot_password' => 'Forgot your password?',
+    'remember_me' => 'Remember me on this device',
+    'submit_login' => 'Sign In',
+    'or' => 'Or',
+
+    'register_title' => 'Create a New Account',
+    'register_subtitle' => 'Join the elite tech community',
+    'name' => 'Full Name',
+    'name_placeholder' => 'e.g. Ahmed Mohamed',
+    'email_placeholder' => 'name@example.com',
+    'password_confirm' => 'Confirm Password',
+    'password_confirm_placeholder' => 'Re-enter your password',
+    'terms_agree' => 'I agree to the',
+    'terms_link' => 'Terms & Conditions',
+    'and' => 'and',
+    'privacy_link' => 'Privacy Policy',
+    'submit_register' => 'Create Account',
+    'already_have_account' => 'Already have an account?',
+
+    'verify_title' => 'Verify Your Email',
+    'verify_subtitle' => 'We sent a 6-digit verification code to your email',
+    'otp_label' => 'Verification Code (6 digits)',
+    'otp_placeholder' => '123456',
+    'submit_verify' => 'Verify Code',
+    'resend_code' => 'Resend Code',
+    'no_code_received' => "Didn't receive the code?",
+
+    'path_title' => 'Choose Your Path',
+    'path_subtitle' => 'Select one or more paths — you can change later',
+    'path_submit' => 'Save Path & Continue',
+    'jobs_forum_interest' => 'I want to appear in the Jobs Forum',
+
+    'forgot_title' => 'Recover Password',
+    'forgot_subtitle' => 'Enter your email and we will send you a reset link',
+    'send_reset_link' => 'Send Reset Link',
+    'back_to_login' => 'Back to Login',
+
+    'reset_title' => 'Set a New Password',
+    'new_password' => 'New Password',
+    'confirm_password' => 'Confirm New Password',
+    'submit_reset' => 'Reset Password',
+
+    'admin_login_title' => 'Admin Panel',
+    'admin_login_subtitle' => 'Restricted access for administrators',
+    'admin_submit' => 'Access Admin Panel',
+];

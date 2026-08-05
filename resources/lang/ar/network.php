@@ -1,0 +1,26 @@
+<?php
+// resources/lang/ar/network.php
+return [
+    'title' => 'الرسائل وتواصل الشبكة',
+    'subtitle' => 'تواصل مع أعضاء مجتمع النخبة التقنية وأصحاب الأفكار والمطورين مباشرة.',
+    'conversations' => 'المحادثات',
+    'no_conversations' => 'لا توجد محادثات سابقة.',
+    'select_conversation' => 'اختر محادثة من القائمة لبدء التواصل.',
+    'send_message' => 'إرسال',
+    'type_message' => 'اكتب رسالتك هنا...',
+    'start_conversation' => 'بدء محادثة جديدة',
+    'recipient' => 'المستقبل',
+    'inbox' => 'الوارد',
+    'archive' => 'الأرشيف',
+    'new_messages' => 'جديدة',
+    'no_threads_in_section' => 'لا محادثات في هذا القسم بعد. ابدأ محادثة من الدليل.',
+    'view_profile' => 'الملف',
+    'archive_btn' => 'أرشفة',
+    'start_first_message' => 'ابدأ المحادثة بأول رسالة.',
+    'choose_conversation' => 'اختر محادثة أو ابدأ تواصلاً جديداً من الدليل على الجانب.',
+    'new_conversation_title' => 'بدء محادثة جديدة',
+    'choose_member' => 'اختر عضواً...',
+    'first_message_placeholder' => 'رسالتك الأولى...',
+    'send_btn' => 'إرسال',
+    'directory_hint' => 'للتواصل العميق مع المواهب أو أصحاب الأفكار استخدم هذه الصفحة بعد تسجيل الدخول.',
+];

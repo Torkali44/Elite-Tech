@@ -1,0 +1,56 @@
+<?php
+// resources/lang/ar/auth.php
+return [
+    'welcome' => 'أهلاً بك في Elite Tech',
+    'tagline' => 'منصة تشاركية شفافة — تصفح بحرية، وتفاعل بعد التوثيق.',
+    'login_title' => 'تسجيل الدخول',
+    'login_subtitle' => 'سجّل دخولك للمتابعة إلى مسارك في المجتمع',
+    'new_account' => 'حساب جديد',
+    'email' => 'البريد الإلكتروني',
+    'password' => 'كلمة المرور',
+    'forgot_password' => 'نسيت كلمة المرور؟',
+    'remember_me' => 'تذكرني على هذا الجهاز',
+    'submit_login' => 'دخول إلى المنصة',
+    'or' => 'أو',
+
+    'register_title' => 'إنشاء حساب جديد',
+    'register_subtitle' => 'انضم لمجتمع النخبة التقنية',
+    'name' => 'الاسم الكامل',
+    'name_placeholder' => 'مثال: أحمد محمد',
+    'email_placeholder' => 'name@example.com',
+    'password_confirm' => 'تأكيد كلمة المرور',
+    'password_confirm_placeholder' => 'أعد كتابة كلمة المرور',
+    'terms_agree' => 'أوافق على',
+    'terms_link' => 'الشروط والأحكام',
+    'and' => 'و',
+    'privacy_link' => 'سياسة الخصوصية',
+    'submit_register' => 'إنشاء الحساب',
+    'already_have_account' => 'لديك حساب بالفعل؟',
+
+    'verify_title' => 'تأكيد البريد الإلكتروني',
+    'verify_subtitle' => 'أرسلنا رمز تحقق من 6 أرقام إلى بريدك الإلكتروني',
+    'otp_label' => 'رمز التحقق (6 أرقام)',
+    'otp_placeholder' => '123456',
+    'submit_verify' => 'تأكيد الرمز',
+    'resend_code' => 'إعادة إرسال الرمز',
+    'no_code_received' => 'لم يصلك الرمز؟',
+
+    'path_title' => 'اختر مسارك',
+    'path_subtitle' => 'اختر مسارًا أو أكثر — يمكنك تغييره لاحقاً',
+    'path_submit' => 'حفظ المسار والمتابعة',
+    'jobs_forum_interest' => 'أريد الظهور في منتدى التوظيف',
+
+    'forgot_title' => 'استعادة كلمة المرور',
+    'forgot_subtitle' => 'أدخل بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين',
+    'send_reset_link' => 'إرسال رابط الاسترداد',
+    'back_to_login' => 'العودة لتسجيل الدخول',
+
+    'reset_title' => 'تعيين كلمة مرور جديدة',
+    'new_password' => 'كلمة المرور الجديدة',
+    'confirm_password' => 'تأكيد كلمة المرور الجديدة',
+    'submit_reset' => 'تعيين كلمة المرور',
+
+    'admin_login_title' => 'لوحة الإدارة',
+    'admin_login_subtitle' => 'دخول مخصص للإدارة',
+    'admin_submit' => 'دخول لوحة الإدارة',
+];

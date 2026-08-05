@@ -9,18 +9,18 @@
             </div>
 
             <nav class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-tertiary">
-                <a href="{{ route('ideas.index') }}" class="hover:text-primary transition">بنك الأفكار</a>
-                <a href="{{ route('jobs') }}" class="hover:text-primary transition">التوظيف</a>
-                <a href="{{ route('about') }}" class="hover:text-primary transition">عن المنصة</a>
-                <a href="{{ route('terms') }}" class="hover:text-primary transition">الشروط</a>
-                <a href="{{ route('privacy') }}" class="hover:text-primary transition">الخصوصية</a>
-                <a href="{{ route('agreement') }}" class="hover:text-primary transition">اتفاقية الاستخدام</a>
+                <a href="{{ route('ideas.index') }}" class="hover:text-primary transition">{{ __('navigation.ideas_bank') }}</a>
+                <a href="{{ route('jobs') }}" class="hover:text-primary transition">{{ __('navigation.employment') }}</a>
+                <a href="{{ route('about') }}" class="hover:text-primary transition">{{ __('navigation.about') }}</a>
+                <a href="{{ route('terms') }}" class="hover:text-primary transition">{{ __('navigation.terms') }}</a>
+                <a href="{{ route('privacy') }}" class="hover:text-primary transition">{{ __('navigation.privacy') }}</a>
+                <a href="{{ route('agreement') }}" class="hover:text-primary transition">{{ __('navigation.agreement') }}</a>
             </nav>
         </div>
 
         <div class="border-t border-mist mt-8 pt-5 text-xs text-tertiary flex flex-wrap justify-between gap-2">
-            <span>© {{ date('Y') }} Elite Tech Community. جميع الحقوق محفوظة.</span>
-            <span>توثيق KYC · حماية البيانات</span>
+            <span>© {{ date('Y') }} Elite Tech Community. {{ app()->getLocale() === 'ar' ? 'جميع الحقوق محفوظة.' : 'All rights reserved.' }}</span>
+            <span>{{ app()->getLocale() === 'ar' ? 'توثيق KYC · حماية البيانات' : 'KYC Verification · Data Protection' }}</span>
         </div>
     </div>
 </footer>

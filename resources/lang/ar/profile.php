@@ -1,0 +1,28 @@
+<?php
+// resources/lang/ar/profile.php
+return [
+    'cv_builder_title' => 'بناء الـ CV والسيرة الذاتية',
+    'cv_builder_subtitle' => 'أدخل بياناتك ومهاراتك لتوليد سيرة ذاتية احترافية بتصميم جذاب وتصديرها كـ PDF.',
+    'personal_info' => 'البيانات الشخصية',
+    'job_title' => 'المسمى الوظيفي / التخصص',
+    'job_title_placeholder' => 'مثال: Full Stack Laravel Developer',
+    'bio' => 'نبذة مختصرة',
+    'bio_placeholder' => 'اكتب ملخصاً عن خبراتك وتطلعاتك المهنية...',
+    'location' => 'المدينة / الدولة',
+    'location_placeholder' => 'مثال: القاهرة، مصر',
+    'portfolio_url' => 'رابط معرض الأعمال / GitHub',
+    'portfolio_placeholder' => 'https://github.com/username',
+    'skills' => 'المهارات والتقنيات',
+    'experience' => 'الخبرات العملية',
+    'education' => 'التعليم والشهادات',
+    'add_experience' => '+ إضافة خبرة',
+    'add_education' => '+ إضافة مؤهل',
+    'live_preview' => 'معاينة حية للـ CV',
+    'export_pdf' => 'تحميل PDF 📄',
+    'save_cv' => 'حفظ البيانات',
+    'profile_details' => 'تفاصيل الملف الشخصي',
+    'available_for_hire' => 'متاح للعمل والتنفيذ',
+    'not_available' => 'غير متاح حالياً',
+    'contact_info' => 'بيانات التواصل',
+    'verified_user' => 'عضو موثّق KYC',
+];
