@@ -46,15 +46,18 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
     Route::get('/forgot-password', [AuthController::class, 'showForgot'])->name('password.request');
     Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:5,1');
-    Route::get('/reset-password/{token}', [AuthController::class, 'showReset'])->name('password.reset');
+    Route::get('/reset-password/{token?}', [AuthController::class, 'showReset'])->name('password.reset');
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update')->middleware('throttle:5,1');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Verify routes: accessible by GUESTS (pending_reg in session) AND authenticated users.
+// They must NOT be inside the 'auth' middleware group.
+Route::get('/auth/verify', [AuthController::class, 'showVerify'])->name('auth.verify')->middleware('throttle:10,1');
+Route::post('/auth/verify', [AuthController::class, 'verify'])->middleware('throttle:5,1');
+
 Route::middleware('auth')->group(function () {
-    Route::get('/auth/verify', [AuthController::class, 'showVerify'])->name('auth.verify');
-    Route::post('/auth/verify', [AuthController::class, 'verify']);
     Route::get('/auth/path-selection', [AuthController::class, 'showPathSelection'])->name('auth.path');
     Route::post('/auth/path-selection', [AuthController::class, 'savePath']);
 

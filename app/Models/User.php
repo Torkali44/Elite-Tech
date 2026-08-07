@@ -2,18 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasFactory, Notifiable;
 
     protected $fillable = [
         'name', 'email', 'password', 'role', 'roles', 'title', 'bio', 'portfolio_url',
         'location', 'avatar', 'available_for_hire', 'kyc_status', 'kyc_purpose',
-        'wants_jobs_forum', 'show_in_jobs_forum', 'rejection_reason', 'admin_notes', 'is_suspended',
+        'wants_jobs_forum', 'show_in_jobs_forum', 'rejection_reason', 'admin_notes',
+        'is_suspended', 'email_verified_at',
     ];
+
 
     protected $hidden = ['password', 'remember_token'];
 

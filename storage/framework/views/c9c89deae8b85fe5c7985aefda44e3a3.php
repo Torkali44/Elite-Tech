@@ -96,6 +96,7 @@
         </div>
     </div>
 </div>
+<?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html>
 <?php /**PATH C:\E\iti-open-source\Freelance\elitetech-laravel\resources\views/layouts/auth.blade.php ENDPATH**/ ?>

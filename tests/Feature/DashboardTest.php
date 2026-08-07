@@ -21,12 +21,13 @@ class DashboardTest extends TestCase
     public function test_dashboard_loads_correctly_when_user_has_ideas(): void
     {
         $user = User::create([
-            'name'       => 'Owner',
-            'email'      => 'owner@example.com',
-            'password'   => bcrypt('password123'),
-            'role'       => 'idea_owner',
-            'roles'      => ['idea_owner'],
-            'kyc_status' => 'approved',
+            'name'              => 'Owner',
+            'email'             => 'owner@example.com',
+            'password'          => bcrypt('password123'),
+            'role'              => 'idea_owner',
+            'roles'             => ['idea_owner'],
+            'kyc_status'        => 'approved',
+            'email_verified_at' => now(),
         ]);
 
         Idea::create([
@@ -60,13 +61,14 @@ class DashboardTest extends TestCase
     public function test_clearing_portfolio_url_triggers_kyc_rereview(): void
     {
         $user = User::create([
-            'name'          => 'Verified',
-            'email'         => 'verified@example.com',
-            'password'      => bcrypt('password123'),
-            'role'          => 'developer',
-            'roles'         => ['developer'],
-            'kyc_status'    => 'approved',
-            'portfolio_url' => 'https://old-portfolio.example.com',
+            'name'              => 'Verified',
+            'email'             => 'verified@example.com',
+            'password'          => bcrypt('password123'),
+            'role'              => 'developer',
+            'roles'             => ['developer'],
+            'kyc_status'        => 'approved',
+            'portfolio_url'     => 'https://old-portfolio.example.com',
+            'email_verified_at' => now(),
         ]);
 
         Cv::create([

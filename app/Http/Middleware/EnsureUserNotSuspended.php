@@ -13,13 +13,29 @@ class EnsureUserNotSuspended
     {
         $user = $request->user();
 
-        if ($user && $user->is_suspended) {
+        if (! $user) {
+            return $next($request);
+        }
+
+        // ── Suspended account: force logout immediately ──────────────────────
+        if ($user->is_suspended) {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
             return redirect()->route('login')
-                ->withErrors(['email' => 'هذا الحساب معلّق. تواصل مع الإدارة.']);
+                ->withErrors(['email' => __('auth.account_suspended')]);
+        }
+
+        // ── Unverified email: redirect to verify page ───────────────────────
+        // Excludes the verify route itself, logout, and language switcher to
+        // prevent redirect loops. All other authenticated routes require
+        // a verified email.
+        if (
+            ! $user->email_verified_at &&
+            ! $request->routeIs('auth.verify', 'logout', 'lang.switch')
+        ) {
+            return redirect()->route('auth.verify');
         }
 
         return $next($request);

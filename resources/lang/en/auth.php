@@ -50,7 +50,50 @@ return [
     'confirm_password' => 'Confirm New Password',
     'submit_reset' => 'Reset Password',
 
-    'admin_login_title' => 'Admin Panel',
+    'admin_login_title'    => 'Admin Panel',
     'admin_login_subtitle' => 'Restricted access for administrators',
-    'admin_submit' => 'Access Admin Panel',
+    'admin_submit'         => 'Access Admin Panel',
+
+    // Credentials & account state
+    'invalid_credentials'          => 'Incorrect email or password.',
+    'account_suspended'            => 'This account is suspended. Contact support.',
+    'please_verify_email'          => 'Please verify your email to continue.',
+    'email_reserved'               => 'This email is reserved for the admin account.',
+    'email_taken'                  => 'This email is already registered. Try signing in.',
+    'account_already_exists_login' => 'An account with this email already exists. Please sign in.',
+
+    // Validation
+    'terms_required'    => 'You must accept the terms to continue.',
+    'password_mismatch' => 'Passwords do not match.',
+    'role_required'     => 'Please select at least one path.',
+    'otp_digits'        => 'The verification code must be exactly 6 digits.',
+    'otp_required'      => 'Please enter the verification code.',
+
+    // OTP flow
+    'session_expired_register'  => 'Registration session expired. Please start over.',
+    'otp_expired_reregister'    => 'Code expired. Please register again.',
+    'otp_expired_resend'        => 'Code expired. Please request a new one.',
+    'otp_wrong'                 => 'Incorrect verification code.',
+    'otp_wrong_attempts'        => 'Incorrect code. Attempts remaining: :count',
+    'otp_max_attempts'          => 'Maximum verification attempts exceeded. Please register again.',
+    'otp_resent'                => 'A new verification code has been sent to your email.',
+    'email_verified_success'    => 'Email verified and account created successfully! 🎉',
+
+    // Resend
+    'resend_max_reached' => 'Maximum resend attempts reached. Please register again.',
+    'resend_cooldown'    => 'Please wait :seconds seconds before resending.',
+
+    // Path selection
+    'idea_owner_kyc_required' => 'The Idea Owner path requires KYC before publishing. Complete verification now.',
+    'jobs_forum_kyc_required' => 'To join the Jobs Forum, complete identity verification.',
+    'developer_path_selected' => 'You can freely build your CV and export a PDF without KYC.',
+    'path_saved'              => 'Your path has been saved successfully.',
+
+    // Password reset
+    'reset_link_sent'        => 'If the account exists, a reset link has been sent to your email.',
+    'password_reset_success' => 'Password updated. You can now sign in.',
+    'reset_link_invalid'     => 'The reset link is invalid or has expired.',
+    'email_not_found'        => 'This email address is not registered.',
+    'otp_sent_reset'         => 'A verification code has been sent to your email to reset your password.',
 ];
+

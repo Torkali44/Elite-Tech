@@ -14,10 +14,11 @@ class IdeaTest extends TestCase
     public function test_guest_can_view_published_ideas(): void
     {
         $user = User::create([
-            'name' => 'Owner',
-            'email' => 'owner@example.com',
-            'password' => bcrypt('password123'),
-            'role' => 'idea_owner',
+            'name'              => 'Owner',
+            'email'             => 'owner@example.com',
+            'password'          => bcrypt('password123'),
+            'role'              => 'idea_owner',
+            'email_verified_at' => now(),
         ]);
 
         Idea::create([
@@ -37,12 +38,13 @@ class IdeaTest extends TestCase
     public function test_unverified_idea_owner_cannot_access_create_idea_page(): void
     {
         $user = User::create([
-            'name' => 'Owner',
-            'email' => 'unverified@example.com',
-            'password' => bcrypt('password123'),
-            'role' => 'idea_owner',
-            'roles' => ['idea_owner'],
-            'kyc_status' => 'none',
+            'name'              => 'Owner',
+            'email'             => 'unverified@example.com',
+            'password'          => bcrypt('password123'),
+            'role'              => 'idea_owner',
+            'roles'             => ['idea_owner'],
+            'kyc_status'        => 'none',
+            'email_verified_at' => now(), // email verified, KYC not yet
         ]);
 
         $response = $this->actingAs($user)->get('/ideas/create');
@@ -53,12 +55,13 @@ class IdeaTest extends TestCase
     public function test_verified_idea_owner_can_store_idea(): void
     {
         $user = User::create([
-            'name' => 'Verified Owner',
-            'email' => 'verified@example.com',
-            'password' => bcrypt('password123'),
-            'role' => 'idea_owner',
-            'roles' => ['idea_owner'],
-            'kyc_status' => 'approved',
+            'name'              => 'Verified Owner',
+            'email'             => 'verified@example.com',
+            'password'          => bcrypt('password123'),
+            'role'              => 'idea_owner',
+            'roles'             => ['idea_owner'],
+            'kyc_status'        => 'approved',
+            'email_verified_at' => now(),
         ]);
 
         $response = $this->actingAs($user)->post('/ideas', [
