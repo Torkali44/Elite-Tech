@@ -21,7 +21,7 @@ yarn-error.log
 /storage/app/private
 EliteCommunityPRD.html
 /storage/framework/testing
-/storage/framework/views/
-/storage/framework/cache/
-/storage/framework/sessions/
-   
+/storage/framework/views/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/

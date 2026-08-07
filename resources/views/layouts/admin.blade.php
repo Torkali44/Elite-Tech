@@ -13,7 +13,7 @@
            class="fixed lg:static inset-y-0 {{ app()->getLocale() === 'ar' ? 'right-0' : 'left-0' }} w-72 bg-primary text-white z-40 transform transition lg:transform-none flex flex-col">
         <div class="p-6 border-b border-white/10 flex items-center justify-between gap-3">
             <div class="flex items-center gap-3">
-                <x-logo class="h-11 w-11 object-cover rounded-xl" />
+                <x-logo class="h-10 w-auto max-w-[140px] object-contain rounded-lg" />
                 <div>
                     <div class="font-bold text-sm">Elite Tech</div>
                     <div class="text-xs text-white/60">{{ __('admin.panel_title') }}</div>

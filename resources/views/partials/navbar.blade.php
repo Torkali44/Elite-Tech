@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16 gap-4">
             <a href="{{ route('home') }}" class="flex items-center gap-2.5 shrink-0">
-                <x-logo class="h-9 w-9 object-cover rounded-lg" />
+                <x-logo class="h-10 w-auto max-w-[180px] object-contain rounded-lg" />
                 <div class="leading-tight">
                     <div class="font-extrabold text-primary text-sm tracking-tight">
                         Elite <span class="text-secondary">Community</span>

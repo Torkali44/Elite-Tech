@@ -2,7 +2,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div class="flex items-center gap-2.5">
-                <x-logo class="h-8 w-8 object-cover rounded-md" />
+                <x-logo class="h-9 w-auto max-w-[140px] object-contain rounded-md" />
                 <span class="font-extrabold text-primary text-sm">
                     Elite <span class="text-secondary">Community</span>
                 </span>

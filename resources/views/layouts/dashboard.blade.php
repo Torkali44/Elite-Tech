@@ -56,7 +56,7 @@
             <div class="p-5 border-b border-mist flex flex-col gap-3">
                 <div class="flex items-center justify-between gap-3">
                     <div class="flex items-center gap-3 min-w-0">
-                        <x-logo class="h-10 w-10 object-cover rounded-lg shrink-0" />
+                        <x-logo class="h-9 w-auto max-w-[140px] object-contain rounded-lg shrink-0" />
                         <div class="min-w-0 flex-1">
                             <div class="font-extrabold text-primary text-sm truncate">{{ $user->name ?? __('dashboard.member') }}</div>
                             <div class="text-xs text-tertiary truncate">{{ $roleLabels[$primaryRole] ?? ($user->title ?? __('dashboard.member')) }}</div>
