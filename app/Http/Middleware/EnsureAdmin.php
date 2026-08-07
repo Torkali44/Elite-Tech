@@ -17,13 +17,15 @@ class EnsureAdmin
     {
         $user = $request->user();
 
-        if ($user && ($user->role === 'admin' || $user->hasRole('admin'))) {
+        if ($user && $user->isAdmin()) {
             $request->session()->put('is_admin', true);
+
             return $next($request);
         }
 
         if (! $request->session()->get('is_admin')) {
-            return redirect()->route('login')->with('error', 'يرجى تسجيل الدخول بحساب الإدارة للوصول إلى لوحة التحكم.');
+            return redirect()->route('login')
+                ->with('error', 'يرجى تسجيل الدخول بحساب الإدارة للوصول إلى لوحة التحكم.');
         }
 
         return $next($request);

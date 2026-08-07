@@ -7,9 +7,20 @@
     @include('partials.styles')
     <style>
       @media print {
-        aside, header, .no-print, .gate-backdrop { display: none !important; }
-        body { background: #fff !important; }
-        main { padding: 0 !important; max-width: 100% !important; }
+        aside.no-print, header, .no-print, .gate-backdrop { display: none !important; }
+        html, body {
+          margin: 0 !important;
+          padding: 0 !important;
+          width: 100% !important;
+        }
+        body > div,
+        body > div > div,
+        body > div > div > main {
+          margin: 0 !important;
+          padding: 0 !important;
+          max-width: none !important;
+          width: 100% !important;
+        }
         .card { box-shadow: none !important; border: none !important; }
       }
     </style>
@@ -170,12 +181,12 @@
 
         <main class="p-4 sm:p-6 lg:p-8 flex-1 max-w-7xl w-full mx-auto">
             @if (session('ok'))
-                <div class="mb-5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-4 py-3 font-semibold">
+                <div class="no-print mb-5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-4 py-3 font-semibold">
                     {{ session('ok') }}
                 </div>
             @endif
             @if (session('error'))
-                <div class="mb-5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-sm px-4 py-3 font-semibold">
+                <div class="no-print mb-5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-sm px-4 py-3 font-semibold">
                     {{ session('error') }}
                 </div>
             @endif

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Support\AdminAuth;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +27,33 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
+        $email = strtolower(trim($credentials['email']));
+        $password = $credentials['password'];
+
+        if (AdminAuth::isAdminEmail($email)) {
+            if (! AdminAuth::passwordMatches($password)) {
+                return back()
+                    ->withInput($request->only('email'))
+                    ->withErrors(['email' => 'البريد الإلكتروني أو كلمة المرور غير صحيحة.']);
+            }
+
+            $adminUser = AdminAuth::user();
+            if ($adminUser?->is_suspended) {
+                return back()->withErrors(['email' => 'هذا الحساب معلّق. تواصل مع الإدارة.']);
+            }
+
+            if ($adminUser) {
+                Auth::login($adminUser, $request->boolean('remember'));
+            } else {
+                Auth::logout();
+            }
+
+            $request->session()->regenerate();
+            $request->session()->put('is_admin', true);
+
+            return redirect()->route('admin.dashboard');
+        }
+
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             return back()
                 ->withInput($request->only('email'))
@@ -41,7 +69,7 @@ class AuthController extends Controller
             return back()->withErrors(['email' => 'هذا الحساب معلّق. تواصل مع الإدارة.']);
         }
 
-        if ($user->role === 'admin' || $user->hasRole('admin')) {
+        if ($user->isAdmin()) {
             $request->session()->put('is_admin', true);
 
             return redirect()->route('admin.dashboard');
@@ -71,6 +99,12 @@ class AuthController extends Controller
             'email.unique' => 'هذا البريد مسجّل بالفعل.',
             'password.confirmed' => 'كلمتا المرور غير متطابقتين.',
         ]);
+
+        if (AdminAuth::isAdminEmail($data['email'])) {
+            return back()
+                ->withInput($request->except('password', 'password_confirmation'))
+                ->withErrors(['email' => 'هذا البريد محجوز لحساب الإدارة.']);
+        }
 
         $user = User::create([
             'name' => $data['name'],
@@ -232,6 +266,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
+        $request->session()->forget('is_admin');
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

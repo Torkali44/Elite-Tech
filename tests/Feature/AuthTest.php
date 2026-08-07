@@ -80,6 +80,31 @@ class AuthTest extends TestCase
         $this->assertTrue((bool) session('is_admin'));
     }
 
+    public function test_admin_login_via_admin_url_redirects_to_login(): void
+    {
+        $this->get('/admin/login')->assertRedirect('/login');
+    }
+
+    public function test_admin_credentials_via_unified_login_open_admin_dashboard(): void
+    {
+        User::create([
+            'name' => 'Admin User',
+            'email' => 'admin@elitetech.com',
+            'password' => bcrypt('password123'),
+            'role' => 'admin',
+            'roles' => ['admin'],
+        ]);
+
+        $response = $this->post('/login', [
+            'email' => 'admin@elitetech.com',
+            'password' => 'password123',
+        ]);
+
+        $response->assertRedirect(route('admin.dashboard'));
+        $this->assertAuthenticated();
+        $this->assertTrue((bool) session('is_admin'));
+    }
+
     public function test_idea_seeker_path_selection_activates_kyc_instantly(): void
     {
         $user = User::create([

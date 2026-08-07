@@ -107,10 +107,10 @@ Route::middleware('auth')->group(function () {
 Route::get('/ideas/{id}', [IdeaController::class, 'show'])->name('ideas.show')->whereNumber('id');
 
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/login', fn () => redirect()->route('login'))->name('login');
+    Route::redirect('/login', '/login');
 
     Route::middleware('admin.auth')->group(function () {
-        Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
         Route::get('/users', [AdminController::class, 'users'])->name('users');
         Route::post('/users/{id}/suspend', [AdminController::class, 'suspendUser'])->name('users.suspend');

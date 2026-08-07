@@ -64,7 +64,17 @@ class User extends Authenticatable
 
     public function hasRole($role): bool
     {
-        return in_array($role, $this->roles ?? [$this->role], true);
+        $roles = $this->roles;
+        if (! is_array($roles) || $roles === []) {
+            $roles = $this->role ? [$this->role] : [];
+        }
+
+        return in_array($role, $roles, true);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin' || $this->hasRole('admin');
     }
 
     public function isKycApproved(): bool

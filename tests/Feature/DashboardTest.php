@@ -93,7 +93,7 @@ class DashboardTest extends TestCase
             'expected_salary' => '',
         ]);
 
-        $response->assertRedirect(route('dashboard'));
+        $response->assertRedirect(route('profile.cv'));
         $response->assertSessionHas('error');
 
         $this->assertDatabaseHas('users', [

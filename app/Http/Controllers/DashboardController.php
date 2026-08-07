@@ -12,6 +12,10 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         // Single query for ideas with aggregated counts.
         $ideaStats = \App\Models\Idea::selectRaw(
             "COUNT(*) as total,

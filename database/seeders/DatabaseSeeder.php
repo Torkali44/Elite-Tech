@@ -47,11 +47,17 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        $adminEmail = config('admin.email', 'admin@elitetech.com');
+        $adminPassword = config('admin.password', 'password123');
+        $adminPassValue = preg_match('/^\$2[ayb]\$/', (string) $adminPassword) === 1
+            ? $adminPassword
+            : $adminPassword;
+
         $admin = User::updateOrCreate(
-            ['email' => 'admin@elitetech.com'],
+            ['email' => $adminEmail],
             [
                 'name' => 'إدارة النظام',
-                'password' => Hash::make('password123'),
+                'password' => $adminPassValue,
                 'role' => 'admin',
                 'roles' => ['admin'],
                 'title' => 'مدير النظام',

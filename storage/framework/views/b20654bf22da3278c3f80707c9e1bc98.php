@@ -1,0 +1,2 @@
+
+<?php echo $__env->make('ideas.create', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\E\iti-open-source\Freelance\elitetech-laravel\resources\views\ideas\edit.blade.php ENDPATH**/ ?>
