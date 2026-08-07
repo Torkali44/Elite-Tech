@@ -464,6 +464,56 @@ class AuthTest extends TestCase
 
         $this->assertFalse(session()->has('password_reset'));
     }
+
+    // =========================================================================
+    // SEEDED ACCOUNTS VERIFICATION (ADMIN & TORK)
+    // =========================================================================
+
+    public function test_seeded_admin_account_can_login_and_access_admin_dashboard(): void
+    {
+        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+
+        $response = $this->post('/login', [
+            'email'    => 'etech1596@gmail.com',
+            'password' => 'elitetech_Admin_2026_Password',
+        ]);
+
+        $response->assertRedirect(route('admin.dashboard'));
+        $this->assertAuthenticated();
+        $this->assertTrue((bool) session('is_admin'));
+
+        $admin = User::where('email', 'etech1596@gmail.com')->first();
+        $this->assertTrue($admin->isAdmin());
+
+        $this->actingAs($admin)
+             ->withSession(['is_admin' => true])
+             ->get('/admin/dashboard')
+             ->assertStatus(200);
+    }
+
+    public function test_seeded_tork_admin_account_can_login_and_access_admin_dashboard(): void
+    {
+        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+
+        $response = $this->post('/login', [
+            'email'    => 'tork932@gmail.com',
+            'password' => 'passwordAdmin',
+        ]);
+
+        $response->assertRedirect(route('admin.dashboard'));
+        $this->assertAuthenticated();
+        $this->assertTrue((bool) session('is_admin'));
+
+        $tork = User::where('email', 'tork932@gmail.com')->first();
+        $this->assertTrue($tork->isAdmin());
+
+        $this->actingAs($tork)
+             ->withSession(['is_admin' => true])
+             ->get('/admin/dashboard')
+             ->assertStatus(200);
+    }
 }
+
+
 
 
