@@ -130,16 +130,26 @@
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     <span>{{ __('settings.title') }}</span>
                 </a>
+
+                <form action="{{ route('logout') }}" method="POST" class="pt-2 border-t border-mist mt-2">
+                    @csrf
+                    <button type="submit" class="side-link w-full text-rose-600 hover:!bg-rose-50 font-bold">
+                        <svg class="w-4 h-4 shrink-0 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        <span>{{ __('navigation.logout_full') }}</span>
+                    </button>
+                </form>
             </nav>
         </div>
 
-        <div class="p-3 border-t border-mist space-y-0.5">
+        <div class="p-3 border-t border-mist space-y-1">
             <a href="{{ route('home') }}" class="side-link text-tertiary">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 00-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                 <span>{{ __('general.back') }} {{ __('navigation.home') }}</span>
             </a>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <button class="side-link w-full text-rose-600 hover:!bg-rose-50">
+                <button type="submit" class="side-link w-full text-rose-600 hover:!bg-rose-50 font-bold">
+                    <svg class="w-4 h-4 shrink-0 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                     <span>{{ __('navigation.logout_full') }}</span>
                 </button>
             </form>
@@ -148,32 +158,34 @@
 
     <div class="flex-1 min-w-0 flex flex-col min-h-screen">
         <header class="no-print bg-white border-b border-mist sticky top-0 z-30">
-            <div class="flex items-center justify-between px-4 lg:px-8 h-14 gap-4">
-                <div class="flex items-center gap-3">
+            <div class="flex items-center justify-between px-3 sm:px-6 lg:px-8 h-14 gap-2 sm:gap-4">
+                <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 sm:flex-initial">
                     <button @click="open = !open"
                             type="button"
-                            class="lg:hidden p-2 rounded-md bg-neutral text-primary">
+                            class="lg:hidden p-1.5 sm:p-2 rounded-md bg-neutral text-primary shrink-0 h-9 w-9 flex items-center justify-center">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                     </button>
-                    <div>
-                        <div class="text-sm font-extrabold text-primary">{{ $roleLabels[$primaryRole] ?? __('dashboard.title') }}</div>
-                        <div class="text-xs text-tertiary">{{ __('general.info') }}: {{ $user->name }}</div>
+                    <div class="min-w-0 flex-1">
+                        <div class="text-xs sm:text-sm font-extrabold text-primary truncate leading-snug">{{ $user->name }}</div>
+                        <div class="text-[11px] sm:text-xs text-tertiary truncate leading-snug">{{ $roleLabels[$primaryRole] ?? __('dashboard.title') }}</div>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
                     <!-- Language Switcher -->
                     <a href="{{ route('lang.switch', app()->getLocale() === 'ar' ? 'en' : 'ar') }}"
-                       class="px-2.5 py-1.5 rounded-lg text-xs font-extrabold bg-neutral text-primary border border-mist hover:bg-mist transition flex items-center gap-1">
+                       class="px-2 py-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-extrabold bg-neutral text-primary border border-mist hover:bg-mist transition flex items-center gap-1 shrink-0 h-9">
                         🌐 {{ app()->getLocale() === 'ar' ? 'English' : 'العربية' }}
                     </a>
 
                     @if($user->hasRole('idea_owner'))
-                        <a href="{{ route('ideas.create') }}" class="btn-secondary text-sm !py-2 !px-4">{{ __('ideas.create_new') }}</a>
+                        <a href="{{ route('ideas.create') }}" class="btn-secondary text-xs sm:text-sm !py-1.5 !px-2.5 sm:!py-2 sm:!px-4 shrink-0 !min-h-0 h-9 sm:h-10">
+                            {{ __('ideas.create_new') }}
+                        </a>
                     @elseif($user->hasRole('idea_seeker') && ! $user->isKycApproved())
-                        <a href="{{ route('verification.kyc', ['purpose' => 'implement']) }}" class="btn-secondary text-sm !py-2 !px-4">{{ __('dashboard.complete_kyc_now') }}</a>
+                        <a href="{{ route('verification.kyc', ['purpose' => 'implement']) }}" class="btn-secondary text-xs sm:text-sm !py-1.5 !px-2.5 sm:!py-2 sm:!px-4 shrink-0 !min-h-0 h-9 sm:h-10">{{ __('dashboard.complete_kyc_now') }}</a>
                     @else
-                        <a href="{{ route('auth.path') }}" class="btn-outline text-sm !py-2 !px-4 hidden sm:inline-flex">{{ __('dashboard.change_path') }}</a>
+                        <a href="{{ route('auth.path') }}" class="btn-outline text-xs sm:text-sm !py-1.5 !px-2.5 sm:!py-2 sm:!px-4 hidden sm:inline-flex shrink-0 !min-h-0 h-9 sm:h-10">{{ __('dashboard.change_path') }}</a>
                     @endif
                 </div>
             </div>

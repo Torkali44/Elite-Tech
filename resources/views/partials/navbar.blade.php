@@ -1,9 +1,9 @@
 <header x-data="{ mobileOpen: false }" class="sticky top-0 z-50 bg-white border-b border-mist">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16 gap-4">
-            <a href="{{ route('home') }}" class="flex items-center gap-2.5 shrink-0">
-                <x-logo class="h-10 w-auto max-w-[180px] object-contain rounded-lg" />
-                <div class="leading-tight">
+            <a href="{{ route('home') }}" class="flex items-center gap-2 shrink-0">
+                <x-logo class="h-9 sm:h-10 w-auto max-w-[130px] sm:max-w-[180px] object-contain rounded-lg" />
+                <div class="leading-tight hidden sm:block">
                     <div class="font-extrabold text-primary text-sm tracking-tight">
                         Elite <span class="text-secondary">Community</span>
                     </div>
@@ -30,27 +30,27 @@
                 @endforeach
             </nav>
 
-            <div class="flex items-center gap-2 shrink-0">
+            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <!-- Language Switcher -->
                 <a href="{{ route('lang.switch', app()->getLocale() === 'ar' ? 'en' : 'ar') }}"
-                   class="px-2.5 py-1.5 rounded-lg text-xs font-extrabold bg-neutral text-primary border border-mist hover:bg-mist transition flex items-center gap-1">
+                   class="px-2 py-1.5 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-extrabold bg-neutral text-primary border border-mist hover:bg-mist transition flex items-center gap-1 shrink-0 h-9">
                     🌐 {{ app()->getLocale() === 'ar' ? 'English' : 'العربية' }}
                 </a>
 
                 @auth
-                    <a href="{{ route('dashboard') }}" class="btn-primary text-sm !py-2 !px-4">{{ __('navigation.dashboard') }}</a>
+                    <a href="{{ route('dashboard') }}" class="btn-primary text-xs sm:text-sm !py-1.5 !px-2.5 sm:!py-2 sm:!px-4 shrink-0 !min-h-0 h-9 sm:h-10">{{ __('navigation.dashboard') }}</a>
                     <form action="{{ route('logout') }}" method="POST" class="hidden sm:block">
                         @csrf
                         <button class="btn-ghost text-sm !py-2">{{ __('navigation.logout') }}</button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="btn-ghost text-sm hidden sm:inline-flex">{{ __('navigation.login') }}</a>
-                    <a href="{{ route('register') }}" class="btn-secondary text-sm !py-2 !px-4">{{ __('navigation.register') }}</a>
+                    <a href="{{ route('login') }}" class="btn-ghost text-xs sm:text-sm hidden sm:inline-flex">{{ __('navigation.login') }}</a>
+                    <a href="{{ route('register') }}" class="btn-secondary text-xs sm:text-sm !py-1.5 !px-2.5 sm:!py-2 sm:!px-4 shrink-0 !min-h-0 h-9 sm:h-10">{{ __('navigation.register') }}</a>
                 @endauth
 
                 <button @click="mobileOpen = !mobileOpen"
                         type="button"
-                        class="lg:hidden p-2 rounded-md bg-neutral text-primary"
+                        class="lg:hidden p-1.5 sm:p-2 rounded-md bg-neutral text-primary shrink-0 h-9 w-9 flex items-center justify-center"
                         aria-label="{{ __('navigation.menu') }}">
                     <svg x-show="!mobileOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                     <svg x-show="mobileOpen" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>

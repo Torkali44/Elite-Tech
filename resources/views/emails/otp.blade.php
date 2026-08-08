@@ -45,32 +45,40 @@
       color: #4A5568;
       margin-bottom: 32px;
     }
-    .otp-box {
-      background: #F0F4F8;
-      border: 2px dashed #CBD5E0;
-      border-radius: 12px;
-      padding: 28px;
+    .otp-wrapper {
       text-align: center;
-      margin-bottom: 28px;
+      margin: 24px 0 32px 0;
     }
     .otp-label {
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1.5px;
       color: #718096;
       margin-bottom: 12px;
     }
+    .otp-badge {
+      display: inline-block;
+      background: #F0F4F8;
+      border: 1px solid #CBD5E0;
+      border-radius: 12px;
+      padding: 12px 28px;
+      text-align: center;
+      white-space: nowrap;
+      direction: ltr;
+    }
     .otp-code {
-      font-size: 48px;
-      font-weight: 900;
-      letter-spacing: 12px;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 8px;
       color: #1A365D;
-      font-family: 'Courier New', monospace;
-      line-height: 1;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, 'Courier New', monospace;
+      line-height: 1.2;
+      display: inline-block;
+      white-space: nowrap;
     }
     .otp-expiry {
-      font-size: 12px;
+      font-size: 13px;
       color: #718096;
       margin-top: 12px;
       font-weight: 600;
@@ -134,11 +142,13 @@
         </p>
 
         <!-- OTP Box -->
-        <div class="otp-box">
+        <div class="otp-wrapper">
           <div class="otp-label">
             {{ app()->getLocale() === 'ar' ? 'رمز التحقق' : 'Verification Code' }}
           </div>
-          <div class="otp-code">{{ $code }}</div>
+          <div class="otp-badge">
+            <span class="otp-code">{{ $code }}</span>
+          </div>
           <div class="otp-expiry">
             @if(app()->getLocale() === 'ar')
               ينتهي الرمز خلال <strong>{{ $expiryMinutes }} دقائق</strong>
