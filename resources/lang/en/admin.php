@@ -5,7 +5,7 @@ return [
     'panel_title' => 'Administration',
     'overview' => 'Overview',
     'overview_desc' => 'Community monitoring, KYC requests, and idea reviews.',
-    'active_admin_session' => 'Active Admin Session',
+    'active_admin_session' => 'Administration',
     'admin_logout' => 'Admin Logout',
     'nav' => [
         'overview' => 'Overview',

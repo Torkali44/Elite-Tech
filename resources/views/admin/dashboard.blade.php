@@ -31,45 +31,61 @@
     </div>
 </div>
 
-<div class="grid lg:grid-cols-2 gap-6">
-    <div class="card p-6">
+<div class="grid lg:grid-cols-2 gap-4 sm:gap-6">
+    <div class="card p-4 sm:p-6 min-w-0">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="font-bold text-primary">{{ __('admin.recent_users') }}</h3>
-            <a href="{{ route('admin.users') }}" class="text-xs text-secondary font-bold">{{ __('admin.view_all') }}</a>
+            <h3 class="font-bold text-primary text-sm sm:text-base">{{ __('admin.recent_users') }}</h3>
+            <a href="{{ route('admin.users') }}" class="text-xs text-secondary font-bold hover:underline">{{ __('admin.view_all') }}</a>
         </div>
-        <div class="space-y-3">
+        <div class="space-y-2.5">
             @forelse($recentUsers as $u)
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-primary/10 grid place-items-center text-primary font-bold text-sm">{{ mb_substr($u->name,0,1) }}</div>
-                <div class="flex-1 min-w-0">
-                    <div class="font-bold text-primary text-sm truncate">{{ $u->name }}</div>
-                    <div class="text-xs text-tertiary truncate">{{ $u->email }} · {{ $u->roleLabel() }}</div>
+            <div class="flex items-center justify-between gap-2.5 p-2.5 rounded-xl bg-neutral/60 hover:bg-neutral transition">
+                <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary/10 text-primary grid place-items-center font-bold text-xs sm:text-sm shrink-0">
+                        {{ mb_substr($u->name, 0, 1) }}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="font-bold text-primary text-xs sm:text-sm truncate">{{ $u->name }}</div>
+                        <div class="text-[11px] sm:text-xs text-tertiary truncate">
+                            {{ $u->email }} <span class="text-tertiary/60 hidden sm:inline">· {{ $u->roleLabel() }}</span>
+                        </div>
+                    </div>
                 </div>
-                <span class="badge bg-mist text-tertiary">{{ $u->kyc_status }}</span>
+                <span class="badge text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-md shrink-0 {{ $u->kyc_status === 'approved' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' : ($u->kyc_status === 'pending' ? 'bg-amber-50 text-amber-700 border border-amber-200/60' : 'bg-mist text-tertiary') }}">
+                    {{ $u->kyc_status }}
+                </span>
             </div>
             @empty
-                <p class="text-sm text-tertiary">{{ __('admin.no_users') }}</p>
+                <p class="text-sm text-tertiary py-2 text-center">{{ __('admin.no_users') }}</p>
             @endforelse
         </div>
     </div>
 
-    <div class="card p-6">
+    <div class="card p-4 sm:p-6 min-w-0">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="font-bold text-primary">{{ __('admin.pending_kyc') }}</h3>
-            <a href="{{ route('admin.verifications') }}" class="text-xs text-secondary font-bold">{{ __('admin.view_all') }}</a>
+            <h3 class="font-bold text-primary text-sm sm:text-base">{{ __('admin.pending_kyc') }}</h3>
+            <a href="{{ route('admin.verifications') }}" class="text-xs text-secondary font-bold hover:underline">{{ __('admin.view_all') }}</a>
         </div>
-        <div class="space-y-3">
+        <div class="space-y-2.5">
             @forelse($pendingKyc as $v)
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-secondary/10 grid place-items-center text-secondary font-bold">KYC</div>
-                <div class="flex-1 min-w-0">
-                    <div class="font-bold text-primary text-sm">{{ $v->user->name ?? '—' }}</div>
-                    <div class="text-xs text-tertiary">{{ $v->purposeLabel() }} · {{ $v->created_at->diffForHumans() }}</div>
+            <div class="flex items-center justify-between gap-2.5 p-2.5 rounded-xl bg-neutral/60 hover:bg-neutral transition">
+                <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-secondary/15 text-secondary grid place-items-center font-bold text-xs shrink-0">
+                        KYC
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <div class="font-bold text-primary text-xs sm:text-sm truncate">{{ $v->user->name ?? '—' }}</div>
+                        <div class="text-[11px] sm:text-xs text-tertiary truncate">
+                            {{ $v->purposeLabel() }} <span class="text-tertiary/60">· {{ $v->created_at->diffForHumans() }}</span>
+                        </div>
+                    </div>
                 </div>
-                <a href="{{ route('admin.verifications') }}" class="text-xs bg-primary text-white px-3 py-1.5 rounded-lg font-bold">{{ __('admin.review') }}</a>
+                <a href="{{ route('admin.verifications') }}" class="text-xs bg-primary text-white px-3 py-1.5 rounded-lg font-bold hover:bg-primary/90 transition shrink-0">
+                    {{ __('admin.review') }}
+                </a>
             </div>
             @empty
-                <p class="text-sm text-tertiary">{{ __('admin.no_pending_kyc') }}</p>
+                <p class="text-sm text-tertiary py-2 text-center">{{ __('admin.no_pending_kyc') }}</p>
             @endforelse
         </div>
     </div>

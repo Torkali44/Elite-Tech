@@ -5,7 +5,7 @@ return [
     'panel_title' => 'لوحة الإدارة',
     'overview' => 'نظرة عامة',
     'overview_desc' => 'مراقبة المجتمع، طلبات KYC، ومراجعة الأفكار.',
-    'active_admin_session' => 'جلسة إدارية نشطة',
+    'active_admin_session' => 'الإدارة',
     'admin_logout' => 'تسجيل خروج الإدارة',
     'nav' => [
         'overview' => 'نظرة عامة',
