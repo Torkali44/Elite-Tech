@@ -8,9 +8,9 @@
     @stack('head')
 </head>
 <body class="min-h-screen">
-<div x-data="{ open:false }" class="flex min-h-screen">
-    <aside :class="open ? 'translate-x-0' : ({{ app()->getLocale() === 'ar' ? "'translate-x-full lg:translate-x-0'" : "'-translate-x-full lg:translate-x-0'" }})"
-           class="fixed lg:static inset-y-0 {{ app()->getLocale() === 'ar' ? 'right-0' : 'left-0' }} w-72 bg-primary text-white z-40 transform transition lg:transform-none flex flex-col">
+<div x-data="{ open:false }" class="flex min-h-screen relative overflow-x-hidden">
+    <aside :class="open ? 'translate-x-0 shadow-2xl' : ({{ app()->getLocale() === 'ar' ? "'translate-x-full lg:translate-x-0'" : "'-translate-x-full lg:translate-x-0'" }})"
+           class="fixed lg:sticky top-0 inset-y-0 {{ app()->getLocale() === 'ar' ? 'right-0 border-l border-white/10' : 'left-0 border-r border-white/10' }} w-72 h-screen bg-primary text-white z-50 transform transition-transform duration-250 ease-out flex flex-col justify-between">
         <div class="p-6 border-b border-white/10 flex items-center justify-between gap-3">
             <div class="flex items-center gap-3">
                 <x-logo class="h-10 w-auto max-w-[140px] object-contain rounded-lg" />
@@ -24,7 +24,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
-        <nav class="p-4 space-y-1 flex-1">
+        <nav class="p-4 space-y-1 flex-1 overflow-y-auto">
             @php $active = optional(request()->route())->getName(); @endphp
             @foreach([
                 ['admin.dashboard', __('admin.nav.overview'), 'M3 12l9-9 9 9M5 10v10h14V10'],
@@ -49,7 +49,7 @@
         </div>
     </aside>
 
-    <div class="flex-1 min-w-0 bg-neutral">
+    <div class="flex-1 min-w-0 bg-neutral flex flex-col min-h-screen">
         <header class="bg-white border-b border-mist sticky top-0 z-30">
             <div class="flex items-center justify-between px-4 lg:px-8 h-16 gap-4">
                 <button @click="open=!open" type="button" class="lg:hidden p-2 rounded-lg hover:bg-neutral">
@@ -75,7 +75,7 @@
                 </div>
             </div>
         </header>
-        <main class="p-4 lg:p-8">
+        <main class="p-4 lg:p-8 flex-1">
             @if (session('ok'))
                 <div class="mb-6 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm px-4 py-3">{{ session('ok') }}</div>
             @endif
@@ -85,7 +85,7 @@
             @yield('content')
         </main>
     </div>
-    <div x-show="open" x-cloak @click="open=false" class="fixed inset-0 bg-ink/40 z-30 lg:hidden"></div>
+    <div x-show="open" x-cloak @click="open=false" class="fixed inset-0 bg-ink/40 z-40 lg:hidden"></div>
 </div>
 </body>
 </html>

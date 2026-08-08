@@ -6,28 +6,28 @@
     <p class="text-tertiary text-sm">{{ __('admin.overview_desc') }}</p>
 </div>
 
-<div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-    <div class="card p-5">
-        <div class="text-xs text-tertiary mb-1">{{ __('admin.stats.users') }}</div>
-        <div class="text-3xl font-black text-primary">{{ $stats['users'] }}</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
+    <div class="card p-3.5 sm:p-5 min-w-0">
+        <div class="text-xs text-tertiary mb-1 truncate">{{ __('admin.stats.users') }}</div>
+        <div class="text-2xl sm:text-3xl font-black text-primary truncate">{{ $stats['users'] }}</div>
     </div>
-    <div class="card p-5">
-        <div class="text-xs text-tertiary mb-1">{{ __('admin.stats.ideas') }}</div>
-        <div class="text-3xl font-black text-primary">{{ $stats['ideas'] }}</div>
+    <div class="card p-3.5 sm:p-5 min-w-0">
+        <div class="text-xs text-tertiary mb-1 truncate">{{ __('admin.stats.ideas') }}</div>
+        <div class="text-2xl sm:text-3xl font-black text-primary truncate">{{ $stats['ideas'] }}</div>
     </div>
-    <div class="card p-5">
-        <div class="text-xs text-tertiary mb-1">{{ __('admin.stats.published') }}</div>
-        <div class="text-3xl font-black text-primary">{{ $stats['published'] }}</div>
+    <div class="card p-3.5 sm:p-5 min-w-0">
+        <div class="text-xs text-tertiary mb-1 truncate">{{ __('admin.stats.published') }}</div>
+        <div class="text-2xl sm:text-3xl font-black text-primary truncate">{{ $stats['published'] }}</div>
     </div>
-    <div class="card p-5 border-{{ app()->getLocale() === 'ar' ? 'r' : 'l' }}-4 border-indigo-500">
-        <div class="text-xs font-bold text-indigo-600 mb-1">{{ __('admin.stats.conversion') }}</div>
-        <div class="text-3xl font-black text-indigo-700">{{ $stats['conversion'] }}%</div>
-        <div class="text-[10px] text-tertiary mt-1">{{ __('admin.stats.conversion_desc') }}</div>
+    <div class="card p-3.5 sm:p-5 min-w-0 border-{{ app()->getLocale() === 'ar' ? 'r' : 'l' }}-4 border-indigo-500">
+        <div class="text-xs font-bold text-indigo-600 mb-1 truncate">{{ __('admin.stats.conversion') }}</div>
+        <div class="text-2xl sm:text-3xl font-black text-indigo-700 truncate">{{ $stats['conversion'] }}%</div>
+        <div class="text-[10px] text-tertiary mt-1 truncate">{{ __('admin.stats.conversion_desc') }}</div>
     </div>
-    <div class="card p-5 border-{{ app()->getLocale() === 'ar' ? 'r' : 'l' }}-4 border-emerald-500">
-        <div class="text-xs font-bold text-emerald-600 mb-1">{{ __('admin.stats.avg_kyc_sla') }}</div>
-        <div class="text-2xl font-black text-emerald-700">{{ $stats['avg_kyc_sla'] }}</div>
-        <div class="text-[10px] text-tertiary mt-1">{{ __('admin.stats.avg_kyc_desc') }}</div>
+    <div class="card p-3.5 sm:p-5 min-w-0 border-{{ app()->getLocale() === 'ar' ? 'r' : 'l' }}-4 border-emerald-500 col-span-2 sm:col-span-1">
+        <div class="text-xs font-bold text-emerald-600 mb-1 truncate">{{ __('admin.stats.avg_kyc_sla') }}</div>
+        <div class="text-xl sm:text-2xl font-black text-emerald-700 truncate">{{ $stats['avg_kyc_sla'] }}</div>
+        <div class="text-[10px] text-tertiary mt-1 truncate">{{ __('admin.stats.avg_kyc_desc') }}</div>
     </div>
 </div>
 
