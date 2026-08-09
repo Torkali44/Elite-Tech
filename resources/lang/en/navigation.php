@@ -18,6 +18,7 @@ return [
     'terms' => 'Terms & Conditions',
     'agreement' => 'User Agreement',
     'employment' => 'Employment',
+    'contact_us' => 'Contact Us',
     'lang_switcher' => 'عربي',
     'lang_label' => 'العربية',
 ];

@@ -18,6 +18,7 @@ return [
     'terms' => 'الشروط والأحكام',
     'agreement' => 'اتفاقية الاستخدام',
     'employment' => 'التوظيف',
+    'contact_us' => 'تواصل معنا',
     'lang_switcher' => 'EN',
     'lang_label' => 'English',
 ];

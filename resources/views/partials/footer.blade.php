@@ -12,6 +12,7 @@
                 <a href="{{ route('ideas.index') }}" class="hover:text-primary transition">{{ __('navigation.ideas_bank') }}</a>
                 <a href="{{ route('jobs') }}" class="hover:text-primary transition">{{ __('navigation.employment') }}</a>
                 <a href="{{ route('about') }}" class="hover:text-primary transition">{{ __('navigation.about') }}</a>
+                <a href="https://elitemsr.com/contactus" target="_blank" rel="noopener noreferrer" class="hover:text-primary transition">{{ __('navigation.contact_us') }}</a>
                 <a href="{{ route('terms') }}" class="hover:text-primary transition">{{ __('navigation.terms') }}</a>
                 <a href="{{ route('privacy') }}" class="hover:text-primary transition">{{ __('navigation.privacy') }}</a>
                 <a href="{{ route('agreement') }}" class="hover:text-primary transition">{{ __('navigation.agreement') }}</a>

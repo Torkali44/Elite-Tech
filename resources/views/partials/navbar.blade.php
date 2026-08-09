@@ -28,6 +28,10 @@
                         {{ $label }}
                     </a>
                 @endforeach
+                <a href="https://elitemsr.com/contactus" target="_blank" rel="noopener noreferrer"
+                   class="px-3.5 py-2 rounded-md transition-colors text-tertiary hover:text-primary">
+                    {{ __('navigation.contact_us') }}
+                </a>
             </nav>
 
             <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
@@ -74,6 +78,10 @@
                     {{ $label }}
                 </a>
             @endforeach
+            <a href="https://elitemsr.com/contactus" target="_blank" rel="noopener noreferrer"
+               class="px-3 py-2.5 rounded-md font-semibold text-sm text-tertiary hover:bg-neutral">
+                {{ __('navigation.contact_us') }}
+            </a>
 
             <div class="pt-3 border-t border-mist mt-1 flex flex-col gap-2">
                 @auth
