@@ -69,6 +69,13 @@
                     <div class="w-9 h-9 rounded-full bg-primary text-white grid place-items-center font-bold text-xs shrink-0">
                         {{ mb_substr(auth()->user()->name ?? 'A', 0, 1) }}
                     </div>
+                    <form action="{{ route('admin.logout') }}" method="POST" class="inline-block shrink-0">
+                        @csrf
+                        <button type="submit" class="px-2.5 py-1.5 rounded-lg text-xs font-bold bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition flex items-center gap-1 shrink-0 h-9" title="{{ __('admin.admin_logout') }}">
+                            <svg class="w-4 h-4 shrink-0 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                            <span class="hidden sm:inline">{{ __('admin.admin_logout') }}</span>
+                        </button>
+                    </form>
                     @else
                     <div class="w-9 h-9 rounded-full bg-primary text-white grid place-items-center font-bold text-xs">A</div>
                     @endauth
