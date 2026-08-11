@@ -30,21 +30,23 @@ class DashboardTest extends TestCase
             'email_verified_at' => now(),
         ]);
 
-        Idea::create([
+        $idea1 = new Idea([
             'user_id'     => $user->id,
             'title'       => 'Published Idea',
             'category'    => 'Tech',
             'description' => 'Description',
-            'status'      => 'published',
         ]);
+        $idea1->status = 'published';
+        $idea1->save();
 
-        Idea::create([
+        $idea2 = new Idea([
             'user_id'     => $user->id,
             'title'       => 'Draft Idea',
             'category'    => 'Tech',
             'description' => 'Description',
-            'status'      => 'draft',
         ]);
+        $idea2->status = 'draft';
+        $idea2->save();
 
         // Previously crashed with SQLSTATE[HY000] because of SUM(status = "published")
         $response = $this->actingAs($user)->get('/dashboard');

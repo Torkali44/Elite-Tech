@@ -20,9 +20,19 @@ class AdminController extends Controller
             ? round(($implementStarted / $ideasPublished) * 100, 1)
             : 0;
 
-        $reviewedVerifications = Verification::whereNotNull('reviewed_at')->get();
-        $avgKycHours = $reviewedVerifications->count() > 0
-            ? round($reviewedVerifications->avg(fn ($v) => $v->created_at->diffInMinutes($v->reviewed_at)) / 60, 1)
+        // PERF-02: Use database-level aggregation instead of loading all records into memory.
+        $driver = DB::connection()->getDriverName();
+        if ($driver === 'sqlite') {
+            $avgKycMinutes = Verification::whereNotNull('reviewed_at')
+                ->selectRaw('AVG((strftime(\'%s\', reviewed_at) - strftime(\'%s\', created_at)) / 60) as avg_minutes')
+                ->value('avg_minutes');
+        } else {
+            $avgKycMinutes = Verification::whereNotNull('reviewed_at')
+                ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, created_at, reviewed_at)) as avg_minutes')
+                ->value('avg_minutes');
+        }
+        $avgKycHours = $avgKycMinutes !== null
+            ? round($avgKycMinutes / 60, 1)
             : null;
 
         $stats = [

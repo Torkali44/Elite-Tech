@@ -473,16 +473,19 @@ class AuthTest extends TestCase
     {
         $this->seed(\Database\Seeders\DatabaseSeeder::class);
 
+        $adminEmail = config('admin.email');  // set via ADMIN_EMAIL env in phpunit.xml
+
         $response = $this->post('/login', [
-            'email'    => 'etech1596@gmail.com',
-            'password' => 'elitetech_Admin_2026_Password',
+            'email'    => $adminEmail,
+            'password' => 'testAdminSecure123!',  // test-only password — bcrypt stored in ADMIN_PASSWORD test env
         ]);
 
         $response->assertRedirect(route('admin.dashboard'));
         $this->assertAuthenticated();
         $this->assertTrue((bool) session('is_admin'));
 
-        $admin = User::where('email', 'etech1596@gmail.com')->first();
+        $admin = User::where('email', $adminEmail)->first();
+        $this->assertNotNull($admin);
         $this->assertTrue($admin->isAdmin());
 
         $this->actingAs($admin)
@@ -495,16 +498,19 @@ class AuthTest extends TestCase
     {
         $this->seed(\Database\Seeders\DatabaseSeeder::class);
 
+        $torkEmail = config('admin.email2');  // set via ADMIN2_EMAIL env in phpunit.xml
+
         $response = $this->post('/login', [
-            'email'    => 'tork932@gmail.com',
-            'password' => 'passwordAdmin',
+            'email'    => $torkEmail,
+            'password' => 'torkTestSecure456!',  // test-only password — bcrypt stored in ADMIN2_PASSWORD test env
         ]);
 
         $response->assertRedirect(route('admin.dashboard'));
         $this->assertAuthenticated();
         $this->assertTrue((bool) session('is_admin'));
 
-        $tork = User::where('email', 'tork932@gmail.com')->first();
+        $tork = User::where('email', $torkEmail)->first();
+        $this->assertNotNull($tork);
         $this->assertTrue($tork->isAdmin());
 
         $this->actingAs($tork)

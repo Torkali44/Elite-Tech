@@ -1,8 +1,12 @@
 <?php
 
-// Admin credentials from env — separate from the users table (session flag based).
-// ADMIN_PASSWORD may be a plaintext value (legacy) or a bcrypt hash ($2y$...).
+// Admin credentials — loaded exclusively from environment variables.
+// No fallback values: if env vars are missing, admin login is disabled.
+// ADMIN_PASSWORD and ADMIN2_PASSWORD must be bcrypt hashes ($2y$...).
+// Generate a hash with: php artisan tinker --execute="echo bcrypt('your-password');"
 return [
-    'email' => env('ADMIN_EMAIL', 'etech1596@gmail.com'),
-    'password' => env('ADMIN_PASSWORD', 'elitetech_Admin_2026_Password'),
+    'email'     => env('ADMIN_EMAIL'),
+    'password'  => env('ADMIN_PASSWORD'),
+    'email2'    => env('ADMIN2_EMAIL'),
+    'password2' => env('ADMIN2_PASSWORD'),
 ];

@@ -33,7 +33,7 @@ class EnsureUserNotSuspended
         // a verified email.
         if (
             ! $user->email_verified_at &&
-            ! $request->routeIs('auth.verify', 'logout', 'lang.switch')
+            ! $request->routeIs('auth.verify', 'auth.verify.submit', 'logout', 'lang.switch')
         ) {
             return redirect()->route('auth.verify');
         }

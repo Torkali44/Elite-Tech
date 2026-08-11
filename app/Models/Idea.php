@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Idea extends Model
 {
+    // HIGH-04: 'status', 'admin_notes', and 'likes_count' are intentionally excluded from
+    // $fillable. They are system/admin-controlled and must only be set via direct property
+    // assignment or forceFill() in controlled code paths — never via user-supplied mass assignment.
     protected $fillable = [
         'user_id', 'forked_from', 'title', 'category', 'description',
-        'feasibility', 'technologies', 'budget', 'status', 'likes_count', 'admin_notes',
+        'feasibility', 'technologies', 'budget',
     ];
 
     protected $casts = [

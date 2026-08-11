@@ -55,7 +55,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Verify routes: accessible by GUESTS (pending_reg in session) AND authenticated users.
 // They must NOT be inside the 'auth' middleware group.
 Route::get('/auth/verify', [AuthController::class, 'showVerify'])->name('auth.verify')->middleware('throttle:10,1');
-Route::post('/auth/verify', [AuthController::class, 'verify'])->middleware('throttle:5,1');
+Route::post('/auth/verify', [AuthController::class, 'verify'])->name('auth.verify.submit')->middleware('throttle:5,1');
 
 Route::middleware('auth')->group(function () {
     Route::get('/auth/path-selection', [AuthController::class, 'showPathSelection'])->name('auth.path');

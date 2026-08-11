@@ -5,69 +5,88 @@ namespace App\Http\Controllers;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class NetworkController extends Controller
 {
     public function index(Request $request)
     {
-        $user = $request->user();
-        $tab = $request->get('tab', 'inbox');
+        $user   = $request->user();
+        $tab    = $request->get('tab', 'inbox');
         $withId = (int) $request->get('with', 0);
 
-        $partnerIds = Message::query()
-            ->where(function ($q) use ($user) {
-                $q->where('sender_id', $user->id)->orWhere('recipient_id', $user->id);
-            })
-            ->when($tab === 'archive', fn ($q) => $q->where('archived', true), fn ($q) => $q->where('archived', false))
-            ->get(['sender_id', 'recipient_id'])
-            ->map(fn ($m) => $m->sender_id === $user->id ? $m->recipient_id : $m->sender_id)
-            ->unique()
-            ->values();
+        // ── PERF-01: Replaced N+1 loop (1+3N queries) with 4 fixed queries ──────
 
-        $threads = collect();
-        foreach ($partnerIds as $pid) {
-            $partner = User::find($pid);
-            if (! $partner) {
-                continue;
+        // Query 1: Get last message ID per direction within each thread.
+        // GROUP BY sender+recipient gives at most 2 rows per thread (A→B and B→A).
+        // We normalise them to one entry per partner in PHP.
+        $rawRows = DB::table('messages')
+            ->where(fn ($q) => $q->where('sender_id', $user->id)->orWhere('recipient_id', $user->id))
+            ->where('archived', $tab === 'archive')
+            ->select(['sender_id', 'recipient_id'])
+            ->selectRaw('MAX(id) as last_msg_id')
+            ->groupBy('sender_id', 'recipient_id')
+            ->get();
+
+        // Normalise: one entry per partner_id, keeping the highest message ID
+        $threadMap = [];   // partner_id => last_msg_id
+        foreach ($rawRows as $row) {
+            $partnerId = $row->sender_id === $user->id ? $row->recipient_id : $row->sender_id;
+            if (! isset($threadMap[$partnerId]) || $row->last_msg_id > $threadMap[$partnerId]) {
+                $threadMap[$partnerId] = $row->last_msg_id;
             }
+        }
 
-            $last = Message::query()
-                ->where(function ($q) use ($user, $pid) {
-                    $q->where(fn ($qq) => $qq->where('sender_id', $user->id)->where('recipient_id', $pid))
-                        ->orWhere(fn ($qq) => $qq->where('sender_id', $pid)->where('recipient_id', $user->id));
-                })
-                ->when($tab === 'archive', fn ($q) => $q->where('archived', true), fn ($q) => $q->where('archived', false))
-                ->latest()
-                ->first();
+        if (! empty($threadMap)) {
+            $partnerIds  = array_keys($threadMap);
+            $lastMsgIds  = array_values($threadMap);
 
-            if (! $last) {
-                continue;
-            }
+            // Query 2: Load all partner users in a single batch
+            $partners = User::whereIn('id', $partnerIds)->get()->keyBy('id');
 
-            $unread = Message::query()
-                ->where('sender_id', $pid)
+            // Query 3: Load all last messages in a single batch (Eloquent for proper casting)
+            $lastMessages = Message::whereIn('id', $lastMsgIds)->get()->keyBy('id');
+
+            // Query 4: Unread counts for all partners at once
+            $unreadCounts = DB::table('messages')
+                ->whereIn('sender_id', $partnerIds)
                 ->where('recipient_id', $user->id)
                 ->whereNull('read_at')
                 ->where('archived', false)
-                ->count();
+                ->selectRaw('sender_id as partner_id, COUNT(*) as cnt')
+                ->groupBy('sender_id')
+                ->pluck('cnt', 'partner_id');
 
-            $threads->push([
-                'id' => $pid,
-                'partner' => $partner,
-                'preview' => $last->body,
-                'time' => $last->created_at,
-                'unread' => $unread,
-                'archived' => (bool) $last->archived,
-            ]);
+            $threads = collect($threadMap)
+                ->map(function ($lastMsgId, $partnerId) use ($partners, $lastMessages, $unreadCounts) {
+                    $partner = $partners->get($partnerId);
+                    $lastMsg = $lastMessages->get($lastMsgId);
+
+                    if (! $partner || ! $lastMsg) {
+                        return null;
+                    }
+
+                    return [
+                        'id'       => $partnerId,
+                        'partner'  => $partner,
+                        'preview'  => $lastMsg->body,
+                        'time'     => $lastMsg->created_at,
+                        'unread'   => (int) $unreadCounts->get($partnerId, 0),
+                        'archived' => (bool) $lastMsg->archived,
+                    ];
+                })
+                ->filter()
+                ->sortByDesc(fn ($t) => $t['time'])
+                ->values();
+        } else {
+            $threads = collect();
         }
-
-        $threads = $threads->sortByDesc(fn ($t) => $t['time'])->values();
 
         if (! $withId && $threads->isNotEmpty()) {
             $withId = $threads->first()['id'];
         }
 
-        $messages = collect();
+        $messages      = collect();
         $activePartner = null;
 
         if ($withId && $withId === (int) $user->id) {
@@ -106,6 +125,7 @@ class NetworkController extends Controller
 
         return view('network.index', compact('threads', 'messages', 'activePartner', 'withId', 'tab', 'directory'));
     }
+
 
     public function start(Request $request)
     {

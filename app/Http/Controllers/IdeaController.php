@@ -184,17 +184,20 @@ class IdeaController extends Controller
         }
 
         $idea = Idea::create([
-            'user_id' => $user->id,
-            'forked_from' => $parentId,
-            'title' => $data['title'],
-            'category' => $data['category'],
-            'description' => $this->composeDescription($data),
-            'feasibility' => $data['feasibility'] ?? null,
+            'user_id'      => $user->id,
+            'forked_from'  => $parentId,
+            'title'        => $data['title'],
+            'category'     => $data['category'],
+            'description'  => $this->composeDescription($data),
+            'feasibility'  => $data['feasibility'] ?? null,
             'technologies' => array_values(array_filter($data['technologies'] ?? [])),
-            'budget' => $data['budget'] ?? null,
-            'status' => ($data['intent'] ?? 'draft') === 'pending' ? 'pending' : 'draft',
-            'admin_notes' => null,
+            'budget'       => $data['budget'] ?? null,
         ]);
+        // System-controlled fields set via direct assignment (not user mass-assignment)
+        $idea->status      = ($data['intent'] ?? 'draft') === 'pending' ? 'pending' : 'draft';
+        $idea->admin_notes = null;
+        $idea->likes_count = 0;
+        $idea->save();
 
         $msg = $idea->status === 'draft'
             ? 'تم حفظ الفكرة كمسودة. يمكنك إرسالها للمراجعة لاحقاً.'
@@ -229,10 +232,10 @@ class IdeaController extends Controller
                 ->with('error', 'أضف المتطلبات التقنية قبل إرسال الفكرة للمراجعة.');
         }
 
-        $idea->update([
-            'status' => 'pending',
-            'admin_notes' => null,
-        ]);
+        // System-controlled fields set via direct assignment (not user mass-assignment)
+        $idea->status      = 'pending';
+        $idea->admin_notes = null;
+        $idea->save();
 
         return back()->with('ok', 'تم إرسال الفكرة للمراجعة الإدارية. ستظهر في بنك الأفكار بعد الموافقة.');
     }
@@ -282,17 +285,19 @@ class IdeaController extends Controller
 
         $intent = $data['intent'] ?? 'draft';
 
-        $idea->update([
-            'forked_from' => $parentId,
-            'title' => $data['title'],
-            'category' => $data['category'],
-            'description' => $this->composeDescription($data),
-            'feasibility' => $data['feasibility'] ?? null,
+        $idea->fill([
+            'forked_from'  => $parentId,
+            'title'        => $data['title'],
+            'category'     => $data['category'],
+            'description'  => $this->composeDescription($data),
+            'feasibility'  => $data['feasibility'] ?? null,
             'technologies' => array_values(array_filter($data['technologies'] ?? [])),
-            'budget' => $data['budget'] ?? null,
-            'status' => $intent === 'pending' ? 'pending' : 'draft',
-            'admin_notes' => $intent === 'pending' ? null : $idea->admin_notes,
+            'budget'       => $data['budget'] ?? null,
         ]);
+        // System-controlled fields set via direct assignment (not user mass-assignment)
+        $idea->status      = $intent === 'pending' ? 'pending' : 'draft';
+        $idea->admin_notes = $intent === 'pending' ? null : $idea->getOriginal('admin_notes');
+        $idea->save();
 
         $msg = $intent === 'draft'
             ? 'تم تحديث المسودة.'

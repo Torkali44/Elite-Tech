@@ -25,3 +25,5 @@ EliteCommunityPRD.html
 /storage/framework/cache/*
 /storage/framework/sessions/*
 /storage/framework/
+/bootstrap/cache/*.php
+!/bootstrap/cache/.gitignore

@@ -79,14 +79,16 @@ class VerificationController extends Controller
     }
 
     /**
-     * Resolve a KYC path from private or legacy public disk.
+     * KYC-03: Resolve a KYC path from the private local disk ONLY.
+     * The public disk fallback was removed — KYC documents must never be publicly accessible.
+     *
+     * If legacy files exist on the public disk they must be manually migrated to
+     * storage/app/private/kyc/{user_id}/ and then removed from storage/app/public/.
      */
     public static function resolveDiskPath(string $path): ?array
     {
-        foreach (['local', 'public'] as $disk) {
-            if (Storage::disk($disk)->exists($path)) {
-                return [$disk, $path];
-            }
+        if (Storage::disk('local')->exists($path)) {
+            return ['local', $path];
         }
 
         return null;

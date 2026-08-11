@@ -67,7 +67,7 @@ class ProfileController extends Controller
             'availability' => 'nullable|string|max:80',
             'expected_salary' => 'nullable|string|max:80',
             'join_forum' => 'nullable|boolean',
-            'avatar' => 'nullable|image|max:2048',
+            'avatar' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'experience_items' => 'nullable|array|max:25',
             'experience_items.*.title' => 'nullable|string|max:200',
             'experience_items.*.company' => 'nullable|string|max:200',

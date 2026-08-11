@@ -27,7 +27,7 @@ class SettingsController extends Controller
             'title' => 'nullable|string|max:120',
             'bio' => 'nullable|string|max:2000',
             'portfolio_url' => 'nullable|url|max:255',
-            'avatar' => 'nullable|image|max:2048',
+            'avatar' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'current_password' => ['required_with:password', 'current_password'],
             'password' => ['nullable', 'confirmed', Password::min(8)],
             'available_for_hire' => 'nullable|boolean',

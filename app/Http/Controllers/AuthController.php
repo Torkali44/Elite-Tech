@@ -569,6 +569,7 @@ class AuthController extends Controller
 
     /**
      * Verify OTP for an already-authenticated user who still needs email verification.
+     * HIGH-03: Added attempt counter and lockout to match the protection in verify().
      */
     private function verifyLegacy(Request $request): RedirectResponse
     {
@@ -576,18 +577,42 @@ class AuthController extends Controller
             'code' => ['required', 'string', 'digits:6'],
         ]);
 
-        $hash    = $request->session()->get('email_otp_hash');
-        $expires = (int) $request->session()->get('email_otp_expires', 0);
+        $hash     = $request->session()->get('email_otp_hash');
+        $expires  = (int) $request->session()->get('email_otp_expires', 0);
+        $attempts = (int) $request->session()->get('email_otp_attempts', 0);
+
+        // --- Lockout: clear session and force re-authentication ---
+        if ($attempts >= 5) {
+            $request->session()->forget(['email_otp_hash', 'email_otp_expires', 'email_otp_attempts']);
+            auth()->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('login')
+                ->withErrors(['code' => __('auth.otp_max_attempts')]);
+        }
 
         if (! $hash || $expires < now()->timestamp) {
+            $request->session()->forget(['email_otp_hash', 'email_otp_expires', 'email_otp_attempts']);
+
             return back()->withErrors(['code' => __('auth.otp_expired_resend')]);
         }
 
+        // Increment attempt counter before checking so failed checks consume the attempt
+        $request->session()->put('email_otp_attempts', $attempts + 1);
+
         if (! Hash::check($data['code'], $hash)) {
-            return back()->withErrors(['code' => __('auth.otp_wrong')]);
+            $remaining = 5 - ($attempts + 1);
+
+            return back()->withErrors([
+                'code' => $remaining > 0
+                    ? __('auth.otp_wrong')
+                    : __('auth.otp_max_attempts'),
+            ]);
         }
 
-        $request->session()->forget(['email_otp_hash', 'email_otp_expires']);
+        // Success: clear all OTP session keys
+        $request->session()->forget(['email_otp_hash', 'email_otp_expires', 'email_otp_attempts']);
         $request->user()->forceFill(['email_verified_at' => now()])->save();
 
         return redirect()->route('auth.path')->with('ok', __('auth.email_verified_success'));

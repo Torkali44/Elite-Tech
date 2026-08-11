@@ -21,13 +21,14 @@ class IdeaTest extends TestCase
             'email_verified_at' => now(),
         ]);
 
-        Idea::create([
+        $idea = new Idea([
             'user_id' => $user->id,
             'title' => 'فكرة ممتازة',
             'category' => 'الذكاء الاصطناعي',
             'description' => 'وصف الفكرة',
-            'status' => 'published',
         ]);
+        $idea->status = 'published';
+        $idea->save();
 
         $response = $this->get('/ideas');
 
