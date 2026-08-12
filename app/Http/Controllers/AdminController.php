@@ -2,16 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Idea;
+use App\Models\IdeaComment;
 use App\Models\ImplementRequest;
 use App\Models\User;
 use App\Models\Verification;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
+    private function logAdminAction(string $action, Model $subject, ?array $changes = null): void
+    {
+        if (auth()->check()) {
+            ActivityLog::create([
+                'admin_id'     => auth()->id(),
+                'action'       => $action,
+                'subject_type' => get_class($subject),
+                'subject_id'   => $subject->getKey(),
+                'changes'      => $changes,
+            ]);
+        }
+    }
+
     public function dashboard()
     {
         $ideasPublished = Idea::where('status', 'published')->count();
@@ -20,20 +36,7 @@ class AdminController extends Controller
             ? round(($implementStarted / $ideasPublished) * 100, 1)
             : 0;
 
-        // PERF-02: Use database-level aggregation instead of loading all records into memory.
-        $driver = DB::connection()->getDriverName();
-        if ($driver === 'sqlite') {
-            $avgKycMinutes = Verification::whereNotNull('reviewed_at')
-                ->selectRaw('AVG((strftime(\'%s\', reviewed_at) - strftime(\'%s\', created_at)) / 60) as avg_minutes')
-                ->value('avg_minutes');
-        } else {
-            $avgKycMinutes = Verification::whereNotNull('reviewed_at')
-                ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, created_at, reviewed_at)) as avg_minutes')
-                ->value('avg_minutes');
-        }
-        $avgKycHours = $avgKycMinutes !== null
-            ? round($avgKycMinutes / 60, 1)
-            : null;
+        $avgKycHours = $this->getAverageKycHours();
 
         $stats = [
             'users' => User::count(),
@@ -127,9 +130,7 @@ class AdminController extends Controller
             ? round(($implementStarted / $ideasPublished) * 100, 1)
             : 0;
 
-        $avgKycHours = Verification::whereNotNull('reviewed_at')
-            ->get()
-            ->avg(fn ($v) => $v->created_at->diffInHours($v->reviewed_at));
+        $avgKycHours = $this->getAverageKycHours();
 
         $newUsersDaily = User::where('created_at', '>=', now()->subDays(14))
             ->select(DB::raw('date(created_at) as d'), DB::raw('count(*) as c'))
@@ -139,6 +140,25 @@ class AdminController extends Controller
             'byRole', 'ideasPublished', 'ideasTotal', 'implementStarted',
             'conversion', 'avgKycHours', 'newUsersDaily'
         ));
+    }
+
+    /**
+     * Compute average KYC review time in hours at the database level.
+     */
+    private function getAverageKycHours(): ?float
+    {
+        $driver = DB::connection()->getDriverName();
+        if ($driver === 'sqlite') {
+            $avgKycMinutes = Verification::whereNotNull('reviewed_at')
+                ->selectRaw('AVG((strftime(\'%s\', reviewed_at) - strftime(\'%s\', created_at)) / 60) as avg_minutes')
+                ->value('avg_minutes');
+        } else {
+            $avgKycMinutes = Verification::whereNotNull('reviewed_at')
+                ->selectRaw('AVG(TIMESTAMPDIFF(MINUTE, created_at, reviewed_at)) as avg_minutes')
+                ->value('avg_minutes');
+        }
+
+        return $avgKycMinutes !== null ? round((float) $avgKycMinutes / 60, 1) : null;
     }
 
     public function approveVerification($id)
@@ -167,6 +187,8 @@ class AdminController extends Controller
             $user->forceFill(['show_in_jobs_forum' => true])->save();
         }
 
+        $this->logAdminAction('approve_kyc', $v, ['kyc_status' => 'approved']);
+
         return back()->with('ok', 'تمت الموافقة وتفعيل صلاحيات المستخدم.');
     }
 
@@ -189,6 +211,8 @@ class AdminController extends Controller
             'rejection_reason' => $data['reason'],
             'show_in_jobs_forum' => false,
         ])->save();
+
+        $this->logAdminAction('reject_kyc', $v, ['kyc_status' => 'rejected', 'reason' => $data['reason']]);
 
         return back()->with('ok', 'تم رفض الطلب وإرسال سبب الرفض للمستخدم.');
     }
@@ -215,20 +239,26 @@ class AdminController extends Controller
             $user->forceFill(['admin_notes' => $data['admin_notes']])->save();
         }
 
+        $this->logAdminAction('suspend_user', $user, ['is_suspended' => true]);
+
         return back()->with('ok', 'تم تعليق الحساب وسحب شارة KYC.');
     }
 
     public function saveUserNotes($id, Request $request)
     {
         $data = $request->validate(['admin_notes' => 'nullable|string|max:5000']);
-        User::whereKey($id)->update(['admin_notes' => $data['admin_notes']]);
+        $user = User::findOrFail($id);
+        $user->update(['admin_notes' => $data['admin_notes']]);
+        $this->logAdminAction('save_notes', $user, ['admin_notes' => $data['admin_notes']]);
 
         return back()->with('ok', 'تم حفظ الملاحظات الداخلية.');
     }
 
     public function publishIdea($id)
     {
-        Idea::whereKey($id)->update(['status' => 'published', 'admin_notes' => null]);
+        $idea = Idea::findOrFail($id);
+        $idea->update(['status' => 'published', 'admin_notes' => null]);
+        $this->logAdminAction('publish_idea', $idea, ['status' => 'published']);
 
         return back()->with('ok', 'تم نشر الفكرة للعامة.');
     }
@@ -236,11 +266,14 @@ class AdminController extends Controller
     public function returnIdea($id, Request $request)
     {
         $data = $request->validate(['note' => 'required|string|min:3|max:2000']);
+        $idea = Idea::findOrFail($id);
 
-        Idea::whereKey($id)->update([
+        $idea->update([
             'status' => 'draft',
             'admin_notes' => $data['note'],
         ]);
+
+        $this->logAdminAction('return_idea', $idea, ['status' => 'draft', 'note' => $data['note']]);
 
         return back()->with('ok', 'أُعيدت الفكرة كمسودة مع الملاحظات.');
     }
@@ -268,6 +301,7 @@ class AdminController extends Controller
     {
         $r = ImplementRequest::with(['idea', 'user'])->findOrFail($id);
         $r->update(['status' => 'approved']);
+        $this->logAdminAction('approve_implement', $r, ['status' => 'approved']);
 
         return back()->with('ok', 'تمت الموافقة على طلب التنفيذ من لوحة الإدارة.');
     }
@@ -281,6 +315,8 @@ class AdminController extends Controller
             'note' => trim(($r->note ? $r->note."\n" : '').'رفض الإدارة: '.$data['reason']),
         ]);
 
+        $this->logAdminAction('reject_implement', $r, ['status' => 'rejected', 'reason' => $data['reason']]);
+
         return back()->with('ok', 'تم رفض طلب التنفيذ مع تسجيل السبب.');
     }
 
@@ -292,6 +328,8 @@ class AdminController extends Controller
             'is_suspended' => false,
             'kyc_status'   => $user->kyc_status === 'suspended' ? 'none' : ($user->kyc_status ?? 'none'),
         ])->save();
+
+        $this->logAdminAction('unsuspend_user', $user, ['is_suspended' => false]);
 
         return back()->with('ok', 'تم إعادة تفعيل الحساب بنجاح.');
     }
@@ -312,7 +350,9 @@ class AdminController extends Controller
 
     public function deleteComment($id)
     {
-        \App\Models\IdeaComment::whereKey($id)->delete();
+        $comment = IdeaComment::findOrFail($id);
+        $comment->delete();
+        $this->logAdminAction('delete_comment', $comment);
 
         return back()->with('ok', 'تم حذف التعليق المخالف.');
     }

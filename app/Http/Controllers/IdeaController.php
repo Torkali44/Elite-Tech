@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreIdeaRequest;
+use App\Http\Requests\UpdateIdeaRequest;
 use App\Models\Idea;
 use App\Models\IdeaComment;
 use App\Models\ImplementRequest;
@@ -78,9 +80,9 @@ class IdeaController extends Controller
         return view('ideas.index', compact('ideas', 'categories', 'tab', 'sort', 'stats', 'favIds'));
     }
 
-    public function toggleFavorite($id)
+    public function toggleFavorite(Idea $idea)
     {
-        $idea = Idea::where('status', 'published')->findOrFail($id);
+        abort_unless($idea->status === 'published', 404);
         $user = auth()->user();
 
         if ($user->favoriteIdeas()->where('idea_id', $idea->id)->exists()) {
@@ -98,17 +100,12 @@ class IdeaController extends Controller
         return back()->with('ok', $liked ? 'أُضيفت للمفضلة.' : 'أُزيلت من المفضلة.');
     }
 
-    public function show($id)
+    public function show(Idea $idea)
     {
-        $idea = Idea::with(['user', 'comments.user', 'parent.user'])
-            ->withCount('comments')
-            ->where(function ($q) {
-                $q->where('status', 'published');
-                if (auth()->check()) {
-                    $q->orWhere('user_id', auth()->id());
-                }
-            })
-            ->findOrFail($id);
+        $isOwner = auth()->check() && auth()->id() === $idea->user_id;
+        abort_unless($idea->status === 'published' || $isOwner, 404);
+
+        $idea->load(['user', 'comments.user', 'parent.user'])->loadCount('comments');
 
         $userRequest = auth()->check()
             ? ImplementRequest::where('idea_id', $idea->id)->where('user_id', auth()->id())->first()
@@ -155,7 +152,7 @@ class IdeaController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreIdeaRequest $request)
     {
         $user = $request->user();
 
@@ -165,7 +162,7 @@ class IdeaController extends Controller
                 ->with('error', 'لا يمكن إرسال فكرة قبل مسار صاحب فكرة وموافقة KYC.');
         }
 
-        $data = $this->validateIdea($request);
+        $data = $request->validated();
 
         if (($data['intent'] ?? 'draft') === 'pending' && empty(array_filter($data['technologies'] ?? []))) {
             return back()->withInput()->withErrors([
@@ -207,10 +204,10 @@ class IdeaController extends Controller
     }
 
     /** إرسال مسودة للمراجعة الإدارية (خطوة النشر) */
-    public function submitDraft($id)
+    public function submitDraft(Idea $idea)
     {
         $user = auth()->user();
-        $idea = Idea::where('user_id', $user->id)->findOrFail($id);
+        abort_unless($user && $user->id === $idea->user_id, 404);
 
         if (! $user->hasRole('idea_owner') || ! $user->isKycApproved()) {
             return redirect()
@@ -240,14 +237,15 @@ class IdeaController extends Controller
         return back()->with('ok', 'تم إرسال الفكرة للمراجعة الإدارية. ستظهر في بنك الأفكار بعد الموافقة.');
     }
 
-    public function edit($id)
+    public function edit(Idea $idea)
     {
-        $idea = Idea::with('parent')->where('user_id', auth()->id())->findOrFail($id);
+        abort_unless(auth()->check() && auth()->id() === $idea->user_id, 404);
 
         if (! auth()->user()->isKycApproved() && $idea->status !== 'draft') {
             return redirect()->route('verification.kyc', ['purpose' => 'publish_idea']);
         }
 
+        $idea->load('parent');
         $parents = Idea::with('user')->where('status', 'published')->latest()->limit(50)->get();
         $parsed = $this->parseDescription($idea->description);
 
@@ -259,16 +257,16 @@ class IdeaController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateIdeaRequest $request, Idea $idea)
     {
-        $idea = Idea::where('user_id', $request->user()->id)->findOrFail($id);
+        abort_unless($request->user()->id === $idea->user_id, 404);
 
         if (! $request->user()->isKycApproved()) {
             return redirect()->route('verification.kyc', ['purpose' => 'publish_idea'])
                 ->with('error', 'أعد اجتياز KYC قبل إرسال الفكرة للمراجعة.');
         }
 
-        $data = $this->validateIdea($request, updating: true);
+        $data = $request->validated();
 
         if (($data['intent'] ?? 'draft') === 'pending' && empty(array_filter($data['technologies'] ?? []))) {
             return back()->withInput()->withErrors([
@@ -306,14 +304,9 @@ class IdeaController extends Controller
         return redirect()->route('dashboard.ideaOwner')->with('ok', $msg);
     }
 
-    public function forkConfirm($id)
+    public function forkConfirm(Idea $idea)
     {
-        $idea = Idea::with('user')->find($id);
-
-        if (! $idea || $idea->status !== 'published') {
-            return redirect()->route('ideas.index')
-                ->with('error', 'الاستنساخ متاح فقط للأفكار المنشورة في بنك الأفكار.');
-        }
+        abort_unless($idea->status === 'published', 404);
 
         $user = auth()->user();
 
@@ -327,11 +320,15 @@ class IdeaController extends Controller
                 ->with('error', 'الاستنساخ يتطلب KYC قبل إنشاء المسودة.');
         }
 
+        $idea->load('user');
+
         return view('ideas.fork-confirm', compact('idea'));
     }
 
-    public function fork($id)
+    public function fork(Idea $idea)
     {
+        abort_unless($idea->status === 'published', 404);
+
         $user = auth()->user();
 
         if (! $user->hasRole('idea_owner')) {
@@ -344,11 +341,7 @@ class IdeaController extends Controller
                 ->with('error', 'الاستنساخ والنشر يتطلبان KYC.');
         }
 
-        $source = Idea::with('user')->where('status', 'published')->find($id);
-        if (! $source) {
-            return redirect()->route('ideas.index')
-                ->with('error', 'الاستنساخ متاح فقط للأفكار المنشورة.');
-        }
+        $source = $idea->load('user');
 
         $copy = $source->replicate(['likes_count', 'admin_notes', 'status']);
         $copy->user_id = $user->id;
@@ -363,14 +356,9 @@ class IdeaController extends Controller
             ->with('ok', 'تم إنشاء مسودة مستلهمة من الفكرة الأصلية مع حفظ حقوق صاحبها. أكملها ثم أرسلها للمراجعة.');
     }
 
-    public function implementForm($id)
+    public function implementForm(Idea $idea)
     {
-        $idea = Idea::with('user')->find($id);
-
-        if (! $idea || $idea->status !== 'published') {
-            return redirect()->route('ideas.index')
-                ->with('error', 'طلب التنفيذ متاح فقط للأفكار المنشورة في بنك الأفكار.');
-        }
+        abort_unless($idea->status === 'published', 404);
 
         $user = auth()->user();
 
@@ -380,24 +368,21 @@ class IdeaController extends Controller
                 ->with('error', 'الرغبة في التنفيذ تتطلب اجتياز KYC لضمان الجدية.');
         }
 
+        $idea->load('user');
         $existing = ImplementRequest::where('idea_id', $idea->id)->where('user_id', $user->id)->first();
 
         return view('ideas.implement', compact('idea', 'existing'));
     }
 
-    /** GET /ideas/{id}/comment → صفحة التفاصيل (التعليق يتم بـ POST) */
-    public function commentPage($id)
+    /** GET /ideas/{idea}/comment → صفحة التفاصيل (التعليق يتم بـ POST) */
+    public function commentPage(Idea $idea)
     {
-        return redirect()->route('ideas.show', $id)->withFragment('comments');
+        return redirect()->route('ideas.show', $idea->id)->withFragment('comments');
     }
 
-    public function comment($id, Request $request)
+    public function comment(Idea $idea, Request $request)
     {
-        $idea = Idea::where('status', 'published')->find($id);
-        if (! $idea) {
-            return redirect()->route('ideas.index')
-                ->with('error', 'التعليق متاح فقط على الأفكار المنشورة.');
-        }
+        abort_unless($idea->status === 'published', 404);
 
         $data = $request->validate(['body' => 'required|string|max:2000']);
 
@@ -412,15 +397,11 @@ class IdeaController extends Controller
             ->with('ok', 'تم إضافة تعليقك.');
     }
 
-    public function implement($id, Request $request)
+    public function implement(Idea $idea, Request $request)
     {
-        $user = $request->user();
-        $idea = Idea::where('status', 'published')->find($id);
+        abort_unless($idea->status === 'published', 404);
 
-        if (! $idea) {
-            return redirect()->route('ideas.index')
-                ->with('error', 'طلب التنفيذ متاح فقط للأفكار المنشورة.');
-        }
+        $user = $request->user();
 
         if (! $user->isKycApproved()) {
             return redirect()

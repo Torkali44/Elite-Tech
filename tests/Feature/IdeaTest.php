@@ -13,7 +13,7 @@ class IdeaTest extends TestCase
 
     public function test_guest_can_view_published_ideas(): void
     {
-        $user = User::create([
+        $user = User::forceCreate([
             'name'              => 'Owner',
             'email'             => 'owner@example.com',
             'password'          => bcrypt('password123'),
@@ -38,7 +38,7 @@ class IdeaTest extends TestCase
 
     public function test_unverified_idea_owner_cannot_access_create_idea_page(): void
     {
-        $user = User::create([
+        $user = User::forceCreate([
             'name'              => 'Owner',
             'email'             => 'unverified@example.com',
             'password'          => bcrypt('password123'),
@@ -55,7 +55,7 @@ class IdeaTest extends TestCase
 
     public function test_verified_idea_owner_can_store_idea(): void
     {
-        $user = User::create([
+        $user = User::forceCreate([
             'name'              => 'Verified Owner',
             'email'             => 'verified@example.com',
             'password'          => bcrypt('password123'),

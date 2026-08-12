@@ -2,150 +2,170 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CareerTrack;
 use Illuminate\Http\Request;
 
 class CareerTrackController extends Controller
 {
-    private function tracks(): array
-    {
-        return [
-            ['slug' => 'idea-owner', 'title' => 'مسار صاحب فكرة', 'subtitle' => 'Idea Owner Track', 'icon' => '💡', 'status' => 'قيد المراجعة', 'statusColor' => 'bg-amber-50 text-amber-600 border-amber-200'],
-            ['slug' => 'developer', 'title' => 'مسار مطور البرمجيات', 'subtitle' => 'Software Developer Track', 'icon' => '⟨/⟩', 'status' => 'قيد المراجعة', 'statusColor' => 'bg-blue-50 text-blue-600 border-blue-200'],
-            ['slug' => 'idea-seeker', 'title' => 'مسار باحث عن فكرة', 'subtitle' => 'Idea Seeker Track', 'icon' => '🔍', 'status' => 'نشط', 'statusColor' => 'bg-emerald-50 text-emerald-600 border-emerald-200'],
-        ];
-    }
-
-    private function trackDetails(): array
-    {
-        return [
-            'idea-owner' => [
-                'slug' => 'idea-owner',
-                'title' => 'مسار صاحب فكرة',
-                'subtitle' => 'متابعة حالة تفعيل مسارك الريادي والخطوات القادمة.',
-                'statusLabel' => 'قيد المراجعة',
-                'statusColor' => 'bg-amber-500 text-white shadow-glow',
-                'projectName' => 'منصة «إبداع» للتقنيات العقارية',
-                'projectCategory' => 'PropTech',
-                'submissionDate' => '12 أكتوبر 2023',
-                'needsAction' => false,
-                'about' => 'مسار موجه لأصحاب الأفكار الطموحين لتفعيل نشاطهم كصنّاع أفكار في مجتمع النخبة.',
-                'tags' => ['PropTech', 'Business Plan', 'Pitch Deck'],
-                'steps' => [
-                    [
-                        'title' => 'تقديم الفكرة',
-                        'desc' => 'تم استلام مسودة المشروع والبيانات الأساسية بنجاح.',
-                        'state' => 'done',
-                        'stateLabel' => 'مكتمل',
-                        'icon' => '✓',
-                    ],
-                    [
-                        'title' => 'دراسة الجدوى',
-                        'desc' => 'يقوم فريق الخبراء حالياً بتقييم المخطط الأولي والقيمة السوقية.',
-                        'state' => 'current',
-                        'stateLabel' => 'قيد العمل حالياً...',
-                        'icon' => '🔄',
-                    ],
-                    [
-                        'title' => 'الموافقة النهائية',
-                        'desc' => 'سيتم إصدار القرار النهائي بعد الانتهاء من الدراسة.',
-                        'state' => 'pending',
-                        'stateLabel' => 'في انتظار الخطوة السابقة',
-                        'icon' => '🔒',
-                    ],
-                ],
-            ],
-            'developer' => [
-                'slug' => 'developer',
-                'title' => 'مسار مطور البرمجيات',
-                'subtitle' => 'متابعة حالة تفعيل ملفك كمطور برمجيات نخبة.',
-                'statusLabel' => 'قيد المراجعة',
-                'statusColor' => 'bg-blue-600 text-white shadow-navy',
-                'projectName' => 'ملف أعمال المطور البرمجي',
-                'projectCategory' => 'Software Dev',
-                'submissionDate' => '15 أكتوبر 2023',
-                'needsAction' => true,
-                'about' => 'هذا المسار مصمم للمطورين الذين يسعون للحصول على شارة «النخبة» في مجتمعنا. يتطلب المسار إثبات مهارات برمجية عالية.',
-                'tags' => ['System Architecture', 'React & Node.js', 'Cloud Infrastructure'],
-                'steps' => [
-                    [
-                        'title' => 'تقديم الطلب',
-                        'desc' => 'تم استلام طلبك بنجاح.',
-                        'state' => 'done',
-                        'stateLabel' => 'مكتمل',
-                        'icon' => '✓',
-                    ],
-                    [
-                        'title' => 'مراجعة المعرض (Portfolio)',
-                        'desc' => 'بانتظار إضافة رابط GitHub وملاحظات الخبرة.',
-                        'state' => 'current',
-                        'stateLabel' => 'قيد العمل حالياً...',
-                        'icon' => '🔄',
-                    ],
-                    [
-                        'title' => 'المابلة التقنية',
-                        'desc' => 'سيتم تحديد الموعد بعد قبول الملف الشخصي.',
-                        'state' => 'pending',
-                        'stateLabel' => 'في انتظار الخطوة السابقة',
-                        'icon' => '🔒',
-                    ],
-                ],
-            ],
-            'idea-seeker' => [
-                'slug' => 'idea-seeker',
-                'title' => 'مسار باحث عن فكرة',
-                'subtitle' => 'متابعة حالة تفعيل حسابك كشريك ومستثمر في الأفكار.',
-                'statusLabel' => 'نشط',
-                'statusColor' => 'bg-emerald-600 text-white',
-                'projectName' => 'ملف الشراكة والبحث',
-                'projectCategory' => 'Invest & Partner',
-                'submissionDate' => '01 نوفمبر 2023',
-                'needsAction' => false,
-                'about' => 'مسار لتفعيل دور الموجه أو الشريك في مشاريع مجتمع النخبة.',
-                'tags' => ['Mentorship', 'Consultation', 'Partnership'],
-                'steps' => [
-                    [
-                        'title' => 'تفعيل الحساب',
-                        'desc' => 'تم التحقق من هويتك بنجاح.',
-                        'state' => 'done',
-                        'stateLabel' => 'مكتمل',
-                        'icon' => '✓',
-                    ],
-                    [
-                        'title' => 'اختيار المجالات',
-                        'desc' => 'حدد اهتماماتك ومجالات خبرتك في صفحة الإعدادات.',
-                        'state' => 'done',
-                        'stateLabel' => 'مكتمل',
-                        'icon' => '✓',
-                    ],
-                    [
-                        'title' => 'مطابقة الأفكار',
-                        'desc' => 'يمكنك البدء بطلب تنفيذ وتصفح بنك الأفكار.',
-                        'state' => 'current',
-                        'stateLabel' => 'نشط',
-                        'icon' => '⚡',
-                    ],
-                ],
-            ],
-        ];
-    }
+    private const TRACK_DEFINITIONS = [
+        'idea-owner' => [
+            'slug' => 'idea-owner',
+            'title' => 'مسار صاحب فكرة',
+            'subtitle' => 'متابعة حالة تفعيل مسارك الريادي والخطوات القادمة.',
+            'icon' => '💡',
+        ],
+        'developer' => [
+            'slug' => 'developer',
+            'title' => 'مسار مطور البرمجيات',
+            'subtitle' => 'متابعة حالة تفعيل ملفك كمطور برمجيات نخبة.',
+            'icon' => '⟨/⟩',
+        ],
+        'idea-seeker' => [
+            'slug' => 'idea-seeker',
+            'title' => 'مسار باحث عن فكرة',
+            'subtitle' => 'متابعة حالة تفعيل حسابك كشريك ومستثمر في الأفكار.',
+            'icon' => '🔍',
+        ],
+    ];
 
     public function index(): \Illuminate\View\View
     {
-        return view('career-tracks.index', ['tracks' => $this->tracks()]);
+        $user = auth()->user();
+        $userTracks = CareerTrack::where('user_id', $user->id)->get()->keyBy('slug');
+
+        $tracks = collect(self::TRACK_DEFINITIONS)->map(function ($def, $slug) use ($user, $userTracks) {
+            $record = $userTracks->get($slug);
+            $status = $record?->status ?? ($user->isKycApproved() ? 'done' : ($user->kyc_status === 'pending' ? 'current' : 'pending'));
+
+            $statusLabel = match ($status) {
+                'done' => 'نشط',
+                'current' => 'قيد المراجعة',
+                'rejected' => 'مرفوض',
+                default => 'قيد الانتظار',
+            };
+
+            $statusColor = match ($status) {
+                'done' => 'bg-emerald-50 text-emerald-600 border-emerald-200',
+                'current' => 'bg-amber-50 text-amber-600 border-amber-200',
+                'rejected' => 'bg-rose-50 text-rose-600 border-rose-200',
+                default => 'bg-slate-50 text-slate-600 border-slate-200',
+            };
+
+            return array_merge($def, [
+                'status' => $statusLabel,
+                'statusColor' => $statusColor,
+            ]);
+        })->values();
+
+        return view('career-tracks.index', compact('tracks'));
     }
 
     public function show(string $slug): \Illuminate\View\View
     {
-        $data = $this->trackDetails();
-        abort_unless(isset($data[$slug]), 404);
+        abort_unless(isset(self::TRACK_DEFINITIONS[$slug]), 404);
 
-        return view('career-tracks.show', ['track' => $data[$slug]]);
+        $user = auth()->user()->load(['ideas', 'cv', 'latestVerification']);
+        $def = self::TRACK_DEFINITIONS[$slug];
+
+        $trackRecord = CareerTrack::firstOrCreate(
+            ['user_id' => $user->id, 'slug' => $slug],
+            ['status' => 'pending']
+        );
+
+        $isApproved = $user->isKycApproved();
+        $isPending = $user->kyc_status === 'pending';
+
+        $statusLabel = match ($trackRecord->status) {
+            'done' => 'نشط / مكتمل',
+            'current' => 'قيد المراجعة',
+            'rejected' => 'مرفوض',
+            default => ($isApproved ? 'نشط / مكتمل' : ($isPending ? 'قيد المراجعة' : 'في انتظار الاستكمال')),
+        };
+
+        $statusColor = match ($trackRecord->status) {
+            'done' => 'bg-emerald-600 text-white',
+            'current' => 'bg-amber-500 text-white shadow-glow',
+            'rejected' => 'bg-rose-600 text-white',
+            default => ($isApproved ? 'bg-emerald-600 text-white' : ($isPending ? 'bg-amber-500 text-white shadow-glow' : 'bg-slate-600 text-white')),
+        };
+
+        $firstIdea = $user->ideas->first();
+
+        $projectName = match ($slug) {
+            'idea-owner' => $firstIdea?->title ?? 'لم يتم تقديم فكرة بعد',
+            'developer' => $user->cv?->data['title'] ?? ($user->title ?: 'ملف أعمال المطور البرمجي'),
+            default => 'ملف الشراكة والبحث',
+        };
+
+        $projectCategory = match ($slug) {
+            'idea-owner' => $firstIdea?->category ?? 'عام',
+            'developer' => 'برمجيات',
+            default => 'استثمار وشراكة',
+        };
+
+        $submissionDate = match ($slug) {
+            'idea-owner' => $firstIdea?->created_at?->format('Y-m-d') ?? $user->created_at->format('Y-m-d'),
+            default => $user->created_at->format('Y-m-d'),
+        };
+
+        $steps = [
+            [
+                'title' => 'تقديم الطلب والبيانات',
+                'desc' => 'تم تسجيل الحساب والبيانات الأساسية بنجاح.',
+                'state' => 'done',
+                'stateLabel' => 'مكتمل',
+                'icon' => '✓',
+            ],
+            [
+                'title' => 'مراجعة الهوية والتسجيل (KYC)',
+                'desc' => $isApproved ? 'تم التوثيق والموافقة على الهوية.' : ($isPending ? 'الملف قيد المراجعة لدى الإدارة.' : 'بانتظار تقديم طلب التوثيق (KYC).'),
+                'state' => $isApproved ? 'done' : ($isPending ? 'current' : 'pending'),
+                'stateLabel' => $isApproved ? 'مكتمل' : ($isPending ? 'قيد المراجعة...' : 'معلق'),
+                'icon' => $isApproved ? '✓' : ($isPending ? '🔄' : '🔒'),
+            ],
+            [
+                'title' => 'تفعيل المسار التقني',
+                'desc' => $isApproved ? 'المسار نشط ومفعل في المجتمع.' : 'سيتم التفعيل المباشر فور اعتماد التوثيق.',
+                'state' => $isApproved ? 'done' : 'pending',
+                'stateLabel' => $isApproved ? 'نشط' : 'في الانتظار',
+                'icon' => $isApproved ? '⚡' : '🔒',
+            ],
+        ];
+
+        $track = array_merge($def, [
+            'statusLabel' => $statusLabel,
+            'statusColor' => $statusColor,
+            'projectName' => $projectName,
+            'projectCategory' => $projectCategory,
+            'submissionDate' => $submissionDate,
+            'needsAction' => ! $isApproved && ! $isPending,
+            'github' => $trackRecord->github,
+            'notes' => $trackRecord->admin_notes,
+            'steps' => $steps,
+        ]);
+
+        return view('career-tracks.show', compact('track'));
     }
 
     public function update(string $slug, Request $request): \Illuminate\Http\RedirectResponse
     {
-        abort_unless(in_array($slug, array_keys($this->trackDetails()), true), 404);
+        abort_unless(isset(self::TRACK_DEFINITIONS[$slug]), 404);
 
-        return redirect()->route('career-tracks.show', $slug)->with('ok', 'تم تحديث البيانات المرفقة بنجاح.');
+        $data = $request->validate([
+            'github' => 'nullable|url|max:255',
+            'notes'  => 'nullable|string|max:1000',
+        ]);
+
+        $track = CareerTrack::firstOrCreate(
+            ['user_id' => auth()->id(), 'slug' => $slug]
+        );
+
+        $track->update([
+            'github'      => $data['github'] ?? $track->github,
+            'admin_notes' => $data['notes'] ?? $track->admin_notes,
+            'status'      => 'current',
+        ]);
+
+        return redirect()->route('career-tracks.show', $slug)->with('ok', 'تم تحديث بيانات المسار بنجاح.');
     }
 }

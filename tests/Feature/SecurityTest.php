@@ -37,7 +37,7 @@ class SecurityTest extends TestCase
 
     private function makeVerifiedUser(array $attrs = []): User
     {
-        return User::create(array_merge([
+        return User::forceCreate(array_merge([
             'name'              => 'Test User',
             'email'             => 'testuser_' . uniqid() . '@example.com',
             'password'          => bcrypt('Password123!'),

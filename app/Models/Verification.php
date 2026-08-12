@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Verification extends Model
 {
+    use SoftDeletes;
     protected $fillable = [
         'user_id', 'doc_type', 'purpose', 'id_front', 'id_back', 'selfie',
         'status', 'rejection_reason', 'admin_notes', 'reviewed_at',

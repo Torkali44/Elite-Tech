@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreIdeaRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return auth()->check();
+    }
+
+    public function rules(): array
+    {
+        return [
+            'based_on_previous' => 'nullable|in:yes,no',
+            'parent_id'         => 'nullable|integer|exists:ideas,id',
+            'title'             => 'required|string|max:120',
+            'summary'           => 'required|string|max:300',
+            'problem'           => 'required|string|min:20',
+            'solution'          => 'required|string|min:20',
+            'category'          => 'required|string|max:80',
+            'budget'            => 'nullable|numeric|min:0',
+            'technologies'      => 'nullable|array',
+            'technologies.*'    => 'string|max:60',
+            'feasibility'       => 'nullable|string|max:5000',
+            'ip_agreement'      => 'accepted',
+            'intent'            => 'nullable|in:draft,pending',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'problem.min'           => 'وضّح المشكلة بوضوح (20 حرفاً على الأقل).',
+            'solution.min'          => 'وضّح الحل بوضوح (20 حرفاً على الأقل).',
+            'summary.required'      => 'الوصف المختصر مطلوب ضمن معايير القبول.',
+            'ip_agreement.accepted' => 'يجب الموافقة على إقرار الملكية الفكرية وآلية الـ Fork.',
+        ];
+    }
+}

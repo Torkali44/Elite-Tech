@@ -271,7 +271,7 @@ class AuthController extends Controller
                 ->with('ok', __('auth.account_already_exists_login'));
         }
 
-        $user = User::create([
+        $user = User::forceCreate([
             'name'              => $pending['name'],
             'email'             => $pending['email'],
             'password'          => decrypt($pending['password_encrypted']),
@@ -680,7 +680,7 @@ class AuthController extends Controller
     private function sendOtpEmail(string $email, string $name, string $code): void
     {
         try {
-            Mail::to($email)->send(new OtpMail($name, $code));
+            Mail::to($email)->queue(new OtpMail($name, $code));
         } catch (\Throwable $e) {
             logger()->error("OTP mail failed [{$email}]: " . $e->getMessage());
         }

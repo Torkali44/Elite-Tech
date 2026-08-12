@@ -20,7 +20,7 @@ class DashboardTest extends TestCase
      */
     public function test_dashboard_loads_correctly_when_user_has_ideas(): void
     {
-        $user = User::create([
+        $user = User::forceCreate([
             'name'              => 'Owner',
             'email'             => 'owner@example.com',
             'password'          => bcrypt('password123'),
@@ -62,7 +62,7 @@ class DashboardTest extends TestCase
      */
     public function test_clearing_portfolio_url_triggers_kyc_rereview(): void
     {
-        $user = User::create([
+        $user = User::forceCreate([
             'name'              => 'Verified',
             'email'             => 'verified@example.com',
             'password'          => bcrypt('password123'),

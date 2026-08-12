@@ -61,19 +61,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/auth/path-selection', [AuthController::class, 'showPathSelection'])->name('auth.path');
     Route::post('/auth/path-selection', [AuthController::class, 'savePath']);
 
-    // Ideas — create BEFORE {id} so it is not captured as show
+    // Ideas — create BEFORE {idea} so it is not captured as show
     Route::get('/ideas/create', [IdeaController::class, 'create'])->name('ideas.create');
     Route::post('/ideas', [IdeaController::class, 'store'])->name('ideas.store');
-    Route::get('/ideas/{id}/edit', [IdeaController::class, 'edit'])->name('ideas.edit')->whereNumber('id');
-    Route::put('/ideas/{id}', [IdeaController::class, 'update'])->name('ideas.update')->whereNumber('id');
-    Route::post('/ideas/{id}/submit', [IdeaController::class, 'submitDraft'])->name('ideas.submit')->whereNumber('id');
-    Route::get('/ideas/{id}/fork', [IdeaController::class, 'forkConfirm'])->name('ideas.fork.confirm')->whereNumber('id');
-    Route::post('/ideas/{id}/fork', [IdeaController::class, 'fork'])->name('ideas.fork')->whereNumber('id');
-    Route::get('/ideas/{id}/implement', [IdeaController::class, 'implementForm'])->name('ideas.implement.form')->whereNumber('id');
-    Route::get('/ideas/{id}/comment', [IdeaController::class, 'commentPage'])->name('ideas.comment.page')->whereNumber('id');
-    Route::post('/ideas/{id}/comment', [IdeaController::class, 'comment'])->name('ideas.comment')->whereNumber('id');
-    Route::post('/ideas/{id}/implement', [IdeaController::class, 'implement'])->name('ideas.implement')->whereNumber('id');
-    Route::post('/ideas/{id}/favorite', [IdeaController::class, 'toggleFavorite'])->name('ideas.favorite')->whereNumber('id');
+    Route::get('/ideas/{idea}/edit', [IdeaController::class, 'edit'])->name('ideas.edit');
+    Route::put('/ideas/{idea}', [IdeaController::class, 'update'])->name('ideas.update');
+    Route::post('/ideas/{idea}/submit', [IdeaController::class, 'submitDraft'])->name('ideas.submit');
+    Route::get('/ideas/{idea}/fork', [IdeaController::class, 'forkConfirm'])->name('ideas.fork.confirm');
+    Route::post('/ideas/{idea}/fork', [IdeaController::class, 'fork'])->name('ideas.fork');
+    Route::get('/ideas/{idea}/implement', [IdeaController::class, 'implementForm'])->name('ideas.implement.form');
+    Route::get('/ideas/{idea}/comment', [IdeaController::class, 'commentPage'])->name('ideas.comment.page');
+    Route::post('/ideas/{idea}/comment', [IdeaController::class, 'comment'])->name('ideas.comment')->middleware('throttle:10,1');
+    Route::post('/ideas/{idea}/implement', [IdeaController::class, 'implement'])->name('ideas.implement');
+    Route::post('/ideas/{idea}/favorite', [IdeaController::class, 'toggleFavorite'])->name('ideas.favorite')->middleware('throttle:30,1');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/idea-owner', [DashboardController::class, 'ideaOwner'])
@@ -92,7 +92,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/career-tracks/{slug}/update', [CareerTrackController::class, 'update'])->name('career-tracks.update');
 
     Route::get('/verification/kyc', [VerificationController::class, 'show'])->name('verification.kyc');
-    Route::post('/verification/kyc', [VerificationController::class, 'submit']);
+    Route::post('/verification/kyc', [VerificationController::class, 'submit'])->middleware('throttle:3,1');
 
     Route::get('/profile/cv-builder', [ProfileController::class, 'cvBuilder'])->name('profile.cv');
     Route::post('/profile/cv-builder', [ProfileController::class, 'saveCv']);
@@ -101,13 +101,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/settings', [SettingsController::class, 'update']);
 
     Route::get('/network', [NetworkController::class, 'index'])->name('network.index');
-    Route::post('/network/start', [NetworkController::class, 'start'])->name('network.start');
-    Route::post('/network/{id}/reply', [NetworkController::class, 'reply'])->name('network.reply');
+    Route::post('/network/start', [NetworkController::class, 'start'])->name('network.start')->middleware('throttle:5,1');
+    Route::post('/network/{id}/reply', [NetworkController::class, 'reply'])->name('network.reply')->middleware('throttle:20,1');
     Route::post('/network/{id}/archive', [NetworkController::class, 'archive'])->name('network.archive');
 });
 
 // Public idea detail AFTER /ideas/create
-Route::get('/ideas/{id}', [IdeaController::class, 'show'])->name('ideas.show')->whereNumber('id');
+Route::get('/ideas/{idea}', [IdeaController::class, 'show'])->name('ideas.show');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::redirect('/login', '/login');

@@ -41,7 +41,7 @@ class AuthTest extends TestCase
         $response->assertSessionHas('pending_reg.email', 'newuser@example.com');
 
         // ✅ OTP email was sent
-        Mail::assertSent(OtpMail::class, fn ($m) => $m->hasTo('newuser@example.com'));
+        Mail::assertQueued(OtpMail::class, fn ($m) => $m->hasTo('newuser@example.com'));
     }
 
     public function test_register_with_existing_email_is_rejected(): void
@@ -358,7 +358,7 @@ class AuthTest extends TestCase
 
         $responseExisting->assertRedirect(route('password.reset'));
         $responseExisting->assertSessionHas('ok', __('auth.reset_link_sent'));
-        Mail::assertSent(OtpMail::class, fn ($m) => $m->hasTo('existing@example.com'));
+        Mail::assertQueued(OtpMail::class, fn ($m) => $m->hasTo('existing@example.com'));
     }
 
     public function test_password_reset_sends_otp_and_updates_password_on_valid_otp(): void
@@ -377,7 +377,7 @@ class AuthTest extends TestCase
 
         $response->assertRedirect(route('password.reset'));
         $this->assertTrue(session()->has('password_reset'));
-        Mail::assertSent(OtpMail::class, fn ($m) => $m->hasTo('reset_test@example.com'));
+        Mail::assertQueued(OtpMail::class, fn ($m) => $m->hasTo('reset_test@example.com'));
 
         // 2. Submit OTP + new password
         $code = '123456';
@@ -489,31 +489,6 @@ class AuthTest extends TestCase
         $this->assertTrue($admin->isAdmin());
 
         $this->actingAs($admin)
-             ->withSession(['is_admin' => true])
-             ->get('/admin/dashboard')
-             ->assertStatus(200);
-    }
-
-    public function test_seeded_tork_admin_account_can_login_and_access_admin_dashboard(): void
-    {
-        $this->seed(\Database\Seeders\DatabaseSeeder::class);
-
-        $torkEmail = config('admin.email2');  // set via ADMIN2_EMAIL env in phpunit.xml
-
-        $response = $this->post('/login', [
-            'email'    => $torkEmail,
-            'password' => 'torkTestSecure456!',  // test-only password — bcrypt stored in ADMIN2_PASSWORD test env
-        ]);
-
-        $response->assertRedirect(route('admin.dashboard'));
-        $this->assertAuthenticated();
-        $this->assertTrue((bool) session('is_admin'));
-
-        $tork = User::where('email', $torkEmail)->first();
-        $this->assertNotNull($tork);
-        $this->assertTrue($tork->isAdmin());
-
-        $this->actingAs($tork)
              ->withSession(['is_admin' => true])
              ->get('/admin/dashboard')
              ->assertStatus(200);

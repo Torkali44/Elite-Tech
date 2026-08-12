@@ -12,7 +12,7 @@ class NetworkTest extends TestCase
 
     public function test_user_cannot_reply_to_self(): void
     {
-        $user = User::create([
+        $user = User::forceCreate([
             'name'              => 'User1',
             'email'             => 'user1@example.com',
             'password'          => bcrypt('password123'),
@@ -31,7 +31,7 @@ class NetworkTest extends TestCase
 
     public function test_user_can_send_message_to_another_user(): void
     {
-        $user1 = User::create([
+        $user1 = User::forceCreate([
             'name'              => 'User1',
             'email'             => 'user1@example.com',
             'password'          => bcrypt('password123'),
@@ -39,7 +39,7 @@ class NetworkTest extends TestCase
             'email_verified_at' => now(),
         ]);
 
-        $user2 = User::create([
+        $user2 = User::forceCreate([
             'name'              => 'User2',
             'email'             => 'user2@example.com',
             'password'          => bcrypt('password123'),

@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Idea extends Model
 {
+    use SoftDeletes;
     // HIGH-04: 'status', 'admin_notes', and 'likes_count' are intentionally excluded from
     // $fillable. They are system/admin-controlled and must only be set via direct property
     // assignment or forceFill() in controlled code paths — never via user-supplied mass assignment.

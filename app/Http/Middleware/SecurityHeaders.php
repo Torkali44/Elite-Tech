@@ -32,6 +32,12 @@ class SecurityHeaders
         // Restrict access to browser features not used by the application
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
 
+        // Content Security Policy (CSP) header
+        $response->headers->set(
+            'Content-Security-Policy',
+            "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:;"
+        );
+
         // HSTS: force HTTPS on subsequent visits — only set on actual HTTPS connections
         // to avoid locking out HTTP-only local development
         if ($request->isSecure()) {

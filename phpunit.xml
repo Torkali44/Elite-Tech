@@ -28,7 +28,5 @@
         <!-- Test-only admin credentials — NOT real production values -->
         <env name="ADMIN_EMAIL" value="admin@elitetech.test"/>
         <env name="ADMIN_PASSWORD" value="$2y$04$N0BEvHh527rz.bwpy/7uh.ivyASwMq8XMKb22JjgOVhzFbjnGqAWm"/>
-        <env name="ADMIN2_EMAIL" value="torkali932@elitetech.test"/>
-        <env name="ADMIN2_PASSWORD" value="$2y$04$dttomwfvvUlTds2lixgrZ.M78.4N8sx8BtCXPexWxLu6g2A1NJ5ee"/>
     </php>
 </phpunit>

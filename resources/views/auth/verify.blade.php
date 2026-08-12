@@ -9,12 +9,22 @@
 
     {{-- Title --}}
     <h2 class="text-2xl font-black text-primary mb-1">{{ __('auth.verify_title') }}</h2>
-    <p class="text-sm text-tertiary mb-5 leading-relaxed">
+    <p class="text-sm text-tertiary mb-3 leading-relaxed">
         {{ __('auth.verify_subtitle') }}<br>
         @if(!empty($maskedEmail))
             <span class="font-bold text-primary">{{ $maskedEmail }}</span>
         @endif
     </p>
+
+    <div class="mb-5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs px-3.5 py-2.5 leading-relaxed flex items-start gap-2">
+        <span class="text-base select-none">⚠️</span>
+        <div>
+            <strong class="font-bold">{{ app()->getLocale() === 'ar' ? 'لم تستلم الرمز؟' : "Didn't receive the code?" }}</strong><br>
+            <span>{{ app()->getLocale() === 'ar'
+                ? 'تحقق من مجلد البريد غير المرغوب فيه (Spam / Junk). قد تصل الرسالة هناك في بعض خدمات البريد.'
+                : 'Check your Spam / Junk folder. The email may land there with some email providers.' }}</span>
+        </div>
+    </div>
 
     {{-- Flash messages --}}
     @if(session('ok'))

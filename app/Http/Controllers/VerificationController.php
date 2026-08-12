@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\KycSubmissionRequest;
 use App\Models\Verification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -26,18 +27,9 @@ class VerificationController extends Controller
         return view('verification.kyc', compact('purpose', 'latest', 'effectiveKycStatus'));
     }
 
-    public function submit(Request $request)
+    public function submit(KycSubmissionRequest $request)
     {
-        $data = $request->validate([
-            'doc_type' => 'required|string|in:national_id,passport,driver_license',
-            'purpose' => 'required|string|in:publish_idea,implement,jobs_forum',
-            'id_front' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
-            'id_back' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
-            'selfie' => 'nullable|file|mimes:jpg,jpeg,png|max:5120',
-        ], [
-            'doc_type.required' => app()->getLocale()==='ar' ? 'اختر نوع المستند.' : 'Select document type.',
-            'id_front.required' => app()->getLocale()==='ar' ? 'يرجى رفع صورة الجهة الأمامية للمستند.' : 'Please upload front side of the document.',
-        ]);
+        $data = $request->validated();
 
         $user = $request->user();
         $dir = 'kyc/'.$user->id;
