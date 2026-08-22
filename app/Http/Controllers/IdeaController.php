@@ -168,11 +168,7 @@ class IdeaController extends Controller
 
         $data = $request->validated();
 
-        if (($data['intent'] ?? 'draft') === 'pending' && empty(array_filter($data['technologies'] ?? []))) {
-            return back()->withInput()->withErrors([
-                'technologies' => 'معايير القبول تتطلب تحديد المتطلبات التقنية قبل الإرسال للمراجعة.',
-            ]);
-        }
+
 
         $parentId = null;
         if (($data['based_on_previous'] ?? 'no') === 'yes') {
@@ -272,11 +268,7 @@ class IdeaController extends Controller
 
         $data = $request->validated();
 
-        if (($data['intent'] ?? 'draft') === 'pending' && empty(array_filter($data['technologies'] ?? []))) {
-            return back()->withInput()->withErrors([
-                'technologies' => 'معايير القبول تتطلب تحديد المتطلبات التقنية قبل الإرسال للمراجعة.',
-            ]);
-        }
+
 
         $parentId = $idea->forked_from;
         if (($data['based_on_previous'] ?? 'no') === 'yes') {
