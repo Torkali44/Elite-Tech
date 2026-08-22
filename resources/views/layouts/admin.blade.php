@@ -95,6 +95,34 @@
         </main>
     </div>
     <div x-show="open" x-cloak @click="open=false" class="fixed inset-0 bg-ink/40 z-40 lg:hidden"></div>
+
+    {{-- Toast Notification for unread alerts --}}
+    @if(auth()->check() && auth()->user()->unreadNotifications->count() > 0 && !request()->routeIs('notifications.index'))
+    <div x-data="{ showToast: false }" 
+         x-init="setTimeout(() => { showToast = true; const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); audio.volume = 0.5; audio.play().catch(e => {}); }, 1000); setTimeout(() => showToast = false, 8000)"
+         x-show="showToast"
+         x-cloak
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 transform translate-y-4"
+         x-transition:enter-end="opacity-100 transform translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 transform translate-y-0"
+         x-transition:leave-end="opacity-0 transform translate-y-4"
+         class="fixed bottom-6 {{ app()->getLocale() === 'ar' ? 'left-6' : 'right-6' }} z-[80] bg-white border border-mist shadow-lg rounded-xl p-4 flex items-start gap-3 max-w-sm">
+        
+        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        </div>
+        <div class="flex-1">
+            <h4 class="text-sm font-bold text-primary mb-1">لديك إشعارات جديدة</h4>
+            <p class="text-xs text-tertiary mb-3">يرجى التحقق من قائمة الإشعارات لمعرفة التحديثات الجديدة على حسابك.</p>
+            <div class="flex gap-2">
+                <a href="{{ route('notifications.index') }}" class="btn-primary !py-1.5 !px-3 text-xs w-full text-center">عرض الإشعارات</a>
+                <button @click="showToast = false" class="btn-outline !py-1.5 !px-3 text-xs">إغلاق</button>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
 </body>
 </html>
