@@ -37,6 +37,13 @@
                 @endif
             </div>
 
+            @if($idea->budget)
+            <div class="card p-6">
+                <h3 class="font-bold text-primary mb-3">الميزانية التقديرية</h3>
+                <p class="text-sm text-tertiary leading-relaxed">{{ $idea->budget }}</p>
+            </div>
+            @endif
+
             @if($idea->feasibility)
             <div class="card p-6">
                 <h3 class="font-bold text-primary mb-3">دراسة جدوى مبسطة</h3>
