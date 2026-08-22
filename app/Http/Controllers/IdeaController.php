@@ -51,6 +51,10 @@ class IdeaController extends Controller
             $query->where('category', $request->category);
         }
 
+        if ($request->filled('budget')) {
+            $query->where('budget', $request->budget);
+        }
+
         if ($sort === 'popular') {
             $query->orderByDesc('likes_count')->orderByDesc('id');
         } else {

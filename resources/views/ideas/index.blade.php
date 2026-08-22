@@ -112,6 +112,15 @@
                 </div>
 
                 <div>
+                    <label class="block text-xs font-bold text-tertiary mb-1.5">الميزانية التقديرية</label>
+                    <select name="budget" class="input !py-2 text-sm">
+                        <option value="">كل الميزانيات</option>
+                        @foreach(['أقل من $10,000', '$10,000 - $50,000', '$50,000 - $150,000', '$150,000 - $500,000', 'أكثر من $500,000'] as $range)
+                            <option value="{{ $range }}" @selected(request('budget') === $range)>{{ $range }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
                     <div class="text-xs font-bold text-tertiary mb-2">{{ app()->getLocale()==='ar' ? 'ترتيب حسب' : 'Sort by' }}</div>
                     <label class="flex items-center gap-2 text-sm text-primary mb-2 cursor-pointer">
                         <input type="radio" name="sort" value="newest" class="accent-primary" @checked($sort === 'newest')>

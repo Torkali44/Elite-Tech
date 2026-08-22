@@ -109,7 +109,12 @@
             </div>
             <div>
                 <label class="block text-sm font-bold text-primary mb-1.5">الميزانية التقديرية (اختياري)</label>
-                <input type="text" name="budget" value="{{ old('budget', $editing ? $idea->budget : '') }}" class="input" placeholder="مثال: $150,000 - $250,000 دولار">
+                <select name="budget" class="input">
+                    <option value="">اختر نطاق الميزانية</option>
+                    @foreach(['أقل من $10,000', '$10,000 - $50,000', '$50,000 - $150,000', '$150,000 - $500,000', 'أكثر من $500,000'] as $range)
+                        <option value="{{ $range }}" @selected(old('budget', $editing ? $idea->budget : '')==$range)>{{ $range }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
 
