@@ -59,7 +59,7 @@ Route::post('/auth/verify', [AuthController::class, 'verify'])->name('auth.verif
 
 Route::middleware('auth')->group(function () {
     Route::get('/auth/path-selection', [AuthController::class, 'showPathSelection'])->name('auth.path');
-    Route::post('/auth/path-selection', [AuthController::class, 'savePath']);
+    Route::post('/auth/path-selection', [AuthController::class, 'savePath'])->middleware('throttle:5,1');
 
     // Ideas — create BEFORE {idea} so it is not captured as show
     Route::get('/ideas/create', [IdeaController::class, 'create'])->name('ideas.create');
@@ -98,12 +98,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/cv-builder', [ProfileController::class, 'saveCv']);
 
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
-    Route::post('/settings', [SettingsController::class, 'update']);
+    Route::post('/settings', [SettingsController::class, 'update'])->middleware('throttle:10,1');
 
     Route::get('/network', [NetworkController::class, 'index'])->name('network.index');
     Route::post('/network/start', [NetworkController::class, 'start'])->name('network.start')->middleware('throttle:5,1');
     Route::post('/network/{id}/reply', [NetworkController::class, 'reply'])->name('network.reply')->middleware('throttle:20,1');
-    Route::post('/network/{id}/archive', [NetworkController::class, 'archive'])->name('network.archive');
+    Route::post('/network/{id}/archive', [NetworkController::class, 'archive'])->name('network.archive')->middleware('throttle:10,1');
 });
 
 // Public idea detail AFTER /ideas/create

@@ -160,11 +160,16 @@ class CareerTrackController extends Controller
             ['user_id' => auth()->id(), 'slug' => $slug]
         );
 
-        $track->update([
-            'github'      => $data['github'] ?? $track->github,
-            'admin_notes' => $data['notes'] ?? $track->admin_notes,
-            'status'      => 'current',
-        ]);
+        $updates = [
+            'github' => $data['github'] ?? $track->github,
+        ];
+
+        // Only update status to 'current' if not already 'done'
+        if ($track->status !== 'done') {
+            $updates['status'] = 'current';
+        }
+
+        $track->update($updates);
 
         return redirect()->route('career-tracks.show', $slug)->with('ok', 'تم تحديث بيانات المسار بنجاح.');
     }

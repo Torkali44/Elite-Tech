@@ -36,7 +36,7 @@
         </div>
     @endif
 
-    <form action="{{ $editing ? route('ideas.update', $idea->id) : route('ideas.store') }}" method="POST" class="card p-6 lg:p-8 space-y-6">
+    <form action="{{ $editing ? route('ideas.update', $idea->id) : route('ideas.store') }}" method="POST" class="card p-6 lg:p-8 space-y-6" @submit="submitForm($event)">
         @csrf
         @if($editing) @method('PUT') @endif
 
@@ -162,6 +162,16 @@ function ideaForm(init) {
             const v = this.techInput.replace(',', '').trim();
             if (v && !this.techs.includes(v)) this.techs.push(v);
             this.techInput = '';
+        },
+        submitForm(event) {
+            const v = this.techInput.replace(',', '').trim();
+            if (v && !this.techs.includes(v)) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'technologies[]';
+                input.value = v;
+                event.target.appendChild(input);
+            }
         },
         applyParent() {
             const sel = this.$el.querySelector('select[name=parent_id]');

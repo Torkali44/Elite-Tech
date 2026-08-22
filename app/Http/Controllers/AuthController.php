@@ -314,10 +314,6 @@ class AuthController extends Controller
         $roles    = $data['roles'];
         $wantsJobs = $request->boolean('wants_jobs_forum') && in_array('developer', $roles, true);
 
-        if (in_array('idea_seeker', $roles, true)) {
-            $user->forceFill(['kyc_status' => 'approved'])->save();
-        }
-
         $user->forceFill([
             'roles'            => $roles,
             'role'             => $roles[0],

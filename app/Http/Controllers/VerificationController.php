@@ -14,7 +14,7 @@ class VerificationController extends Controller
     {
         $user = $request->user();
 
-        if ($user->hasRole('idea_seeker') && ! $user->hasRole('idea_owner')) {
+        if ($user->hasRole('idea_seeker') && ! $user->hasRole('idea_owner') && $request->get('purpose') !== 'implement') {
             return redirect()->route('dashboard')->with('ok', __('dashboard.seeker_no_kyc'));
         }
 

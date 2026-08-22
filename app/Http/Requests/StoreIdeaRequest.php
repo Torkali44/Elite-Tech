@@ -30,6 +30,18 @@ class StoreIdeaRequest extends FormRequest
         ];
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('technologies')) {
+            $this->merge([
+                'technologies' => array_values(array_filter(
+                    (array) $this->technologies,
+                    fn ($v) => is_string($v) && trim($v) !== ''
+                )),
+            ]);
+        }
+    }
+
     public function messages(): array
     {
         return [

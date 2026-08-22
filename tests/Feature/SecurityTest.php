@@ -31,6 +31,12 @@ class SecurityTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class]);
+    }
+
     // ──────────────────────────────────────────────────────────────────────────
     // Helpers
     // ──────────────────────────────────────────────────────────────────────────
@@ -256,7 +262,7 @@ class SecurityTest extends TestCase
 
     public function test_legacy_otp_blocks_after_five_wrong_attempts(): void
     {
-        $this->withoutMiddleware(ThrottleRequests::class);
+        $this->withoutMiddleware([\Illuminate\Routing\Middleware\ThrottleRequests::class, \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
         $user = $this->makeVerifiedUser(['email_verified_at' => null]);
 
@@ -271,7 +277,7 @@ class SecurityTest extends TestCase
 
     public function test_legacy_otp_lockout_redirects_to_login_when_attempts_exceed_max(): void
     {
-        $this->withoutMiddleware(ThrottleRequests::class);
+        $this->withoutMiddleware([\Illuminate\Routing\Middleware\ThrottleRequests::class, \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
         $user = $this->makeVerifiedUser(['email_verified_at' => null]);
 
@@ -290,7 +296,7 @@ class SecurityTest extends TestCase
 
     public function test_legacy_otp_correct_code_succeeds_and_verifies_email(): void
     {
-        $this->withoutMiddleware(ThrottleRequests::class);
+        $this->withoutMiddleware([\Illuminate\Routing\Middleware\ThrottleRequests::class, \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
 
         $user = $this->makeVerifiedUser(['email_verified_at' => null]);
 
@@ -316,7 +322,6 @@ class SecurityTest extends TestCase
         $response = $this->actingAs($user)->post('/auth/path-selection', [
             'roles' => ['admin'],
         ]);
-
         $response->assertSessionHasErrors('roles.*');
 
         $this->assertDatabaseHas('users', [

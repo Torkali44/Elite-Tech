@@ -248,7 +248,7 @@ class AdminController extends Controller
     {
         $data = $request->validate(['admin_notes' => 'nullable|string|max:5000']);
         $user = User::findOrFail($id);
-        $user->update(['admin_notes' => $data['admin_notes']]);
+        $user->forceFill(['admin_notes' => $data['admin_notes']])->save();
         $this->logAdminAction('save_notes', $user, ['admin_notes' => $data['admin_notes']]);
 
         return back()->with('ok', 'تم حفظ الملاحظات الداخلية.');
@@ -257,7 +257,9 @@ class AdminController extends Controller
     public function publishIdea($id)
     {
         $idea = Idea::findOrFail($id);
-        $idea->update(['status' => 'published', 'admin_notes' => null]);
+        $idea->status = 'published';
+        $idea->admin_notes = null;
+        $idea->save();
         $this->logAdminAction('publish_idea', $idea, ['status' => 'published']);
 
         return back()->with('ok', 'تم نشر الفكرة للعامة.');
@@ -268,10 +270,9 @@ class AdminController extends Controller
         $data = $request->validate(['note' => 'required|string|min:3|max:2000']);
         $idea = Idea::findOrFail($id);
 
-        $idea->update([
-            'status' => 'draft',
-            'admin_notes' => $data['note'],
-        ]);
+        $idea->status = 'draft';
+        $idea->admin_notes = $data['note'];
+        $idea->save();
 
         $this->logAdminAction('return_idea', $idea, ['status' => 'draft', 'note' => $data['note']]);
 
@@ -300,7 +301,8 @@ class AdminController extends Controller
     public function approveImplementation($id)
     {
         $r = ImplementRequest::with(['idea', 'user'])->findOrFail($id);
-        $r->update(['status' => 'approved']);
+        $r->status = 'approved';
+        $r->save();
         $this->logAdminAction('approve_implement', $r, ['status' => 'approved']);
 
         return back()->with('ok', 'تمت الموافقة على طلب التنفيذ من لوحة الإدارة.');
@@ -310,10 +312,9 @@ class AdminController extends Controller
     {
         $data = $request->validate(['reason' => 'required|string|min:3|max:1000']);
         $r = ImplementRequest::findOrFail($id);
-        $r->update([
-            'status' => 'rejected',
-            'note' => trim(($r->note ? $r->note."\n" : '').'رفض الإدارة: '.$data['reason']),
-        ]);
+        $r->status = 'rejected';
+        $r->note = trim(($r->note ? $r->note."\n" : '').'رفض الإدارة: '.$data['reason']);
+        $r->save();
 
         $this->logAdminAction('reject_implement', $r, ['status' => 'rejected', 'reason' => $data['reason']]);
 
