@@ -13,12 +13,14 @@ class Idea extends Model
     // assignment or forceFill() in controlled code paths — never via user-supplied mass assignment.
     protected $fillable = [
         'user_id', 'forked_from', 'title', 'category', 'description',
-        'feasibility', 'technologies', 'budget',
+        'feasibility', 'technologies', 'budget', 'budget_min', 'budget_max', 'currency',
     ];
 
     protected $casts = [
         'technologies' => 'array',
         'budget' => 'decimal:2',
+        'budget_min' => 'decimal:2',
+        'budget_max' => 'decimal:2',
     ];
 
     public function user()

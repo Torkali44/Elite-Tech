@@ -188,7 +188,9 @@ class IdeaController extends Controller
             'description'  => $this->composeDescription($data),
             'feasibility'  => $data['feasibility'] ?? null,
             'technologies' => array_values(array_filter($data['technologies'] ?? [])),
-            'budget'       => $data['budget'] ?? null,
+            'budget_min'   => $data['budget_min'] ?? null,
+            'budget_max'   => $data['budget_max'] ?? null,
+            'currency'     => $data['currency'] ?? 'USD',
         ]);
         // System-controlled fields set via direct assignment (not user mass-assignment)
         $idea->status      = ($data['intent'] ?? 'draft') === 'pending' ? 'pending' : 'draft';
@@ -290,7 +292,9 @@ class IdeaController extends Controller
             'description'  => $this->composeDescription($data),
             'feasibility'  => $data['feasibility'] ?? null,
             'technologies' => array_values(array_filter($data['technologies'] ?? [])),
-            'budget'       => $data['budget'] ?? null,
+            'budget_min'   => $data['budget_min'] ?? null,
+            'budget_max'   => $data['budget_max'] ?? null,
+            'currency'     => $data['currency'] ?? 'USD',
         ]);
         // System-controlled fields set via direct assignment (not user mass-assignment)
         $idea->status      = $intent === 'pending' ? 'pending' : 'draft';
