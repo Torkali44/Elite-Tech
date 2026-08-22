@@ -6,8 +6,10 @@ use App\Models\ActivityLog;
 use App\Models\Idea;
 use App\Models\IdeaComment;
 use App\Models\ImplementRequest;
+use App\Models\Setting;
 use App\Models\User;
 use App\Models\Verification;
+use App\Notifications\SystemAlert;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -192,6 +194,13 @@ class AdminController extends Controller
 
         $this->logAdminAction('approve_kyc', $v, ['kyc_status' => 'approved']);
 
+        $user->notify(new SystemAlert(
+            'تم توثيق حسابك',
+            'مبارك! تمت مراجعة بياناتك واعتماد توثيقك (KYC) بنجاح.',
+            route('verification.kyc'),
+            'check'
+        ));
+
         return back()->with('ok', 'تمت الموافقة وتفعيل صلاحيات المستخدم.');
     }
 
@@ -216,6 +225,13 @@ class AdminController extends Controller
         ])->save();
 
         $this->logAdminAction('reject_kyc', $v, ['kyc_status' => 'rejected', 'reason' => $data['reason']]);
+
+        $v->user->notify(new SystemAlert(
+            'فشل التوثيق',
+            "نأسف، لم نتمكن من اعتماد توثيقك. السبب: {$data['reason']}",
+            route('verification.kyc'),
+            'exclamation'
+        ));
 
         return back()->with('ok', 'تم رفض الطلب وإرسال سبب الرفض للمستخدم.');
     }
@@ -265,6 +281,13 @@ class AdminController extends Controller
         $idea->save();
         $this->logAdminAction('publish_idea', $idea, ['status' => 'published']);
 
+        $idea->user->notify(new SystemAlert(
+            'تم نشر فكرتك',
+            "مبارك! تم مراجعة فكرتك «{$idea->title}» ونشرها في بنك الأفكار.",
+            route('ideas.show', $idea->id),
+            'check'
+        ));
+
         return back()->with('ok', 'تم نشر الفكرة للعامة.');
     }
 
@@ -278,6 +301,13 @@ class AdminController extends Controller
         $idea->save();
 
         $this->logAdminAction('return_idea', $idea, ['status' => 'draft', 'note' => $data['note']]);
+
+        $idea->user->notify(new SystemAlert(
+            'ملاحظات على فكرتك',
+            "تم إرجاع فكرتك «{$idea->title}» كمسودة لإجراء بعض التعديلات.",
+            route('ideas.edit', $idea->id),
+            'exclamation'
+        ));
 
         return back()->with('ok', 'أُعيدت الفكرة كمسودة مع الملاحظات.');
     }
@@ -308,18 +338,32 @@ class AdminController extends Controller
         $r->save();
         $this->logAdminAction('approve_implement', $r, ['status' => 'approved']);
 
+        $r->user->notify(new SystemAlert(
+            'تمت الموافقة على طلب التنفيذ',
+            "تمت الموافقة على طلبك لتنفيذ الفكرة «{$r->idea->title}».",
+            route('dashboard.myImplementations'),
+            'check'
+        ));
+
         return back()->with('ok', 'تمت الموافقة على طلب التنفيذ من لوحة الإدارة.');
     }
 
     public function rejectImplementation($id, Request $request)
     {
         $data = $request->validate(['reason' => 'required|string|min:3|max:1000']);
-        $r = ImplementRequest::findOrFail($id);
+        $r = ImplementRequest::with(['idea', 'user'])->findOrFail($id);
         $r->status = 'rejected';
         $r->note = trim(($r->note ? $r->note."\n" : '').'رفض الإدارة: '.$data['reason']);
         $r->save();
 
         $this->logAdminAction('reject_implement', $r, ['status' => 'rejected', 'reason' => $data['reason']]);
+
+        $r->user->notify(new SystemAlert(
+            'تم رفض طلب التنفيذ',
+            "تم رفض طلبك لتنفيذ الفكرة «{$r->idea->title}».",
+            route('dashboard.myImplementations'),
+            'exclamation'
+        ));
 
         return back()->with('ok', 'تم رفض طلب التنفيذ مع تسجيل السبب.');
     }

@@ -63,6 +63,13 @@ class VerificationController extends Controller
             'wants_jobs_forum' => $data['purpose'] === 'jobs_forum' ? true : $user->wants_jobs_forum,
         ])->save();
 
+        \Illuminate\Support\Facades\Notification::send(\App\Models\User::getAdmins(), new \App\Notifications\SystemAlert(
+            'طلب توثيق جديد',
+            "قدم {$user->name} طلب توثيق هوية جديد (KYC).",
+            route('admin.verifications'),
+            'user'
+        ));
+
         $msg = $wasApproved
             ? (app()->getLocale()==='ar' ? 'تم رفع وثيقة جديدة — سُحبت شارة التوثيق وأُخفيت من المنتدى إلى حين إعادة المراجعة.' : 'New document uploaded — verification badge temporarily removed until review.')
             : (app()->getLocale()==='ar' ? 'تم إرسال طلب التحقق للمراجعة. ستصلك النتيجة في لوحة التحكم.' : 'Verification request submitted for review. Results will appear in your dashboard.');

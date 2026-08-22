@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreIdeaRequest;
 use App\Http\Requests\UpdateIdeaRequest;
+use Illuminate\Support\Facades\DB;
+use App\Models\User;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\SystemAlert;
 use App\Models\Idea;
 use App\Models\IdeaComment;
 use App\Models\ImplementRequest;
@@ -196,6 +200,15 @@ class IdeaController extends Controller
         $idea->likes_count = 0;
         $idea->save();
 
+        if ($idea->status === 'pending') {
+            Notification::send(User::getAdmins(), new SystemAlert(
+                'فكرة جديدة للمراجعة',
+                "تم تقديم فكرة «{$idea->title}» للمراجعة من قبل {$user->name}.",
+                route('admin.ideas.show', $idea->id),
+                'lightbulb'
+            ));
+        }
+
         $msg = $idea->status === 'draft'
             ? 'تم حفظ الفكرة كمسودة. يمكنك إرسالها للمراجعة لاحقاً.'
             : 'تم إرسال الفكرة للمراجعة الإدارية. ستظهر في بنك الأفكار بعد القبول.';
@@ -223,16 +236,17 @@ class IdeaController extends Controller
             return back()->with('popup', 'الفكرة قيد المراجعة الإدارية بالفعل.');
         }
 
-        if (empty(array_filter((array) $idea->technologies))) {
-            return redirect()
-                ->route('ideas.edit', $idea->id)
-                ->with('error', 'أضف المتطلبات التقنية قبل إرسال الفكرة للمراجعة.');
-        }
-
         // System-controlled fields set via direct assignment (not user mass-assignment)
         $idea->status      = 'pending';
         $idea->admin_notes = null;
         $idea->save();
+
+        Notification::send(User::getAdmins(), new SystemAlert(
+            'فكرة جديدة للمراجعة',
+            "تم تقديم فكرة «{$idea->title}» للمراجعة من قبل {$user->name}.",
+            route('admin.ideas.show', $idea->id),
+            'lightbulb'
+        ));
 
         return back()->with('ok', 'تم إرسال الفكرة للمراجعة الإدارية. ستظهر في بنك الأفكار بعد الموافقة.');
     }
@@ -413,13 +427,33 @@ class IdeaController extends Controller
             'agree_terms.accepted' => 'يجب الموافقة على اتفاقية الاستخدام للمتابعة.',
         ]);
 
-        ImplementRequest::updateOrCreate(
+        $req = ImplementRequest::updateOrCreate(
             ['idea_id' => $idea->id, 'user_id' => $user->id],
             ['via' => $data['via'], 'note' => $data['note'] ?? null, 'status' => 'pending']
         );
 
+        $idea->load('user');
+
+        // Notify Admin
+        Notification::send(User::getAdmins(), new SystemAlert(
+            'طلب تنفيذ جديد',
+            "قدم {$user->name} طلب تنفيذ للفكرة «{$idea->title}».",
+            route('admin.implementations.show', $req->id),
+            'cog'
+        ));
+
+        // Notify Idea Owner
+        if ($idea->user_id !== $user->id) {
+            $idea->user->notify(new SystemAlert(
+                'طلب تنفيذ لفكرتك',
+                "هناك مطور مهتم بتنفيذ فكرتك «{$idea->title}».",
+                route('dashboard.implementRequests'),
+                'check'
+            ));
+        }
+
         return redirect()->route('ideas.show', $idea->id)
-            ->with('ok', 'تم تسجيل رغبتك في التنفيذ. صاحب الفكرة والإدارة يراجعان الطلب.');
+            ->with('ok', 'تم تسجيل رغبتك في التنفيذ. سيتم مراجعة الطلب.');
     }
 
     private function validateIdea(Request $request, bool $updating = false): array

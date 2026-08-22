@@ -16,7 +16,9 @@ use App\Http\Controllers\{
     SettingsController,
     NetworkController,
     AdminController,
-    LanguageController
+    LanguageController,
+    NotificationController,
+    ArchiveController
 };
 
 Route::get('/lang/{locale}', [LanguageController::class, 'switch'])
@@ -58,6 +60,13 @@ Route::get('/auth/verify', [AuthController::class, 'showVerify'])->name('auth.ve
 Route::post('/auth/verify', [AuthController::class, 'verify'])->name('auth.verify.submit')->middleware('throttle:5,1');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    Route::get('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+
+    // Archive
+    Route::get('/archive', [ArchiveController::class, 'index'])->name('archive.index')->middleware('throttle:10,1');
+
     Route::get('/auth/path-selection', [AuthController::class, 'showPathSelection'])->name('auth.path');
     Route::post('/auth/path-selection', [AuthController::class, 'savePath'])->middleware('throttle:5,1');
 

@@ -73,6 +73,13 @@ class DashboardController extends Controller
             'note' => $data['note'] ?: $req->note,
         ]);
 
+        $req->user->notify(new \App\Notifications\SystemAlert(
+            $data['action'] === 'approved' ? 'صاحب الفكرة قبل طلبك' : 'صاحب الفكرة رفض طلبك',
+            $data['action'] === 'approved' ? "وافق {$req->idea->user->name} على طلبك لتنفيذ الفكرة «{$req->idea->title}»." : "اعتذر {$req->idea->user->name} عن قبول طلبك لتنفيذ الفكرة «{$req->idea->title}».",
+            route('dashboard.myImplementations'),
+            $data['action'] === 'approved' ? 'check' : 'exclamation'
+        ));
+
         $msg = $data['action'] === 'approved'
             ? 'قبلت طلب الانضمام/التنفيذ. يمكنك التواصل عبر الرسائل.'
             : 'تم رفض طلب التنفيذ.';

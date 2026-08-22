@@ -79,6 +79,14 @@ class User extends Authenticatable
         return $this->role === 'admin' || $this->hasRole('admin');
     }
 
+    /**
+     * Get all admin users.
+     */
+    public static function getAdmins()
+    {
+        return self::where('role', 'admin')->orWhereJsonContains('roles', 'admin')->get();
+    }
+
     public function isKycApproved(): bool
     {
         return ($this->kyc_status ?? 'none') === 'approved' && ! $this->is_suspended;
