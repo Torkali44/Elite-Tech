@@ -103,7 +103,7 @@
                         @foreach($categories as $cat)
                             <option value="{{ $cat }}" @selected(request('category') === $cat)>{{ $cat }}</option>
                         @endforeach
-                        @foreach(['الذكاء الاصطناعي','تطوير الويب','تطبيقات المحمول','الأمن السيبراني','البلوكشين'] as $fallback)
+                        @foreach(['الذكاء الاصطناعي','تطوير الويب','تطبيقات المحمول','الأمن السيبراني','البلوكشين','حاضنات ومسرعات الأعمال','التنفيذ التقني التشاركي'] as $fallback)
                             @if(!$categories->contains($fallback))
                                 <option value="{{ $fallback }}" @selected(request('category') === $fallback)>{{ $fallback }}</option>
                             @endif
