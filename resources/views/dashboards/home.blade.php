@@ -71,7 +71,7 @@
     @forelse($myIdeas as $idea)
         <div class="flex flex-wrap items-center gap-3 py-3 border-b border-mist last:border-0">
             <div class="flex-1 min-w-0">
-                <a href="{{ route('ideas.show', $idea->id) }}" class="font-bold text-primary text-sm hover:text-secondary">{{ $idea->title }}</a>
+                <a href="{{ route('ideas.show', $idea->id) }}" class="font-bold text-primary text-sm hover:text-secondary">{{ $idea->localized_title }}</a>
                 <div class="text-xs text-tertiary">{{ $idea->category }} · {{ $idea->created_at->diffForHumans() }}</div>
                 @if($idea->admin_notes && in_array($idea->status, ['draft', 'archived'], true))
                     <div class="text-xs text-rose-600 mt-1">{{ app()->getLocale()==='ar' ? 'ملاحظة الإدارة:' : 'Admin note:' }} {{ $idea->admin_notes }}</div>

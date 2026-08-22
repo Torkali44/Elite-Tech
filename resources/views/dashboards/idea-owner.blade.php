@@ -28,7 +28,7 @@
             </span>
             <span class="badge bg-mist text-tertiary text-[10px]">{{ $idea->category }}</span>
         </div>
-        <a href="{{ route('ideas.show', $idea->id) }}" class="font-bold text-primary mb-2 block hover:text-secondary">{{ $idea->title }}</a>
+        <a href="{{ route('ideas.show', $idea->id) }}" class="font-bold text-primary mb-2 block hover:text-secondary">{{ $idea->localized_title }}</a>
         <p class="text-xs text-tertiary line-clamp-3 mb-4">{{ $idea->shortDesc(120) }}</p>
         @if($idea->admin_notes)
             <p class="text-xs text-rose-600 mb-3">{{ __('general.info') ?? 'Note' }}: {{ $idea->admin_notes }}</p>

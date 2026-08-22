@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\SystemAlert;
+use App\Services\TranslationService;
 use App\Models\Idea;
 use App\Models\IdeaComment;
 use App\Models\ImplementRequest;
@@ -184,12 +185,14 @@ class IdeaController extends Controller
             }
         }
 
+        $desc = $this->composeDescription($data);
+        
         $idea = Idea::create([
             'user_id'      => $user->id,
             'forked_from'  => $parentId,
             'title'        => $data['title'],
             'category'     => $data['category'],
-            'description'  => $this->composeDescription($data),
+            'description'  => $desc,
             'feasibility'  => $data['feasibility'] ?? null,
             'technologies' => array_values(array_filter($data['technologies'] ?? [])),
             'budget'       => $data['budget'] ?? null,
@@ -198,6 +201,8 @@ class IdeaController extends Controller
         $idea->status      = ($data['intent'] ?? 'draft') === 'pending' ? 'pending' : 'draft';
         $idea->admin_notes = null;
         $idea->likes_count = 0;
+        $idea->title_en    = TranslationService::translateToEnglish($data['title']);
+        $idea->description_en = TranslationService::translateToEnglish($desc);
         $idea->save();
 
         if ($idea->status === 'pending') {
@@ -293,11 +298,12 @@ class IdeaController extends Controller
 
         $intent = $data['intent'] ?? 'draft';
 
+        $desc = $this->composeDescription($data);
         $idea->fill([
             'forked_from'  => $parentId,
             'title'        => $data['title'],
             'category'     => $data['category'],
-            'description'  => $this->composeDescription($data),
+            'description'  => $desc,
             'feasibility'  => $data['feasibility'] ?? null,
             'technologies' => array_values(array_filter($data['technologies'] ?? [])),
             'budget'       => $data['budget'] ?? null,
@@ -305,6 +311,8 @@ class IdeaController extends Controller
         // System-controlled fields set via direct assignment (not user mass-assignment)
         $idea->status      = $intent === 'pending' ? 'pending' : 'draft';
         $idea->admin_notes = $intent === 'pending' ? null : $idea->getOriginal('admin_notes');
+        $idea->title_en    = TranslationService::translateToEnglish($data['title']);
+        $idea->description_en = TranslationService::translateToEnglish($desc);
         $idea->save();
 
         $msg = $intent === 'draft'

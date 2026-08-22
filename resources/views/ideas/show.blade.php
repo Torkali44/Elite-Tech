@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', $idea->title)
+@section('title', $idea->localized_title)
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <nav class="text-xs text-tertiary mb-4">
@@ -18,14 +18,14 @@
                         <div class="w-full rounded-xl bg-secondary/10 border border-secondary/20 text-sm text-primary px-4 py-3 leading-relaxed">
                             <span class="font-black text-secondary">شارة الاستنساخ:</span>
                             هذه الفكرة مستلهمة/مبنية على فكرة
-                            «<a href="{{ route('ideas.show', $idea->parent->id) }}" class="font-bold underline">{{ $idea->parent->title }}</a>»
+                            «<a href="{{ route('ideas.show', $idea->parent->id) }}" class="font-bold underline">{{ $idea->parent->localized_title }}</a>»
                             لصاحبها <b>{{ $idea->parent->user->name ?? 'عضو' }}</b>
                             — حفظاً للتقدير الأدبي والشفافية.
                         </div>
                     @endif
                 </div>
-                <h1 class="text-3xl font-black text-primary mb-6 leading-tight">{{ $idea->title }}</h1>
-                <div class="prose max-w-none text-tertiary leading-relaxed whitespace-pre-line text-sm">{{ $idea->description }}</div>
+                <h1 class="text-3xl font-black text-primary mb-6 leading-tight">{{ $idea->localized_title }}</h1>
+                <div class="prose max-w-none text-tertiary leading-relaxed whitespace-pre-line text-sm">{{ $idea->localized_description }}</div>
 
                 @if($idea->technologies)
                     <h3 class="font-bold text-primary mt-8 mb-3">التقنيات المقترحة</h3>

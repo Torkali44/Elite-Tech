@@ -3,8 +3,8 @@
 @php
     $isModel = $idea instanceof \App\Models\Idea;
     $id = $isModel ? $idea->id : ($idea['id'] ?? 0);
-    $title = $isModel ? $idea->title : ($idea['title'] ?? '');
-    $desc = $isModel ? $idea->shortDesc(110) : ($idea['desc'] ?? '');
+    $title = $isModel ? $idea->localized_title : ($idea['title'] ?? '');
+    $desc = $isModel ? \Illuminate\Support\Str::limit($idea->localized_description, 110) : ($idea['desc'] ?? '');
     $category = $isModel ? $idea->category : ($idea['category'] ?? '');
     $author = $isModel ? ($idea->user->name ?? 'عضو') : ($idea['author'] ?? '');
     $likes = $isModel ? $idea->likes_count : ($idea['likes'] ?? 0);

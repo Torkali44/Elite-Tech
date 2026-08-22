@@ -25,7 +25,7 @@
 <div class="card p-5" x-data="{ ret:false }">
     <div class="flex flex-wrap justify-between gap-3">
         <div>
-            <h3 class="font-bold text-primary text-lg">{{ $idea->title }}</h3>
+            <h3 class="font-bold text-primary text-lg">{{ $idea->localized_title }}</h3>
             <div class="text-xs text-tertiary mb-2">{{ $idea->user->name ?? '—' }} · {{ $idea->category }} · {{ $idea->created_at->diffForHumans() }}</div>
             <span class="badge bg-mist text-primary">{{ $idea->status }}</span>
         </div>

@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title', 'تفاصيل الفكرة: ' . $idea->title)
+@section('title', 'تفاصيل الفكرة: ' . $idea->localized_title)
 @section('content')
 <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
     <div class="flex items-center gap-3">
@@ -28,13 +28,13 @@
         <div class="card p-6 space-y-4">
             <div>
                 <span class="text-xs font-bold text-secondary uppercase tracking-wider">{{ $idea->category ?? 'عام' }}</span>
-                <h2 class="text-2xl font-extrabold text-primary mt-1">{{ $idea->title }}</h2>
+                <h2 class="text-2xl font-extrabold text-primary mt-1">{{ $idea->localized_title }}</h2>
                 <div class="text-xs text-tertiary mt-1">تاريخ الإنشاء: {{ $idea->created_at->format('Y-m-d H:i') }} ({{ $idea->created_at->diffForHumans() }})</div>
             </div>
 
             <div class="border-t border-mist pt-4">
                 <h3 class="font-bold text-primary mb-2">وصف الفكرة</h3>
-                <div class="text-sm text-tertiary whitespace-pre-line leading-relaxed">{{ $idea->description }}</div>
+                <div class="text-sm text-tertiary whitespace-pre-line leading-relaxed">{{ $idea->localized_description }}</div>
             </div>
 
             @if($idea->target_audience)

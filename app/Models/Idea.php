@@ -58,6 +58,22 @@ class Idea extends Model
         return $this->favoritedBy()->where('user_id', $user->id)->exists();
     }
 
+    public function getLocalizedTitleAttribute()
+    {
+        if (app()->getLocale() === 'en' && !empty($this->title_en)) {
+            return $this->title_en;
+        }
+        return $this->title;
+    }
+
+    public function getLocalizedDescriptionAttribute()
+    {
+        if (app()->getLocale() === 'en' && !empty($this->description_en)) {
+            return $this->description_en;
+        }
+        return $this->description;
+    }
+
     public function categoryIcon(): string
     {
         return match (true) {
@@ -72,8 +88,9 @@ class Idea extends Model
 
     public function shortDesc(int $len = 140): string
     {
-        return mb_strlen($this->description) > $len
-            ? mb_substr($this->description, 0, $len).'…'
-            : $this->description;
+        $desc = $this->localized_description;
+        return mb_strlen($desc) > $len
+            ? mb_substr($desc, 0, $len).'…'
+            : $desc;
     }
 }

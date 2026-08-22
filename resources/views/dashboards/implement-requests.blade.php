@@ -11,7 +11,7 @@
 <div class="card p-5">
     <div class="flex flex-wrap justify-between gap-3">
         <div>
-            <div class="font-bold text-primary">{{ $r->idea->title ?? '—' }}</div>
+            <div class="font-bold text-primary">{{ $r->idea->localized_title ?? '—' }}</div>
             <div class="text-sm text-tertiary mt-1">
                 {{ __('general.from_label') }}: <b>{{ $r->user->name ?? '—' }}</b>
                 · {{ $r->via === 'elite_tech' ? __('general.via_elite') : __('general.via_direct') }}
