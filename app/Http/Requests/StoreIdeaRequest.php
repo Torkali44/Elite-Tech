@@ -23,7 +23,7 @@ class StoreIdeaRequest extends FormRequest
             'category'          => 'required|string|max:80',
             'budget'            => 'nullable|string|max:120',
             'technologies'      => 'nullable|array',
-            'technologies.*'    => 'string|max:60',
+            'technologies.*'    => 'string|max:255',
             'feasibility'       => 'nullable|string|max:5000',
             'ip_agreement'      => 'accepted',
             'intent'            => 'nullable|in:draft,pending',
