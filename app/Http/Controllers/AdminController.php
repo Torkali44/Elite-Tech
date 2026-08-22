@@ -82,6 +82,9 @@ class AdminController extends Controller
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        } else {
+            // Hide drafts from the main admin list unless explicitly requested via filter
+            $query->where('status', '!=', 'draft');
         }
 
         $ideas = $query->paginate(20)->withQueryString();

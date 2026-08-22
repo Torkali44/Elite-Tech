@@ -44,17 +44,17 @@
             </div>
             @endif
 
-            @if($idea->budget_range)
+            @if($idea->budget)
             <div class="border-t border-mist pt-4">
                 <h3 class="font-bold text-primary mb-1 text-sm">الميزانية التقديرية</h3>
-                <p class="text-sm text-tertiary">{{ $idea->budget_range }}</p>
+                <p class="text-sm text-tertiary">{{ $idea->budget }}</p>
             </div>
             @endif
 
-            @if($idea->execution_plan)
+            @if($idea->feasibility)
             <div class="border-t border-mist pt-4">
-                <h3 class="font-bold text-primary mb-1 text-sm">خطة التنفيذ / المتطلبات</h3>
-                <div class="text-sm text-tertiary whitespace-pre-line">{{ $idea->execution_plan }}</div>
+                <h3 class="font-bold text-primary mb-1 text-sm">دراسة الجدوى / خطة التنفيذ</h3>
+                <div class="text-sm text-tertiary whitespace-pre-line">{{ $idea->feasibility }}</div>
             </div>
             @endif
 

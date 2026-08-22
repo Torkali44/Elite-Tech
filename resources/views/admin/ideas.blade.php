@@ -12,7 +12,6 @@
             @foreach([
                 'pending'  => (app()->getLocale()==='ar' ? 'مراجعة' : 'Pending'),
                 'published'=> (app()->getLocale()==='ar' ? 'منشورة' : 'Published'),
-                'draft'    => (app()->getLocale()==='ar' ? 'مسودة'  : 'Draft'),
                 'archived' => (app()->getLocale()==='ar' ? 'مؤرشفة' : 'Archived'),
             ] as $k=>$l)
                 <option value="{{ $k }}" @selected(request('status')===$k)>{{ $l }}</option>
