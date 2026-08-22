@@ -102,7 +102,7 @@
                 <label class="block text-sm font-bold text-primary mb-1.5">الفئة *</label>
                 <select name="category" class="input" x-ref="category" required>
                     <option value="">اختر الفئة</option>
-                    @foreach(['الذكاء الاصطناعي','الأمن السيبراني','تطوير الويب','Blockchain','تطبيقات الجوال','أخرى'] as $cat)
+                    @foreach(['الذكاء الاصطناعي','الأمن السيبراني','تطوير الويب','Blockchain','تطبيقات الجوال','حاضنات ومسرعات الأعمال','التنفيذ التقني التشاركي','أخرى'] as $cat)
                         <option value="{{ $cat }}" @selected(old('category', $editing ? $idea->category : ($fromParent->category ?? ''))==$cat)>{{ $cat }}</option>
                     @endforeach
                 </select>
