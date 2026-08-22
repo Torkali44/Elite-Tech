@@ -109,12 +109,12 @@
             </div>
             <div>
                 <label class="block text-sm font-bold text-primary mb-1.5">الميزانية التقديرية (اختياري)</label>
-                <div class="flex gap-2">
-                    <input type="number" min="0" step="0.01" name="budget_min" value="{{ old('budget_min', $editing ? ($idea->budget_min ?? '') : '') }}" class="input flex-1" placeholder="من">
-                    <span class="self-center text-tertiary">—</span>
-                    <input type="number" min="0" step="0.01" name="budget_max" value="{{ old('budget_max', $editing ? ($idea->budget_max ?? '') : '') }}" class="input flex-1" placeholder="إلى">
-                    <select name="currency" class="input w-auto">
-                        @foreach(['USD' => '$ دولار', 'SAR' => '﷼ ريال', 'EGP' => 'ج.م جنيه'] as $code => $label)
+                <div class="grid grid-cols-[1fr_auto_1fr_auto] items-center gap-2" dir="ltr">
+                    <input type="number" min="0" step="1" name="budget_min" value="{{ old('budget_min', $editing ? ($idea->budget_min ?? '') : '') }}" class="input text-center" placeholder="Min">
+                    <span class="text-tertiary font-bold">—</span>
+                    <input type="number" min="0" step="1" name="budget_max" value="{{ old('budget_max', $editing ? ($idea->budget_max ?? '') : '') }}" class="input text-center" placeholder="Max">
+                    <select name="currency" class="input">
+                        @foreach(['USD' => 'USD $', 'SAR' => 'SAR ﷼', 'EGP' => 'EGP ج.م'] as $code => $label)
                             <option value="{{ $code }}" @selected(old('currency', $editing ? ($idea->currency ?? 'USD') : 'USD')==$code)>{{ $label }}</option>
                         @endforeach
                     </select>
