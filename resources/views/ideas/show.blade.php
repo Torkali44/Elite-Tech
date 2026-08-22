@@ -135,7 +135,7 @@
 
                 <div class="grid grid-cols-2 gap-2 mt-2 text-center text-xs">
                     <div class="bg-mist rounded-lg p-2">
-                        <div class="font-extrabold text-primary text-lg">{{ $idea->budget ? number_format($idea->budget).'$' : '—' }}</div>
+                        <div class="font-extrabold text-primary text-sm">{{ $idea->budget ?: '—' }}</div>
                         <div class="text-tertiary">الميزانية</div>
                     </div>
                     <div class="bg-mist rounded-lg p-2">
