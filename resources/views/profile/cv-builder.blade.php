@@ -239,7 +239,7 @@
   .sidebar-bg-fix { display: none; }
 
   @media print {
-    @page { margin: 0; size: A4 portrait; }
+    @page { margin: 8mm 0; size: A4 portrait; }
 
     html, body {
       margin: 0 !important;
@@ -815,6 +815,10 @@ function previewCvAvatar(input) {
     };
     reader.readAsDataURL(file);
 }
+
+// Hide page title in Chrome print header/footer
+window.addEventListener('beforeprint', () => { document.title = ' '; });
+window.addEventListener('afterprint', () => { document.title = @json(__('general.cv_builder_page_title')); });
 </script>
 @endpush
 @endsection
