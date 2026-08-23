@@ -22,7 +22,7 @@
 
 @push('head')
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Tajawal:wght@400;500;700;800&family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
+<script src="{{ asset('js/html2pdf.bundle.min.js') }}"></script>
 <style>
   .cv-document {
     --cv-sidebar: #1e2732;
