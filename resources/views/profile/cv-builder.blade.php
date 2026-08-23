@@ -852,7 +852,7 @@ function downloadCvPdf() {
     window.scrollTo(0, 0);
 
     html2pdf().set({
-        margin:      [10, 0, 10, 0],
+        margin:      0,
         filename:    fname + '_CV.pdf',
         image:       { type: 'jpeg', quality: 0.95 },
         html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 },
