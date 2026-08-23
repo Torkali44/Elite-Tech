@@ -423,8 +423,23 @@ class AdminController extends Controller
             ->limit(10)
             ->get();
 
-        $recentErrors = \App\Models\ErrorLog::with('user')->latest()->paginate(20, ['*'], 'errors_page');
-        $recentVisitors = \App\Models\VisitorLog::with('user')->latest()->paginate(30, ['*'], 'visitors_page');
+        $errorsQuery = \App\Models\ErrorLog::with('user')->latest();
+        if ($request->filled('error_search')) {
+            $errorsQuery->where(function($q) use ($request) {
+                $q->where('url', 'like', '%'.$request->error_search.'%')
+                  ->orWhere('message', 'like', '%'.$request->error_search.'%');
+            });
+        }
+        $recentErrors = $errorsQuery->paginate(20, ['*'], 'errors_page')->withQueryString();
+
+        $visitorsQuery = \App\Models\VisitorLog::with('user')->latest();
+        if ($request->filled('visitor_ip')) {
+            $visitorsQuery->where('ip_address', 'like', '%'.$request->visitor_ip.'%');
+        }
+        if ($request->filled('visitor_url')) {
+            $visitorsQuery->where('url', 'like', '%'.$request->visitor_url.'%');
+        }
+        $recentVisitors = $visitorsQuery->paginate(20, ['*'], 'visitors_page')->withQueryString();
 
         return view('admin.analytics', compact('stats', 'topPages', 'recentErrors', 'recentVisitors'));
     }

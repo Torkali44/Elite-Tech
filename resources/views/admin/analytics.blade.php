@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 @section('title', 'تحليل الزوار والأخطاء')
 @section('content')
-<div x-data="{ activeTab: '{{ request()->has('errors_page') ? 'errors' : 'visits' }}' }">
+<div x-data="{ activeTab: '{{ request('active_tab', request()->has('errors_page') ? 'errors' : 'visits') }}' }">
     <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
             <h1 class="text-2xl font-black text-primary mb-1">تحليل الزوار والأخطاء التقنية</h1>
@@ -53,7 +53,15 @@
 
             <!-- Recent Visitors Paginated -->
             <div class="card p-6">
-                <h3 class="font-bold text-primary mb-4 text-lg">سجل الزيارات (مفصل)</h3>
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                    <h3 class="font-bold text-primary text-lg">سجل الزيارات (مفصل)</h3>
+                    <form method="GET" class="flex items-center gap-2">
+                        <input type="hidden" name="active_tab" value="visits">
+                        <input type="text" name="visitor_ip" value="{{ request('visitor_ip') }}" placeholder="بحث بـ IP" class="input !py-1 !px-2 text-sm max-w-[150px]">
+                        <input type="text" name="visitor_url" value="{{ request('visitor_url') }}" placeholder="بحث بالرابط" class="input !py-1 !px-2 text-sm max-w-[150px]">
+                        <button class="btn-primary !py-1 !px-3 text-sm">تصفية</button>
+                    </form>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-right">
                         <thead>
@@ -86,7 +94,9 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="mt-4">{{ $recentVisitors->appends(['errors_page' => request('errors_page')])->links() }}</div>
+                <div class="mt-4 no-print flex justify-center">
+                    {{ $recentVisitors->appends(request()->query())->links() }}
+                </div>
             </div>
         </div>
     </div>
@@ -94,7 +104,14 @@
     <!-- Tab 2: Errors -->
     <div x-show="activeTab === 'errors'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform translate-y-2" x-transition:enter-end="opacity-100 transform translate-y-0" x-cloak>
         <div class="card p-6">
-            <h3 class="font-bold text-rose-600 mb-4 text-lg">سجل الأخطاء التقنية (Exceptions)</h3>
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                <h3 class="font-bold text-rose-600 text-lg">سجل الأخطاء التقنية (Exceptions)</h3>
+                <form method="GET" class="flex items-center gap-2">
+                    <input type="hidden" name="active_tab" value="errors">
+                    <input type="text" name="error_search" value="{{ request('error_search') }}" placeholder="ابحث بالرابط أو رسالة الخطأ" class="input !py-1 !px-2 text-sm max-w-[250px]">
+                    <button class="btn-primary !py-1 !px-3 text-sm">بحث</button>
+                </form>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-right">
                     <thead>
@@ -135,7 +152,9 @@
                     </tbody>
                 </table>
             </div>
-            <div class="mt-4">{{ $recentErrors->appends(['visitors_page' => request('visitors_page')])->links() }}</div>
+            <div class="mt-4 no-print flex justify-center">
+                {{ $recentErrors->appends(request()->query())->links() }}
+            </div>
         </div>
     </div>
 </div>
