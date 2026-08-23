@@ -851,11 +851,43 @@ function downloadCvPdf() {
     const prevScroll = window.scrollY;
     window.scrollTo(0, 0);
 
-    // Extend element to fill complete pages so sidebar covers full height
-    const pxPerPage = (297 / 210) * 820; // A4 ratio * element width ≈ 1160px per page
+    // Calculate page dimensions
+    const pxPerPage = (297 / 210) * 820; // A4 ratio * element width
+    const mainEl = el.querySelector('.cv-main');
+
+    // Insert spacer divs at page break positions inside cv-main for text safety margins
+    const spacers = [];
+    if (mainEl) {
+        const elTop = el.getBoundingClientRect().top;
+        const totalH = el.scrollHeight;
+        const numBreaks = Math.floor(totalH / pxPerPage);
+        for (let i = 1; i <= numBreaks; i++) {
+            const breakY = i * pxPerPage; // page break position relative to element top
+            // Find the child closest to this break point and add margin
+            const children = mainEl.querySelectorAll('.cv-main-section, .cv-entry');
+            let best = null, bestDist = Infinity;
+            children.forEach(child => {
+                const childTop = child.getBoundingClientRect().top - elTop;
+                const dist = Math.abs(childTop - breakY);
+                if (dist < bestDist && childTop > (breakY - 80) && childTop < (breakY + 80)) {
+                    bestDist = dist;
+                    best = child;
+                }
+            });
+            if (best) {
+                const spacer = document.createElement('div');
+                spacer.style.cssText = 'height:24px;flex-shrink:0;';
+                spacer.className = 'cv-pdf-spacer';
+                best.parentNode.insertBefore(spacer, best);
+                spacers.push(spacer);
+            }
+        }
+    }
+
+    // Recalculate after spacers and extend to fill complete pages
     const pages = Math.ceil(el.scrollHeight / pxPerPage);
     const origMinHeight = el.style.minHeight;
-    el.style.minHeight = (pages * pxPerPage) + 'px';
+    el.style.minHeight = (pages * pxPerPage - 2) + 'px';
 
     html2pdf().set({
         margin:      0,
@@ -865,11 +897,13 @@ function downloadCvPdf() {
         jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak:   { mode: ['css', 'legacy'] }
     }).from(el).save().then(() => {
+        spacers.forEach(s => s.remove());
         el.style.minHeight = origMinHeight;
         window.scrollTo(0, prevScroll);
         btn.disabled = false;
         btn.innerHTML = origText;
     }).catch(() => {
+        spacers.forEach(s => s.remove());
         el.style.minHeight = origMinHeight;
         window.scrollTo(0, prevScroll);
         btn.disabled = false;
