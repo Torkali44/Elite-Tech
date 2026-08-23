@@ -27,3 +27,8 @@ EliteCommunityPRD.html
 /storage/framework/
 /bootstrap/cache/*.php
 !/bootstrap/cache/.gitignore
+/storage/logs/
+elitetech_db
+compose.yaml
+*.html
+!resources/views/**/*.html
