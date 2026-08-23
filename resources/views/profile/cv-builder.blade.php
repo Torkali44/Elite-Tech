@@ -850,9 +850,10 @@ function downloadCvPdf() {
     const prevScroll = window.scrollY;
     window.scrollTo(0, 0);
 
-    // Smart DOM Pagination to protect text without breaking the sidebar background
-    const pxPerPage = (297 / 210) * 820; // A4 aspect ratio * canvas width
-    const dangerZone = 40; // ~10mm safety margin from top and bottom of page breaks
+    // Smart DOM Pagination with dynamic width calculation
+    const elWidth = el.getBoundingClientRect().width;
+    const pxPerPage = (297 / 210) * elWidth; // Exact A4 aspect ratio applied to actual screen width
+    const dangerZone = elWidth * 0.048; // ~10mm safety margin (10/210 = 0.0476)
     
     const selectors = [
         '.cv-main-heading', '.cv-entry', '.cv-profile-text',
@@ -870,7 +871,7 @@ function downloadCvPdf() {
         let yTop = rect.top - elTop;
         let yBottom = rect.bottom - elTop;
         
-        // Ignore extremely tall blocks that are larger than a safe page area
+        // Ignore extremely tall blocks
         if (rect.height > pxPerPage - (2 * dangerZone)) continue;
 
         let currentPage = Math.floor(yTop / pxPerPage);
@@ -885,10 +886,19 @@ function downloadCvPdf() {
     }
 
     // Extend element height to perfectly fit an integer number of pages
-    // Subtract 10px tolerance to prevent an almost-empty extra page
-    const totalPages = Math.max(1, Math.ceil((el.scrollHeight - 10) / pxPerPage));
+    const totalPages = Math.max(1, Math.ceil((el.scrollHeight - 5) / pxPerPage));
+    const newHeight = Math.ceil(totalPages * pxPerPage) + 'px';
+    
     const origMinHeight = el.style.minHeight;
-    el.style.minHeight = (totalPages * pxPerPage) + 'px';
+    const sidebar = el.querySelector('.cv-sidebar');
+    const main = el.querySelector('.cv-main');
+    const origSidebarHeight = sidebar ? sidebar.style.minHeight : '';
+    const origMainHeight = main ? main.style.minHeight : '';
+
+    el.style.minHeight = newHeight;
+    // Force explicit height on flex children to fix html2canvas flex stretch bug
+    if (sidebar) sidebar.style.minHeight = newHeight;
+    if (main) main.style.minHeight = newHeight;
 
     html2pdf().set({
         margin:      0,
@@ -902,6 +912,8 @@ function downloadCvPdf() {
             block.style.marginTop = origMargin;
         }
         el.style.minHeight = origMinHeight;
+        if (sidebar) sidebar.style.minHeight = origSidebarHeight;
+        if (main) main.style.minHeight = origMainHeight;
         window.scrollTo(0, prevScroll);
         btn.disabled = false;
         btn.innerHTML = origText;
@@ -910,6 +922,8 @@ function downloadCvPdf() {
             block.style.marginTop = origMargin;
         }
         el.style.minHeight = origMinHeight;
+        if (sidebar) sidebar.style.minHeight = origSidebarHeight;
+        if (main) main.style.minHeight = origMainHeight;
         window.scrollTo(0, prevScroll);
         btn.disabled = false;
         btn.innerHTML = origText;
