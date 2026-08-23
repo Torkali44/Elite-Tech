@@ -22,6 +22,7 @@
 
 @push('head')
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Tajawal:wght@400;500;700;800&family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
 <style>
   .cv-document {
     --cv-sidebar: #1e2732;
@@ -831,43 +832,39 @@ window.addEventListener('afterprint', () => { document.title = @json(__('general
 
 // PDF Download using html2pdf.js
 function downloadCvPdf() {
+    if (typeof html2pdf === 'undefined') {
+        alert('مكتبة PDF لم تتحمل بعد. يرجى تحديث الصفحة والمحاولة مرة أخرى.');
+        return;
+    }
+
     const btn = document.getElementById('cv-download-btn');
     const origText = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<svg class="inline w-4 h-4 me-1 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> جاري التحميل...';
+    btn.innerHTML = '⏳ جاري التحميل...';
 
     const element = document.querySelector('#cv-preview .cv-document');
     if (!element) { btn.disabled = false; btn.innerHTML = origText; return; }
 
-    // Get the user's name for the filename
     const nameEl = element.querySelector('.cv-name');
     const userName = nameEl ? nameEl.textContent.trim().replace(/\s+/g, '_') : 'CV';
 
-    const opt = {
-        margin:      [12, 0, 12, 0], // top, left, bottom, right (mm)
+    html2pdf().set({
+        margin:      [10, 0, 10, 0],
         filename:    userName + '_CV.pdf',
-        image:       { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-            scale: 2, 
-            useCORS: true, 
-            letterRendering: true,
-            scrollY: 0,
-            windowWidth: 820
-        },
+        image:       { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: 1.5, useCORS: true, scrollY: 0, windowWidth: 820 },
         jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:   { mode: ['avoid-all', 'css', 'legacy'] }
-    };
-
-    html2pdf().set(opt).from(element).save().then(() => {
+        pagebreak:   { mode: ['css', 'legacy'] }
+    }).from(element).save().then(() => {
         btn.disabled = false;
         btn.innerHTML = origText;
-    }).catch(() => {
+    }).catch((err) => {
         btn.disabled = false;
         btn.innerHTML = origText;
-        alert('حدث خطأ أثناء إنشاء الملف. يرجى المحاولة مرة أخرى.');
+        console.error('PDF Error:', err);
+        alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
     });
 }
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js" integrity="sha512-MpDEBEEfOYjCbOOFJJEbxZ3NqPfRPHmPNOJMjhmH2MCnx8G8CvkRXSRmPKoBqBIAjBHMOGqr3PctBuKasBdpA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 @endpush
 @endsection
