@@ -239,7 +239,7 @@
   .sidebar-bg-fix { display: none; }
 
   @media print {
-    @page { margin: 12mm 0; size: A4 portrait; }
+    @page { margin: 0; size: A4 portrait; }
 
     html, body {
       margin: 0 !important;
