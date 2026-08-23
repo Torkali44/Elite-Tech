@@ -239,7 +239,7 @@
   .sidebar-bg-fix { display: none; }
 
   @media print {
-    @page { margin: 10mm 0; size: A4 portrait; }
+    @page { margin: 0; size: A4 portrait; }
 
     html, body {
       margin: 0 !important;
@@ -309,6 +309,7 @@
       border-radius: 0 !important;
       box-shadow: none !important;
       background: transparent !important;
+      overflow: visible !important;
     }
 
     .cv-sidebar {
