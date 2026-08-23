@@ -423,8 +423,8 @@ class AdminController extends Controller
             ->limit(10)
             ->get();
 
-        $recentErrors = \App\Models\ErrorLog::with('user')->latest()->paginate(20);
-        $recentVisitors = \App\Models\VisitorLog::with('user')->latest()->limit(50)->get();
+        $recentErrors = \App\Models\ErrorLog::with('user')->latest()->paginate(20, ['*'], 'errors_page');
+        $recentVisitors = \App\Models\VisitorLog::with('user')->latest()->paginate(30, ['*'], 'visitors_page');
 
         return view('admin.analytics', compact('stats', 'topPages', 'recentErrors', 'recentVisitors'));
     }
