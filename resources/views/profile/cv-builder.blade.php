@@ -849,9 +849,9 @@ function downloadCvPdf() {
     const nameEl = source.querySelector('.cv-name');
     const userName = nameEl ? nameEl.textContent.trim().replace(/\s+/g, '_') : 'CV';
 
-    // Clone into a standalone container (visible to html2canvas but invisible to user)
+    // Clone into a standalone container (behind everything, html2canvas can still see it)
     const wrapper = document.createElement('div');
-    wrapper.style.cssText = 'position:absolute;left:0;top:0;width:820px;opacity:0;pointer-events:none;z-index:-1;';
+    wrapper.style.cssText = 'position:absolute;left:0;top:0;width:820px;z-index:-9999;pointer-events:none;';
     const clone = source.cloneNode(true);
     clone.style.cssText = 'display:flex;flex-direction:row;align-items:stretch;width:820px;max-width:820px;min-height:auto;overflow:visible;position:static;margin:0;padding:0;border-radius:0;box-shadow:none;background:#fff;';
     
@@ -889,9 +889,8 @@ function downloadCvPdf() {
     wrapper.appendChild(clone);
     document.body.appendChild(wrapper);
 
-    // Wait a frame for layout to settle
+    // Wait a frame for layout to settle then generate PDF
     requestAnimationFrame(() => {
-        wrapper.style.opacity = '0';
         html2pdf().set({
             margin:      [10, 0, 10, 0],
             filename:    userName + '_CV.pdf',
