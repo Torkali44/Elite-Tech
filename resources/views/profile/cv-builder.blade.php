@@ -851,6 +851,12 @@ function downloadCvPdf() {
     const prevScroll = window.scrollY;
     window.scrollTo(0, 0);
 
+    // Extend element to fill complete pages so sidebar covers full height
+    const pxPerPage = (297 / 210) * 820; // A4 ratio * element width ≈ 1160px per page
+    const pages = Math.ceil(el.scrollHeight / pxPerPage);
+    const origMinHeight = el.style.minHeight;
+    el.style.minHeight = (pages * pxPerPage) + 'px';
+
     html2pdf().set({
         margin:      0,
         filename:    fname + '_CV.pdf',
@@ -859,10 +865,12 @@ function downloadCvPdf() {
         jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak:   { mode: ['css', 'legacy'] }
     }).from(el).save().then(() => {
+        el.style.minHeight = origMinHeight;
         window.scrollTo(0, prevScroll);
         btn.disabled = false;
         btn.innerHTML = origText;
     }).catch(() => {
+        el.style.minHeight = origMinHeight;
         window.scrollTo(0, prevScroll);
         btn.disabled = false;
         btn.innerHTML = origText;
