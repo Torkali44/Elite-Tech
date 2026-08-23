@@ -376,9 +376,6 @@
                 <div>
                     <label class="block text-sm font-bold text-primary mb-1">اللون الرئيسي</label>
                     <div class="flex items-center gap-3">
-                        <button type="button" onclick="toggleSpacers()" id="cv-spacer-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                            <i class="fas fa-arrows-alt-v mr-1"></i> ضبط الفواصل يدوياً
-                        </button>
                         <input type="color" name="theme_color" x-model="themeColor" class="h-10 w-14 cursor-pointer border-0 p-0 rounded bg-transparent">
                         <input type="text" x-model="themeColor" class="input flex-1 !py-1 text-sm font-mono" dir="ltr">
                     </div>
@@ -706,7 +703,7 @@
                 @if($g('summary'))
                     <section class="cv-main-section">
                         <h2 class="cv-main-heading">{{ __('general.cv_profile_heading') }}</h2>
-                        <p class="cv-profile-text">{{ $g('summary') }}</p>
+                        <p class="cv-profile-text whitespace-pre-wrap" x-text="cvData.summary"></p>
                     </section>
                 @endif
 
@@ -726,7 +723,7 @@
                                     @if(count($bullets))
                                         <ul class="cv-bullets">@foreach($bullets as $b)<li>{{ $b }}</li>@endforeach</ul>
                                     @elseif($entry['description'] ?? '')
-                                        <p class="cv-profile-text">{{ $entry['description'] }}</p>
+                                        <p class="cv-profile-text whitespace-pre-wrap">{{ $entry['description'] }}</p>
                                     @endif
                                 </div>
                             @endif
@@ -752,7 +749,7 @@
                                     @if(count($bullets))
                                         <ul class="cv-bullets">@foreach($bullets as $b)<li>{{ $b }}</li>@endforeach</ul>
                                     @elseif($entry['description'] ?? '')
-                                        <p class="cv-profile-text">{{ $entry['description'] }}</p>
+                                        <p class="cv-profile-text whitespace-pre-wrap">{{ $entry['description'] }}</p>
                                     @endif
                                 </div>
                             @endif
@@ -776,7 +773,7 @@
                                     @if(count($bullets))
                                         <ul class="cv-bullets">@foreach($bullets as $b)<li>{{ $b }}</li>@endforeach</ul>
                                     @elseif($entry['description'] ?? '')
-                                        <p class="cv-profile-text">{{ $entry['description'] }}</p>
+                                        <p class="cv-profile-text whitespace-pre-wrap">{{ $entry['description'] }}</p>
                                     @endif
                                 </div>
                             @endif
@@ -835,110 +832,6 @@ window.addEventListener('afterprint', () => { document.title = @json(__('general
 
 // PDF Download
 // Manual Spacer Tool
-let isSpacerMode = false;
-let spacerStyleEl = null;
-const nodeMargins = {};
-
-function toggleSpacers() {
-    isSpacerMode = !isSpacerMode;
-    const doc = document.querySelector('.cv-document');
-    const btn = document.getElementById('cv-spacer-btn');
-    
-    if (isSpacerMode) {
-        doc.classList.add('edit-spacers');
-        btn.classList.replace('bg-indigo-600', 'bg-red-600');
-        btn.classList.replace('hover:bg-indigo-700', 'hover:bg-red-700');
-        btn.innerHTML = '<i class="fas fa-times mr-1"></i> إنهاء ضبط الفواصل';
-        
-        // Add unique IDs and controls
-        let counter = 0;
-        doc.querySelectorAll('.cv-main-section, .cv-entry, .cv-sidebar-section').forEach(el => {
-            if (!el.id) el.id = 'pdf-node-' + (++counter);
-            
-            if (!el.querySelector(':scope > .spacer-controls')) {
-                const controls = document.createElement('div');
-                controls.className = 'spacer-controls';
-                controls.innerHTML = `
-                    <button type="button" class="spacer-btn" onclick="addMargin('${el.id}', 10)" title="زيادة الفراغ">+</button>
-                    <button type="button" class="spacer-btn" onclick="addMargin('${el.id}', -10)" title="تقليل الفراغ">-</button>
-                `;
-                el.appendChild(controls);
-            }
-        });
-        
-        if (!spacerStyleEl) {
-            spacerStyleEl = document.createElement('style');
-            document.head.appendChild(spacerStyleEl);
-        }
-        drawPageBreaks();
-    } else {
-        doc.classList.remove('edit-spacers');
-        btn.classList.replace('bg-red-600', 'bg-indigo-600');
-        btn.classList.replace('hover:bg-red-700', 'hover:bg-indigo-700');
-        btn.innerHTML = '<i class="fas fa-arrows-alt-v mr-1"></i> ضبط الفواصل يدوياً';
-        document.querySelectorAll('.page-break-line').forEach(el => el.remove());
-    }
-}
-
-function addMargin(id, amount) {
-    nodeMargins[id] = Math.max(0, (nodeMargins[id] || 0) + amount);
-    updateSpacerStyles();
-}
-
-function updateSpacerStyles() {
-    let css = '';
-    for (let id in nodeMargins) {
-        if (nodeMargins[id] > 0) {
-            css += `#${id} { margin-top: ${nodeMargins[id]}px !important; }\n`;
-        }
-    }
-    spacerStyleEl.innerHTML = css;
-    drawPageBreaks();
-}
-
-function drawPageBreaks() {
-    document.querySelectorAll('.page-break-line').forEach(el => el.remove());
-    if (!isSpacerMode) return;
-    
-    const doc = document.querySelector('.cv-document');
-    const elWidth = doc.getBoundingClientRect().width;
-    const pxPerPage = (297 / 210) * elWidth;
-    
-    const totalPages = Math.max(1, Math.ceil(doc.scrollHeight / pxPerPage));
-    for (let i = 1; i <= totalPages + 1; i++) {
-        const lineY = i * pxPerPage;
-        if (lineY > doc.scrollHeight + 200) break;
-        
-        const line = document.createElement('div');
-        line.className = 'page-break-line';
-        line.style.cssText = `
-            position: absolute;
-            top: ${lineY}px;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: repeating-linear-gradient(90deg, #ef4444, #ef4444 10px, transparent 10px, transparent 20px);
-            z-index: 999;
-            pointer-events: none;
-        `;
-        const label = document.createElement('div');
-        label.style.cssText = `
-            position: absolute;
-            top: -22px;
-            right: 10px;
-            background: #ef4444;
-            color: white;
-            font-size: 12px;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-        `;
-        label.innerText = 'نهاية الصفحة ' + i;
-        line.appendChild(label);
-        doc.appendChild(line);
-    }
-}
-
 // PDF Download
 function downloadCvPdf() {
     if (typeof html2pdf === 'undefined') {
@@ -949,10 +842,6 @@ function downloadCvPdf() {
     const origText = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '⏳ جاري التحميل...';
-
-    // Disable spacer UI during capture
-    const wasSpacerMode = isSpacerMode;
-    if (wasSpacerMode) toggleSpacers();
 
     const el = document.querySelector('#cv-preview .cv-document');
     if (!el) { btn.disabled = false; btn.innerHTML = origText; return; }
@@ -993,7 +882,6 @@ function downloadCvPdf() {
         window.scrollTo(0, prevScroll);
         btn.disabled = false;
         btn.innerHTML = origText;
-        if (wasSpacerMode) toggleSpacers();
     }).catch(() => {
         el.style.minHeight = origMinHeight;
         if (sidebar) sidebar.style.minHeight = origSidebarHeight;
@@ -1001,7 +889,6 @@ function downloadCvPdf() {
         window.scrollTo(0, prevScroll);
         btn.disabled = false;
         btn.innerHTML = origText;
-        if (wasSpacerMode) toggleSpacers();
     });
 }
 </script>
