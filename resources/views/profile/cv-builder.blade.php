@@ -842,46 +842,54 @@ function downloadCvPdf() {
     btn.disabled = true;
     btn.innerHTML = '⏳ جاري التحميل...';
 
-    const element = document.querySelector('#cv-preview .cv-document');
-    if (!element) { btn.disabled = false; btn.innerHTML = origText; return; }
+    const source = document.querySelector('#cv-preview .cv-document');
+    if (!source) { btn.disabled = false; btn.innerHTML = origText; return; }
 
-    const nameEl = element.querySelector('.cv-name');
+    // Get filename from user name
+    const nameEl = source.querySelector('.cv-name');
     const userName = nameEl ? nameEl.textContent.trim().replace(/\s+/g, '_') : 'CV';
+
+    // Clone into a standalone off-screen container
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;width:820px;z-index:-9999;';
+    const clone = source.cloneNode(true);
+    clone.style.cssText = 'width:820px;max-width:820px;overflow:visible;position:static;margin:0;border-radius:0;box-shadow:none;';
+    
+    // Copy computed CSS variable values as inline styles
+    const computed = getComputedStyle(source);
+    const sidebarColor = computed.getPropertyValue('--cv-sidebar').trim() || '#1e2732';
+    clone.style.setProperty('--cv-sidebar', sidebarColor);
+    clone.style.setProperty('--cv-accent', computed.getPropertyValue('--cv-accent').trim() || '#8da2b5');
+    clone.style.setProperty('--cv-ink', computed.getPropertyValue('--cv-ink').trim() || '#1a1a1a');
+    clone.style.fontFamily = computed.fontFamily;
+
+    // Make sidebar opaque in clone
+    const sidebar = clone.querySelector('.cv-sidebar');
+    if (sidebar) {
+        sidebar.style.background = sidebarColor;
+        sidebar.style.width = '32%';
+    }
+
+    // Remove print-only background fix element
+    const bgFix = clone.querySelector('.sidebar-bg-fix');
+    if (bgFix) bgFix.remove();
+
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
 
     html2pdf().set({
         margin:      [10, 0, 10, 0],
         filename:    userName + '_CV.pdf',
         image:       { type: 'jpeg', quality: 0.95 },
-        html2canvas: { 
-            scale: 1.5, 
-            useCORS: true, 
-            scrollX: 0,
-            scrollY: 0,
-            windowWidth: 820,
-            onclone: function(clonedDoc) {
-                // Fix sticky/fixed positioning that breaks html2canvas
-                const preview = clonedDoc.querySelector('#cv-preview');
-                if (preview) {
-                    preview.style.position = 'static';
-                    preview.style.top = 'auto';
-                }
-                const doc = clonedDoc.querySelector('.cv-document');
-                if (doc) {
-                    doc.style.overflow = 'visible';
-                    doc.style.maxWidth = '820px';
-                    doc.style.width = '820px';
-                }
-                // Hide the fixed background element
-                const bgFix = clonedDoc.querySelector('.sidebar-bg-fix');
-                if (bgFix) bgFix.style.display = 'none';
-            }
-        },
+        html2canvas: { scale: 1.5, useCORS: true, width: 820, scrollX: 0, scrollY: 0 },
         jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak:   { mode: ['css', 'legacy'] }
-    }).from(element).save().then(() => {
+    }).from(clone).save().then(() => {
+        document.body.removeChild(wrapper);
         btn.disabled = false;
         btn.innerHTML = origText;
     }).catch((err) => {
+        document.body.removeChild(wrapper);
         btn.disabled = false;
         btn.innerHTML = origText;
         console.error('PDF Error:', err);
