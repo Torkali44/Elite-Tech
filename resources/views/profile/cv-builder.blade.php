@@ -239,7 +239,7 @@
   .sidebar-bg-fix { display: none; }
 
   @media print {
-    @page { margin: 8mm 0; size: A4 portrait; }
+    @page { margin: 12mm 0; size: A4 portrait; }
 
     html, body {
       margin: 0 !important;
@@ -335,6 +335,12 @@
     }
 
     a.cv-entry-link { color: #1a365d !important; }
+
+    /* Prevent single lines stranded at top/bottom of pages */
+    p, li, .cv-profile-text, .cv-bullets {
+      orphans: 3 !important;
+      widows: 3 !important;
+    }
   }
 </style>
 @endpush
