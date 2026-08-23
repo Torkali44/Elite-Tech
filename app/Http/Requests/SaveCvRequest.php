@@ -45,7 +45,7 @@ class SaveCvRequest extends FormRequest
             'education_items.*.title'        => 'nullable|string|max:200',
             'education_items.*.institution'  => 'nullable|string|max:200',
             'education_items.*.dates'        => 'nullable|string|max:80',
-            'education_items.*.description'  => 'nullable|string|max:1000',
+            'education_items.*.description'  => 'nullable|string|max:3000',
         ];
     }
 }
