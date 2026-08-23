@@ -318,7 +318,7 @@
     </div>
 </div>
 
-<div class="cv-page-grid grid xl:grid-cols-2 gap-6" x-data="{ themeColor: '{{ $g('theme_color', '#1e2732') }}', themeFont: '{{ $g('theme_font', '\'Segoe UI\', system-ui, -apple-system, sans-serif') }}' }">
+<div class="cv-page-grid grid xl:grid-cols-2 gap-6" x-data="{ themeColor: @js($g('theme_color', '#1e2732')), themeFont: @js($g('theme_font', '\'Segoe UI\', system-ui, -apple-system, sans-serif')) }">
     <form method="POST" action="{{ route('profile.cv') }}" enctype="multipart/form-data"
           class="card p-6 space-y-5 no-print" id="cv-form">
         @csrf
