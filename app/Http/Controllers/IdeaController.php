@@ -187,31 +187,39 @@ class IdeaController extends Controller
 
         $desc = $this->composeDescription($data);
         
-        $idea = Idea::create([
-            'user_id'      => $user->id,
-            'forked_from'  => $parentId,
-            'title'        => $data['title'],
-            'category'     => $data['category'],
-            'description'  => $desc,
-            'feasibility'  => $data['feasibility'] ?? null,
-            'technologies' => array_values(array_filter($data['technologies'] ?? [])),
-            'budget'       => $data['budget'] ?? null,
-        ]);
-        // System-controlled fields set via direct assignment (not user mass-assignment)
-        $idea->status      = ($data['intent'] ?? 'draft') === 'pending' ? 'pending' : 'draft';
-        $idea->admin_notes = null;
-        $idea->likes_count = 0;
-        $idea->title_en    = TranslationService::translateToEnglish($data['title']);
-        $idea->description_en = TranslationService::translateToEnglish($desc);
-        $idea->save();
+        $idea = DB::transaction(function () use ($user, $parentId, $data, $desc) {
+            $idea = Idea::create([
+                'user_id'      => $user->id,
+                'forked_from'  => $parentId,
+                'title'        => $data['title'],
+                'category'     => $data['category'],
+                'description'  => $desc,
+                'feasibility'  => $data['feasibility'] ?? null,
+                'technologies' => array_values(array_filter($data['technologies'] ?? [])),
+                'budget'       => $data['budget'] ?? null,
+            ]);
+            // System-controlled fields set via direct assignment (not user mass-assignment)
+            $idea->status      = ($data['intent'] ?? 'draft') === 'pending' ? 'pending' : 'draft';
+            $idea->admin_notes = null;
+            $idea->likes_count = 0;
+            $idea->title_en    = TranslationService::translateToEnglish($data['title']);
+            $idea->description_en = TranslationService::translateToEnglish($desc);
+            $idea->save();
+
+            return $idea;
+        });
 
         if ($idea->status === 'pending') {
-            Notification::send(User::getAdmins(), new SystemAlert(
-                'فكرة جديدة للمراجعة',
-                "تم تقديم فكرة «{$idea->title}» للمراجعة من قبل {$user->name}.",
-                route('admin.ideas.show', $idea->id),
-                'lightbulb'
-            ));
+            try {
+                Notification::send(User::getAdmins(), new SystemAlert(
+                    'فكرة جديدة للمراجعة',
+                    "تم تقديم فكرة «{$idea->title}» للمراجعة من قبل {$user->name}.",
+                    route('admin.ideas.show', $idea->id),
+                    'lightbulb'
+                ));
+            } catch (\Throwable $e) {
+                logger()->error("Notification failed for idea #{$idea->id}: " . $e->getMessage());
+            }
         }
 
         $msg = $idea->status === 'draft'
@@ -246,12 +254,16 @@ class IdeaController extends Controller
         $idea->admin_notes = null;
         $idea->save();
 
-        Notification::send(User::getAdmins(), new SystemAlert(
-            'فكرة جديدة للمراجعة',
-            "تم تقديم فكرة «{$idea->title}» للمراجعة من قبل {$user->name}.",
-            route('admin.ideas.show', $idea->id),
-            'lightbulb'
-        ));
+        try {
+            Notification::send(User::getAdmins(), new SystemAlert(
+                'فكرة جديدة للمراجعة',
+                "تم تقديم فكرة «{$idea->title}» للمراجعة من قبل {$user->name}.",
+                route('admin.ideas.show', $idea->id),
+                'lightbulb'
+            ));
+        } catch (\Throwable $e) {
+            logger()->error("Notification failed for submitDraft idea #{$idea->id}: " . $e->getMessage());
+        }
 
         return back()->with('ok', 'تم إرسال الفكرة للمراجعة الإدارية. ستظهر في بنك الأفكار بعد الموافقة.');
     }
@@ -361,14 +373,18 @@ class IdeaController extends Controller
 
         $source = $idea->load('user');
 
-        $copy = $source->replicate(['likes_count', 'admin_notes', 'status']);
-        $copy->user_id = $user->id;
-        $copy->forked_from = $source->id;
-        $copy->title = 'تطوير: '.$source->title;
-        $copy->status = 'draft';
-        $copy->likes_count = 0;
-        $copy->admin_notes = null;
-        $copy->save();
+        $copy = DB::transaction(function () use ($source, $user) {
+            $copy = $source->replicate(['likes_count', 'admin_notes', 'status']);
+            $copy->user_id = $user->id;
+            $copy->forked_from = $source->id;
+            $copy->title = 'تطوير: '.$source->title;
+            $copy->status = 'draft';
+            $copy->likes_count = 0;
+            $copy->admin_notes = null;
+            $copy->save();
+
+            return $copy;
+        });
 
         return redirect()->route('ideas.edit', $copy->id)
             ->with('ok', 'تم إنشاء مسودة مستلهمة من الفكرة الأصلية مع حفظ حقوق صاحبها. أكملها ثم أرسلها للمراجعة.');
@@ -443,21 +459,25 @@ class IdeaController extends Controller
         $idea->load('user');
 
         // Notify Admin
-        Notification::send(User::getAdmins(), new SystemAlert(
-            'طلب تنفيذ جديد',
-            "قدم {$user->name} طلب تنفيذ للفكرة «{$idea->title}».",
-            route('admin.implementations.show', $req->id),
-            'cog'
-        ));
-
-        // Notify Idea Owner
-        if ($idea->user_id !== $user->id) {
-            $idea->user->notify(new SystemAlert(
-                'طلب تنفيذ لفكرتك',
-                "هناك مطور مهتم بتنفيذ فكرتك «{$idea->title}».",
-                route('dashboard.implementRequests'),
-                'check'
+        try {
+            Notification::send(User::getAdmins(), new SystemAlert(
+                'طلب تنفيذ جديد',
+                "قدم {$user->name} طلب تنفيذ للفكرة «{$idea->title}».",
+                route('admin.implementations.show', $req->id),
+                'cog'
             ));
+
+            // Notify Idea Owner
+            if ($idea->user_id !== $user->id) {
+                $idea->user->notify(new SystemAlert(
+                    'طلب تنفيذ لفكرتك',
+                    "هناك مطور مهتم بتنفيذ فكرتك «{$idea->title}».",
+                    route('dashboard.implementRequests'),
+                    'check'
+                ));
+            }
+        } catch (\Throwable $e) {
+            logger()->error("Notification failed for implement request #{$req->id}: " . $e->getMessage());
         }
 
         return redirect()->route('ideas.show', $idea->id)

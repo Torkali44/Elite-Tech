@@ -27,12 +27,13 @@ class EnsureUserNotSuspended
                 ->withErrors(['email' => __('auth.account_suspended')]);
         }
 
-        // ── Unverified email: redirect to verify page ───────────────────────
+        // ── Login OTP not verified: redirect to verify page ─────────────────
+        // This covers both email verification and login OTP in one check.
         // Excludes the verify route itself, logout, and language switcher to
         // prevent redirect loops. All other authenticated routes require
-        // a verified email.
+        // a completed OTP verification.
         if (
-            ! $user->email_verified_at &&
+            ! $request->session()->has('login_otp_verified') &&
             ! $request->routeIs('auth.verify', 'auth.verify.submit', 'logout', 'lang.switch')
         ) {
             return redirect()->route('auth.verify');

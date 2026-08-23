@@ -2,8 +2,8 @@
 
 return [
     'driver' => env('SESSION_DRIVER', 'file'),
-    'lifetime' => (int) env('SESSION_LIFETIME', 120),
-    'expire_on_close' => false,
+    'lifetime' => (int) env('SESSION_LIFETIME', 60),
+    'expire_on_close' => true,
     'encrypt' => env('SESSION_ENCRYPT', true),
     'files' => storage_path('framework/sessions'),
     'connection' => env('SESSION_CONNECTION'),

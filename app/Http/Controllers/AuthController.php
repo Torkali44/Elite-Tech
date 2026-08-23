@@ -56,6 +56,18 @@ class AuthController extends Controller
             $request->session()->regenerate();
             $request->session()->put('is_admin', true);
 
+            // ── Admin OTP: require OTP if admin has a User record ──
+            if ($adminUser) {
+                $this->issueEmailOtpForUser($request, $adminUser);
+                $request->session()->put('needs_login_otp', true);
+                $request->session()->forget('login_otp_verified');
+
+                return redirect()->route('auth.verify')
+                    ->with('ok', __('auth.login_otp_sent', [], 'ar') ?: 'تم إرسال رمز التحقق إلى بريدك الإلكتروني.');
+            }
+
+            // Edge case: admin without User record — skip OTP
+            $request->session()->put('login_otp_verified', true);
             return redirect()->route('admin.dashboard');
         }
 
@@ -77,23 +89,18 @@ class AuthController extends Controller
             return back()->withErrors(['email' => __('auth.account_suspended')]);
         }
 
-        // Unverified email → issue OTP and redirect to verify page
-        if (! $user->email_verified_at) {
-            $this->issueEmailOtpForUser($request, $user);
-            return redirect()->route('auth.verify')
-                ->with('ok', __('auth.please_verify_email'));
-        }
-
+        // ── Always require OTP on every login ──────────────────────────────
+        // Store admin flag early so it survives through OTP flow
         if ($user->isAdmin()) {
             $request->session()->put('is_admin', true);
-            return redirect()->route('admin.dashboard');
         }
 
-        if (empty($user->roles)) {
-            return redirect()->route('auth.path');
-        }
+        $this->issueEmailOtpForUser($request, $user);
+        $request->session()->put('needs_login_otp', true);
+        $request->session()->forget('login_otp_verified');
 
-        return redirect()->intended(route('dashboard'));
+        return redirect()->route('auth.verify')
+            ->with('ok', __('auth.login_otp_sent', [], 'ar') ?: 'تم إرسال رمز التحقق إلى بريدك الإلكتروني.');
     }
 
     // =========================================================================
@@ -159,13 +166,13 @@ class AuthController extends Controller
 
     public function showVerify(Request $request): \Illuminate\View\View|RedirectResponse
     {
-        // ── Case 1: authenticated user with verified email → nothing to verify ──
-        if (auth()->check() && auth()->user()->email_verified_at) {
-            return redirect()->route('auth.path');
+        // ── Case 1: authenticated user, verified, and login OTP done → nothing to verify ──
+        if (auth()->check() && auth()->user()->email_verified_at && ! $request->session()->has('needs_login_otp')) {
+            return redirect()->route('dashboard');
         }
 
-        // ── Case 2: authenticated user without verified email (legacy/edge case) ──
-        if (auth()->check() && ! auth()->user()->email_verified_at) {
+        // ── Case 2: authenticated user needing OTP (login OTP or email verification) ──
+        if (auth()->check()) {
             if ($request->boolean('resend') || ! $request->session()->has('email_otp_hash')) {
                 $this->issueEmailOtpForUser($request, auth()->user());
             }
@@ -214,8 +221,8 @@ class AuthController extends Controller
 
     public function verify(Request $request): RedirectResponse
     {
-        // ── Legacy flow: already-authenticated, unverified user ──
-        if (auth()->check() && ! auth()->user()->email_verified_at) {
+        // ── Authenticated user needing OTP (login OTP or email verification) ──
+        if (auth()->check() && (! auth()->user()->email_verified_at || $request->session()->has('needs_login_otp'))) {
             return $this->verifyLegacy($request);
         }
 
@@ -271,10 +278,19 @@ class AuthController extends Controller
                 ->with('ok', __('auth.account_already_exists_login'));
         }
 
+        try {
+            $decryptedPassword = decrypt($pending['password_encrypted']);
+        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+            $request->session()->forget('pending_reg');
+            logger()->error('Registration decrypt failed: ' . $e->getMessage());
+            return redirect()->route('register')
+                ->with('error', __('auth.session_expired_register'));
+        }
+
         $user = User::forceCreate([
             'name'              => $pending['name'],
             'email'             => $pending['email'],
-            'password'          => decrypt($pending['password_encrypted']),
+            'password'          => $decryptedPassword,
             'role'              => 'idea_seeker',
             'kyc_status'        => 'none',
             'email_verified_at' => now(),
@@ -286,6 +302,7 @@ class AuthController extends Controller
         // Authenticate and regenerate session
         Auth::login($user);
         $request->session()->regenerate();
+        $request->session()->put('login_otp_verified', true);
 
         return redirect()->route('auth.path')
             ->with('ok', __('auth.email_verified_success'));
@@ -552,7 +569,7 @@ class AuthController extends Controller
     public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
-        $request->session()->forget(['is_admin', 'pending_reg']);
+        $request->session()->forget(['is_admin', 'pending_reg', 'login_otp_verified', 'needs_login_otp']);
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
@@ -564,7 +581,7 @@ class AuthController extends Controller
     // =========================================================================
 
     /**
-     * Verify OTP for an already-authenticated user who still needs email verification.
+     * Verify OTP for an already-authenticated user (login OTP or email verification).
      * HIGH-03: Added attempt counter and lockout to match the protection in verify().
      */
     private function verifyLegacy(Request $request): RedirectResponse
@@ -579,7 +596,7 @@ class AuthController extends Controller
 
         // --- Lockout: clear session and force re-authentication ---
         if ($attempts >= 5) {
-            $request->session()->forget(['email_otp_hash', 'email_otp_expires', 'email_otp_attempts']);
+            $request->session()->forget(['email_otp_hash', 'email_otp_expires', 'email_otp_attempts', 'needs_login_otp']);
             auth()->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
@@ -607,11 +624,29 @@ class AuthController extends Controller
             ]);
         }
 
-        // Success: clear all OTP session keys
-        $request->session()->forget(['email_otp_hash', 'email_otp_expires', 'email_otp_attempts']);
-        $request->user()->forceFill(['email_verified_at' => now()])->save();
+        // ── Success: clear all OTP session keys and mark login OTP as verified ──
+        $request->session()->forget(['email_otp_hash', 'email_otp_expires', 'email_otp_attempts', 'needs_login_otp']);
+        $request->session()->put('login_otp_verified', true);
 
-        return redirect()->route('auth.path')->with('ok', __('auth.email_verified_success'));
+        // If email not yet verified, mark it now
+        $user = $request->user();
+        if (! $user->email_verified_at) {
+            $user->forceFill(['email_verified_at' => now()])->save();
+        }
+
+        // ── Smart redirect based on user type ──
+        if ($user->isAdmin() && $request->session()->has('is_admin')) {
+            return redirect()->route('admin.dashboard')
+                ->with('ok', __('auth.otp_login_success', [], 'ar') ?: 'تم التحقق بنجاح.');
+        }
+
+        if (empty($user->roles)) {
+            return redirect()->route('auth.path')
+                ->with('ok', __('auth.email_verified_success'));
+        }
+
+        return redirect()->intended(route('dashboard'))
+            ->with('ok', __('auth.otp_login_success', [], 'ar') ?: 'تم التحقق بنجاح.');
     }
 
     /**
