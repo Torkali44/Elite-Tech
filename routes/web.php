@@ -124,6 +124,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('admin.auth')->group(function () {
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/analytics', [AdminController::class, 'analytics'])->name('analytics');
         Route::get('/users', [AdminController::class, 'users'])->name('users');
         Route::post('/users/{id}/suspend', [AdminController::class, 'suspendUser'])->name('users.suspend');
         Route::post('/users/{id}/activate', [AdminController::class, 'activateUser'])->name('users.activate');

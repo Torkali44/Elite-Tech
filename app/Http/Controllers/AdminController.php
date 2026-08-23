@@ -404,4 +404,28 @@ class AdminController extends Controller
 
         return back()->with('ok', 'تم حذف التعليق المخالف.');
     }
+
+    public function analytics(Request $request)
+    {
+        $today = \Carbon\Carbon::today();
+        
+        $stats = [
+            'visitors_today' => \App\Models\VisitorLog::whereDate('created_at', $today)->count(),
+            'unique_visitors_today' => \App\Models\VisitorLog::whereDate('created_at', $today)->distinct('ip_address')->count('ip_address'),
+            'errors_today' => \App\Models\ErrorLog::whereDate('created_at', $today)->count(),
+            'total_errors' => \App\Models\ErrorLog::count(),
+        ];
+
+        $topPages = \App\Models\VisitorLog::select('url', DB::raw('count(*) as total'))
+            ->whereDate('created_at', '>=', \Carbon\Carbon::now()->subDays(7))
+            ->groupBy('url')
+            ->orderByDesc('total')
+            ->limit(10)
+            ->get();
+
+        $recentErrors = \App\Models\ErrorLog::with('user')->latest()->paginate(20);
+        $recentVisitors = \App\Models\VisitorLog::with('user')->latest()->limit(50)->get();
+
+        return view('admin.analytics', compact('stats', 'topPages', 'recentErrors', 'recentVisitors'));
+    }
 }

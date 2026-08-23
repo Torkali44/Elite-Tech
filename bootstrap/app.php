@@ -22,6 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('web', SetLocale::class);
         $middleware->appendToGroup('web', EnsureUserNotSuspended::class);
 
+        $middleware->appendToGroup('web', \App\Http\Middleware\VisitorTracker::class);
+
         $middleware->alias([
             'role' => RoleMiddleware::class,
             'admin.auth' => EnsureAdmin::class,
@@ -29,5 +31,19 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->reportable(function (\Throwable $e) {
+            if (app()->bound('request')) {
+                $request = app('request');
+                try {
+                    \App\Models\ErrorLog::create([
+                        'user_id' => auth()->id(),
+                        'url' => substr($request->fullUrl(), 0, 255),
+                        'message' => substr($e->getMessage(), 0, 65500),
+                        'stack_trace' => $e->getTraceAsString(),
+                    ]);
+                } catch (\Exception $ex) {
+                    // Fail silently if DB is down
+                }
+            }
+        });
     })->create();

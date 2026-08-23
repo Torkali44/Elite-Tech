@@ -33,6 +33,7 @@
                 ['admin.users', __('admin.nav.users'), 'M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87'],
                 ['admin.implementations', __('admin.nav.implementations'), 'M13 10V3L4 14h7v7l9-11h-7z'],
                 ['admin.reports', __('admin.nav.reports'), 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6m6 0V9a2 2 0 012-2h2a2 2 0 012 2v10'],
+                ['admin.analytics', 'تحليل الزوار والأخطاء', 'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z'],
             ] as $item)
             <a href="{{ route($item[0]) }}"
                class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition {{ $active===$item[0] ? 'bg-white/15 text-white font-bold' : 'text-white/70 hover:bg-white/10 hover:text-white' }}">
