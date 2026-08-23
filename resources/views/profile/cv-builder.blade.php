@@ -847,47 +847,24 @@ function downloadCvPdf() {
     const nameEl = el.querySelector('.cv-name');
     const fname = nameEl ? nameEl.textContent.trim().replace(/\s+/g, '_') : 'CV';
 
-    // Scroll to top to avoid capture offset issues
+    // Scroll to top
     const prevScroll = window.scrollY;
     window.scrollTo(0, 0);
 
-    // Extend element to fill complete pages
-    const pxPerPage = (297 / 210) * 820;
-    const pages = Math.ceil(el.scrollHeight / pxPerPage);
+    // Extend element height to fill the last page completely
+    // A4 ratio: 297mm/210mm applied to element width 820px
+    const pxPerPage = Math.floor((297 / 210) * 820);
     const origMinHeight = el.style.minHeight;
-    el.style.minHeight = (pages * pxPerPage - 2) + 'px';
+    const totalPages = Math.ceil(el.scrollHeight / pxPerPage);
+    el.style.minHeight = (totalPages * pxPerPage) + 'px';
 
-    // Get sidebar color
-    const sidebarHex = getComputedStyle(el).getPropertyValue('--cv-sidebar').trim() || '#1e2732';
-    const sr = parseInt(sidebarHex.slice(1,3), 16);
-    const sg = parseInt(sidebarHex.slice(3,5), 16);
-    const sb = parseInt(sidebarHex.slice(5,7), 16);
-
-    // Generate PDF with 8mm top/bottom margins for text safety
     html2pdf().set({
-        margin:      [8, 0, 8, 0],
+        margin:      0,
         filename:    fname + '_CV.pdf',
         image:       { type: 'jpeg', quality: 0.95 },
         html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 },
-        jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:   { mode: ['css', 'legacy'] }
-    }).from(el).toPdf().get('pdf').then(pdf => {
-        // Draw sidebar color rectangles over the top/bottom margins on every page
-        const totalPages = pdf.internal.getNumberOfPages();
-        const pageW = pdf.internal.pageSize.getWidth();
-        const pageH = pdf.internal.pageSize.getHeight();
-        const sidebarW = pageW * 0.32;
-
-        for (let i = 1; i <= totalPages; i++) {
-            pdf.setPage(i);
-            pdf.setFillColor(sr, sg, sb);
-            // Fill top margin area (sidebar column only)
-            pdf.rect(0, 0, sidebarW, 8, 'F');
-            // Fill bottom margin area (sidebar column only)
-            pdf.rect(0, pageH - 8, sidebarW, 8, 'F');
-        }
-
-        pdf.save(fname + '_CV.pdf');
+        jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).from(el).save().then(() => {
         el.style.minHeight = origMinHeight;
         window.scrollTo(0, prevScroll);
         btn.disabled = false;
