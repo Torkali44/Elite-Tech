@@ -352,7 +352,10 @@
     </div>
     <div class="flex gap-2">
         <a href="{{ route('settings') }}" class="btn-ghost text-sm">{{ __('general.cv_appearance_settings') }}</a>
-        <button type="button" onclick="window.print()" class="btn-secondary text-sm">{{ __('general.cv_export_pdf') }}</button>
+        <button type="button" onclick="downloadCvPdf()" class="btn-secondary text-sm" id="cv-download-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" class="inline w-4 h-4 me-1 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17v3a2 2 0 002 2h14a2 2 0 002-2v-3"/><path stroke-linecap="round" stroke-linejoin="round" d="M14 2H6a2 2 0 00-2 2v7m16-3V4a2 2 0 00-2-2h-4"/></svg>
+            {{ __('general.cv_export_pdf') }}
+        </button>
     </div>
 </div>
 
@@ -825,6 +828,46 @@ function previewCvAvatar(input) {
 // Hide page title in Chrome print header/footer
 window.addEventListener('beforeprint', () => { document.title = ' '; });
 window.addEventListener('afterprint', () => { document.title = @json(__('general.cv_builder_page_title')); });
+
+// PDF Download using html2pdf.js
+function downloadCvPdf() {
+    const btn = document.getElementById('cv-download-btn');
+    const origText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="inline w-4 h-4 me-1 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> جاري التحميل...';
+
+    const element = document.querySelector('#cv-preview .cv-document');
+    if (!element) { btn.disabled = false; btn.innerHTML = origText; return; }
+
+    // Get the user's name for the filename
+    const nameEl = element.querySelector('.cv-name');
+    const userName = nameEl ? nameEl.textContent.trim().replace(/\s+/g, '_') : 'CV';
+
+    const opt = {
+        margin:      [12, 0, 12, 0], // top, left, bottom, right (mm)
+        filename:    userName + '_CV.pdf',
+        image:       { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+            scale: 2, 
+            useCORS: true, 
+            letterRendering: true,
+            scrollY: 0,
+            windowWidth: 820
+        },
+        jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:   { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        btn.disabled = false;
+        btn.innerHTML = origText;
+    }).catch(() => {
+        btn.disabled = false;
+        btn.innerHTML = origText;
+        alert('حدث خطأ أثناء إنشاء الملف. يرجى المحاولة مرة أخرى.');
+    });
+}
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js" integrity="sha512-MpDEBEEfOYjCbOOFJJEbxZ3NqPfRPHmPNOJMjhmH2MCnx8G8CvkRXSRmPKoBqBIAjBHMOGqr3PctBuKasBdpA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 @endpush
 @endsection
