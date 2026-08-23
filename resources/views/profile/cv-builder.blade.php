@@ -830,8 +830,8 @@ function previewCvAvatar(input) {
 window.addEventListener('beforeprint', () => { document.title = ' '; });
 window.addEventListener('afterprint', () => { document.title = @json(__('general.cv_builder_page_title')); });
 
-// PDF Download
-function downloadCvPdf() {
+// PDF Download — sidebar edge-to-edge, main content with margins
+async function downloadCvPdf() {
     if (typeof html2pdf === 'undefined') {
         alert('مكتبة PDF لم تتحمل بعد. يرجى تحديث الصفحة.');
         return;
@@ -841,40 +841,82 @@ function downloadCvPdf() {
     btn.disabled = true;
     btn.innerHTML = '⏳ جاري التحميل...';
 
-    const el = document.querySelector('#cv-preview .cv-document');
-    if (!el) { btn.disabled = false; btn.innerHTML = origText; return; }
+    try {
+        const el = document.querySelector('#cv-preview .cv-document');
+        const sidebar = el.querySelector('.cv-sidebar');
+        const main = el.querySelector('.cv-main');
+        if (!el || !sidebar || !main) throw new Error('missing');
 
-    const nameEl = el.querySelector('.cv-name');
-    const fname = nameEl ? nameEl.textContent.trim().replace(/\s+/g, '_') : 'CV';
+        const nameEl = el.querySelector('.cv-name');
+        const fname = nameEl ? nameEl.textContent.trim().replace(/\s+/g, '_') : 'CV';
 
-    // Scroll to top
-    const prevScroll = window.scrollY;
-    window.scrollTo(0, 0);
+        const prevScroll = window.scrollY;
+        window.scrollTo(0, 0);
 
-    // Extend element height to fill the last page completely
-    // A4 ratio: 297mm/210mm applied to element width 820px
-    const pxPerPage = Math.floor((297 / 210) * 820);
-    const origMinHeight = el.style.minHeight;
-    const totalPages = Math.ceil(el.scrollHeight / pxPerPage);
-    el.style.minHeight = (totalPages * pxPerPage) + 'px';
+        // Capture sidebar and main as separate canvases
+        const [sCanvas, mCanvas] = await Promise.all([
+            html2canvas(sidebar, { scale: 2, useCORS: true, scrollY: 0 }),
+            html2canvas(main, { scale: 2, useCORS: true, scrollY: 0 })
+        ]);
 
-    html2pdf().set({
-        margin:      0,
-        filename:    fname + '_CV.pdf',
-        image:       { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 },
-        jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    }).from(el).save().then(() => {
-        el.style.minHeight = origMinHeight;
+        // A4 dimensions (mm)
+        const PW = 210, PH = 297;
+        const sW = PW * 0.32;    // sidebar width mm
+        const mW = PW - sW;      // main width mm
+        const MY = 8;             // main margin top/bottom mm
+        const mContentH = PH - 2 * MY; // main usable height per page mm
+
+        // Scale: mm per canvas pixel
+        const sScale = sW / sCanvas.width;
+        const mScale = mW / mCanvas.width;
+
+        // Total height in mm
+        const mainTotalMm = mCanvas.height * mScale;
+        const numPages = Math.max(1, Math.ceil(mainTotalMm / mContentH));
+
+        // Sidebar color for fill
+        const hex = getComputedStyle(el).getPropertyValue('--cv-sidebar').trim() || '#1e2732';
+        const cr = parseInt(hex.slice(1,3),16), cg = parseInt(hex.slice(3,5),16), cb = parseInt(hex.slice(5,7),16);
+
+        const pdf = new jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+        for (let i = 0; i < numPages; i++) {
+            if (i > 0) pdf.addPage();
+
+            // ── SIDEBAR: full page, no margins ──
+            pdf.setFillColor(cr, cg, cb);
+            pdf.rect(0, 0, sW, PH, 'F');
+
+            // Overlay sidebar content image slice
+            const sbStartPx = Math.round(i * PH / sScale);
+            const sbAvail = sCanvas.height - sbStartPx;
+            if (sbAvail > 0) {
+                const sbSliceH = Math.min(Math.round(PH / sScale), sbAvail);
+                const c1 = document.createElement('canvas');
+                c1.width = sCanvas.width; c1.height = sbSliceH;
+                c1.getContext('2d').drawImage(sCanvas, 0, sbStartPx, sCanvas.width, sbSliceH, 0, 0, sCanvas.width, sbSliceH);
+                pdf.addImage(c1.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, sW, sbSliceH * sScale);
+            }
+
+            // ── MAIN: with 8mm top/bottom margins ──
+            const mnStartPx = Math.round(i * mContentH / mScale);
+            const mnAvail = mCanvas.height - mnStartPx;
+            if (mnAvail > 0) {
+                const mnSliceH = Math.min(Math.round(mContentH / mScale), mnAvail);
+                const c2 = document.createElement('canvas');
+                c2.width = mCanvas.width; c2.height = mnSliceH;
+                c2.getContext('2d').drawImage(mCanvas, 0, mnStartPx, mCanvas.width, mnSliceH, 0, 0, mCanvas.width, mnSliceH);
+                pdf.addImage(c2.toDataURL('image/jpeg', 0.95), 'JPEG', sW, MY, mW, mnSliceH * mScale);
+            }
+        }
+
+        pdf.save(fname + '_CV.pdf');
         window.scrollTo(0, prevScroll);
-        btn.disabled = false;
-        btn.innerHTML = origText;
-    }).catch(() => {
-        el.style.minHeight = origMinHeight;
-        window.scrollTo(0, prevScroll);
-        btn.disabled = false;
-        btn.innerHTML = origText;
-    });
+    } catch(e) {
+        console.error('PDF Error:', e);
+    }
+    btn.disabled = false;
+    btn.innerHTML = origText;
 }
 </script>
 @endpush
