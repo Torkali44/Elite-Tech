@@ -237,6 +237,8 @@
     background: #fafbfc;
   }
 
+  .sidebar-bg-fix { display: none; }
+
   @media print {
     @page { margin: 0; size: A4 portrait; }
 
@@ -245,6 +247,20 @@
       padding: 0 !important;
       width: 100% !important;
       background: #fff !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    .sidebar-bg-fix {
+      display: block !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      bottom: 0 !important;
+      width: 32% !important;
+      height: 100vh !important;
+      background-color: var(--cv-sidebar, #1e2732) !important;
+      z-index: -1 !important;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
     }
@@ -280,6 +296,8 @@
       top: 0 !important;
     }
     .cv-document {
+      position: relative !important;
+      z-index: 0 !important;
       display: flex !important;
       flex-direction: row !important;
       align-items: stretch !important;
@@ -291,6 +309,7 @@
       padding: 0 !important;
       border-radius: 0 !important;
       box-shadow: none !important;
+      background: transparent !important;
     }
 
     .cv-sidebar {
@@ -298,7 +317,7 @@
       min-height: 100vh !important;
       margin: 0 !important;
       padding: 15mm 18pt !important;
-      background: var(--cv-sidebar, #1e2732) !important;
+      background: transparent !important;
       box-sizing: border-box !important;
     }
 
@@ -307,6 +326,7 @@
       margin: 0 !important;
       padding: 15mm 32pt !important;
       box-sizing: border-box !important;
+      background: #fff !important;
     }
 
     .cv-photo, .cv-photo-placeholder {
@@ -587,10 +607,11 @@
     {{-- CV Preview / Print --}}
     <div class="sticky top-20 self-start" id="cv-preview">
         <div class="cv-document" :style="`--cv-sidebar: ${themeColor}; font-family: ${themeFont};`">
+            <div class="sidebar-bg-fix no-screen"></div>
             <div class="cv-sidebar">
                 <div class="cv-photo-wrap">
                     @if($avatarDataUri)
-                        <img src="{{ $avatarDataUri }}" alt="" class="cv-photo">
+                        <img src="{{ $avatarDataUri }}" alt="Photo" class="cv-photo">
                     @else
                         <div class="cv-photo-placeholder">{{ $initials ?: '?' }}</div>
                     @endif
