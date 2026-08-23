@@ -236,19 +236,10 @@
     padding: 1rem;
     background: #fafbfc;
   }
-  .cv-main-table { width: 100%; border-collapse: collapse; border: none; margin: 0; padding: 0; }
-  .cv-main-table th, .cv-main-table td { border: none; padding: 0; margin: 0; vertical-align: top; text-align: left; font-weight: normal; }
-  .cv-print-spacer-top, .cv-print-spacer-bottom { height: 0; display: none; }
-
   .sidebar-bg-fix { display: none; }
 
   @media print {
-    @page { margin: 0; size: A4 portrait; }
-
-    .cv-print-spacer-top, .cv-print-spacer-bottom {
-      display: table-cell !important;
-      height: 15mm !important;
-    }
+    @page { margin: 10mm 0; size: A4 portrait; }
 
     html, body {
       margin: 0 !important;
@@ -332,7 +323,7 @@
     .cv-main {
       flex: 1 !important;
       margin: 0 !important;
-      padding: 0 32pt !important;
+      padding: 28pt 32pt !important;
       box-sizing: border-box !important;
       background: #fff !important;
     }
@@ -697,15 +688,12 @@
             </div>
 
             <div class="cv-main">
-                <table class="cv-main-table">
-                    <thead><tr><th class="cv-print-spacer-top"></th></tr></thead>
-                    <tbody><tr><td>
-                        @if($g('summary'))
-                            <section class="cv-main-section">
-                                <h2 class="cv-main-heading">{{ __('general.cv_profile_heading') }}</h2>
-                                <p class="cv-profile-text">{{ $g('summary') }}</p>
-                            </section>
-                        @endif
+                @if($g('summary'))
+                    <section class="cv-main-section">
+                        <h2 class="cv-main-heading">{{ __('general.cv_profile_heading') }}</h2>
+                        <p class="cv-profile-text">{{ $g('summary') }}</p>
+                    </section>
+                @endif
 
                 @php $previewExperience = old('experience_items', $experienceItems); @endphp
                 @if(collect($previewExperience)->contains(fn ($i) => ($i['title'] ?? '') !== '' || ($i['description'] ?? '') !== ''))
@@ -780,9 +768,6 @@
                         @endforeach
                     </section>
                 @endif
-                    </td></tr></tbody>
-                    <tfoot><tr><td class="cv-print-spacer-bottom"></td></tr></tfoot>
-                </table>
             </div>
         </div>
     </div>
