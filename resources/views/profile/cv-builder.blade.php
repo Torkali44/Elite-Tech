@@ -177,6 +177,16 @@
     margin: 0;
     color: #333;
   }
+  .cv-entry, .cv-sidebar-section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .cv-main-heading, .cv-sidebar-heading {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
   .cv-entry { margin-bottom: 16px; }
   .cv-entry:last-child { margin-bottom: 0; }
   .cv-entry-head {
@@ -185,6 +195,8 @@
     align-items: baseline;
     gap: 12px;
     margin-bottom: 2px;
+    page-break-after: avoid;
+    break-after: avoid;
   }
   .cv-entry-title {
     font-size: 13pt;
@@ -285,7 +297,7 @@
       width: 32% !important;
       min-height: 100vh !important;
       margin: 0 !important;
-      padding: 28pt 18pt !important;
+      padding: 15mm 18pt !important;
       background: var(--cv-sidebar, #1e2732) !important;
       box-sizing: border-box !important;
     }
@@ -293,7 +305,7 @@
     .cv-main {
       flex: 1 !important;
       margin: 0 !important;
-      padding: 28pt 32pt !important;
+      padding: 15mm 32pt !important;
       box-sizing: border-box !important;
     }
 
