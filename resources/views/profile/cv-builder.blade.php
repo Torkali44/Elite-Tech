@@ -849,11 +849,11 @@ function downloadCvPdf() {
     const nameEl = source.querySelector('.cv-name');
     const userName = nameEl ? nameEl.textContent.trim().replace(/\s+/g, '_') : 'CV';
 
-    // Clone into a standalone off-screen container
+    // Clone into a standalone container (visible to html2canvas but invisible to user)
     const wrapper = document.createElement('div');
-    wrapper.style.cssText = 'position:fixed;left:-9999px;top:0;width:820px;z-index:-9999;';
+    wrapper.style.cssText = 'position:absolute;left:0;top:0;width:820px;opacity:0;pointer-events:none;z-index:-1;';
     const clone = source.cloneNode(true);
-    clone.style.cssText = 'width:820px;max-width:820px;overflow:visible;position:static;margin:0;border-radius:0;box-shadow:none;';
+    clone.style.cssText = 'display:flex;flex-direction:row;align-items:stretch;width:820px;max-width:820px;min-height:auto;overflow:visible;position:static;margin:0;padding:0;border-radius:0;box-shadow:none;background:#fff;';
     
     // Copy computed CSS variable values as inline styles
     const computed = getComputedStyle(source);
@@ -867,7 +867,19 @@ function downloadCvPdf() {
     const sidebar = clone.querySelector('.cv-sidebar');
     if (sidebar) {
         sidebar.style.background = sidebarColor;
-        sidebar.style.width = '32%';
+        sidebar.style.width = '262px';
+        sidebar.style.flexShrink = '0';
+        sidebar.style.padding = '28px 20px';
+        sidebar.style.boxSizing = 'border-box';
+    }
+
+    // Fix main content area
+    const main = clone.querySelector('.cv-main');
+    if (main) {
+        main.style.flex = '1';
+        main.style.minWidth = '0';
+        main.style.padding = '28px 32px 32px';
+        main.style.background = '#fff';
     }
 
     // Remove print-only background fix element
@@ -877,23 +889,26 @@ function downloadCvPdf() {
     wrapper.appendChild(clone);
     document.body.appendChild(wrapper);
 
-    html2pdf().set({
-        margin:      [10, 0, 10, 0],
-        filename:    userName + '_CV.pdf',
-        image:       { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 1.5, useCORS: true, width: 820, scrollX: 0, scrollY: 0 },
-        jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:   { mode: ['css', 'legacy'] }
-    }).from(clone).save().then(() => {
-        document.body.removeChild(wrapper);
-        btn.disabled = false;
-        btn.innerHTML = origText;
-    }).catch((err) => {
-        document.body.removeChild(wrapper);
-        btn.disabled = false;
-        btn.innerHTML = origText;
-        console.error('PDF Error:', err);
-        alert('حدث خطأ. يرجى المحاولة مرة أخرى.');
+    // Wait a frame for layout to settle
+    requestAnimationFrame(() => {
+        wrapper.style.opacity = '0';
+        html2pdf().set({
+            margin:      [10, 0, 10, 0],
+            filename:    userName + '_CV.pdf',
+            image:       { type: 'jpeg', quality: 0.95 },
+            html2canvas: { scale: 2, useCORS: true, width: 820, windowWidth: 820 },
+            jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:   { mode: ['css', 'legacy'] }
+        }).from(clone).save().then(() => {
+            document.body.removeChild(wrapper);
+            btn.disabled = false;
+            btn.innerHTML = origText;
+        }).catch((err) => {
+            document.body.removeChild(wrapper);
+            btn.disabled = false;
+            btn.innerHTML = origText;
+            console.error('PDF Error:', err);
+        });
     });
 }
 </script>
