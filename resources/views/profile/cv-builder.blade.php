@@ -850,17 +850,66 @@ function downloadCvPdf() {
     const prevScroll = window.scrollY;
     window.scrollTo(0, 0);
 
+    // Smart DOM Pagination to protect text without breaking the sidebar background
+    const pxPerPage = (297 / 210) * 820; // A4 aspect ratio * canvas width
+    const dangerZone = 40; // ~10mm safety margin from top and bottom of page breaks
+    
+    const selectors = [
+        '.cv-main-heading', '.cv-entry', '.cv-profile-text',
+        '.cv-sidebar-heading', '.cv-contact-item', '.cv-skill-item', '.cv-language-item'
+    ];
+    const blocks = Array.from(el.querySelectorAll(selectors.join(', ')));
+    const originalStyles = new Map();
+
+    // Push blocks that cross page boundaries into the next page
+    for (let block of blocks) {
+        originalStyles.set(block, block.style.marginTop);
+        
+        let elTop = el.getBoundingClientRect().top;
+        let rect = block.getBoundingClientRect();
+        let yTop = rect.top - elTop;
+        let yBottom = rect.bottom - elTop;
+        
+        // Ignore extremely tall blocks that are larger than a safe page area
+        if (rect.height > pxPerPage - (2 * dangerZone)) continue;
+
+        let currentPage = Math.floor(yTop / pxPerPage);
+        let nextBreak = (currentPage + 1) * pxPerPage;
+        
+        // If the block touches the bottom danger zone or crosses the line
+        if (yBottom > nextBreak - dangerZone) {
+            let shiftNeeded = (nextBreak + dangerZone) - yTop;
+            let currentMargin = parseFloat(getComputedStyle(block).marginTop) || 0;
+            block.style.marginTop = (currentMargin + shiftNeeded) + 'px';
+        }
+    }
+
+    // Extend element height to perfectly fit an integer number of pages
+    // Subtract 10px tolerance to prevent an almost-empty extra page
+    const totalPages = Math.max(1, Math.ceil((el.scrollHeight - 10) / pxPerPage));
+    const origMinHeight = el.style.minHeight;
+    el.style.minHeight = (totalPages * pxPerPage) + 'px';
+
     html2pdf().set({
         margin:      0,
         filename:    fname + '_CV.pdf',
-        image:       { type: 'jpeg', quality: 0.95 },
+        image:       { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 },
         jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' }
     }).from(el).save().then(() => {
+        // Restore DOM to original state
+        for (let [block, origMargin] of originalStyles) {
+            block.style.marginTop = origMargin;
+        }
+        el.style.minHeight = origMinHeight;
         window.scrollTo(0, prevScroll);
         btn.disabled = false;
         btn.innerHTML = origText;
     }).catch(() => {
+        for (let [block, origMargin] of originalStyles) {
+            block.style.marginTop = origMargin;
+        }
+        el.style.minHeight = origMinHeight;
         window.scrollTo(0, prevScroll);
         btn.disabled = false;
         btn.innerHTML = origText;
