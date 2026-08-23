@@ -14,6 +14,7 @@ class ProfileController extends Controller
         'title', 'summary', 'skills', 'experience', 'education', 'portfolio_url',
         'phone', 'location', 'linkedin', 'github', 'languages', 'certifications',
         'projects', 'years_experience', 'availability', 'expected_salary',
+        'theme_color', 'theme_font'
     ];
 
     public function show($id)
@@ -36,6 +37,8 @@ class ProfileController extends Controller
                 'portfolio_url' => $user->portfolio_url,
                 'location' => $user->location,
                 'skills', 'languages', 'certifications' => [],
+                'theme_color' => '#1e2732',
+                'theme_font' => "'Segoe UI', system-ui, -apple-system, sans-serif",
                 default => '',
             };
             $value = $raw[$key] ?? $fallback;
@@ -91,6 +94,8 @@ class ProfileController extends Controller
             'years_experience' => self::asString($payload['years_experience'] ?? ''),
             'availability' => self::asString($payload['availability'] ?? ''),
             'expected_salary' => self::asString($payload['expected_salary'] ?? ''),
+            'theme_color' => self::asString(request('theme_color', '#1e2732')),
+            'theme_font' => self::asString(request('theme_font', "'Segoe UI', system-ui, -apple-system, sans-serif")),
             'experience_items' => $experienceItems,
             'project_items' => $projectItems,
             'education_items' => $educationItems,

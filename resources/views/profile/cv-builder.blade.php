@@ -21,6 +21,7 @@
 @endphp
 
 @push('head')
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Tajawal:wght@400;500;700;800&family=Almarai:wght@400;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   .cv-document {
     --cv-sidebar: #1e2732;
@@ -73,7 +74,7 @@
     color: #fff;
   }
   .cv-name {
-    font-size: 1.25rem;
+    font-size: 22pt;
     font-weight: 800;
     text-align: center;
     line-height: 1.3;
@@ -82,7 +83,7 @@
     word-break: break-word;
   }
   .cv-job-title {
-    font-size: .78rem;
+    font-size: 12pt;
     text-align: center;
     color: var(--cv-accent);
     margin: 0 0 20px;
@@ -99,7 +100,7 @@
     border-bottom: none;
   }
   .cv-sidebar-heading {
-    font-size: .7rem;
+    font-size: 11pt;
     font-weight: 800;
     letter-spacing: .1em;
     text-transform: uppercase;
@@ -112,7 +113,7 @@
     display: flex;
     align-items: flex-start;
     gap: 8px;
-    font-size: .68rem;
+    font-size: 10pt;
     line-height: 1.45;
     margin-bottom: 7px;
     color: rgba(255,255,255,.92);
@@ -132,7 +133,7 @@
     align-items: center;
   }
   .cv-sidebar-tag {
-    font-size: .66rem;
+    font-size: 10pt;
     line-height: 1.35;
     color: rgba(255,255,255,.92);
     white-space: normal;
@@ -141,7 +142,7 @@
   .cv-sidebar-tag::before {
     content: '○ ';
     opacity: .75;
-    font-size: .55rem;
+    font-size: 9pt;
   }
   .cv-main {
     flex: 1;
@@ -161,7 +162,7 @@
     border-bottom: none;
   }
   .cv-main-heading {
-    font-size: .88rem;
+    font-size: 14pt;
     font-weight: 800;
     letter-spacing: .08em;
     text-transform: uppercase;
@@ -171,7 +172,7 @@
     color: var(--cv-ink);
   }
   .cv-profile-text {
-    font-size: .76rem;
+    font-size: 11pt;
     line-height: 1.65;
     margin: 0;
     color: #333;
@@ -186,25 +187,25 @@
     margin-bottom: 2px;
   }
   .cv-entry-title {
-    font-size: .82rem;
+    font-size: 13pt;
     font-weight: 800;
     margin: 0;
     color: var(--cv-ink);
   }
   .cv-entry-dates {
-    font-size: .7rem;
+    font-size: 11pt;
     color: #555;
     white-space: nowrap;
     flex-shrink: 0;
   }
   .cv-entry-sub {
-    font-size: .72rem;
+    font-size: 11pt;
     color: #444;
     margin: 0 0 6px;
   }
   .cv-entry-sub em { font-style: italic; }
   .cv-entry-link {
-    font-size: .68rem;
+    font-size: 10pt;
     color: #1a365d;
     text-decoration: underline;
     word-break: break-all;
@@ -212,7 +213,7 @@
   .cv-bullets {
     margin: 0;
     padding-left: 16px;
-    font-size: .72rem;
+    font-size: 11pt;
     line-height: 1.55;
     color: #333;
   }
@@ -266,7 +267,6 @@
       left: 0 !important;
       top: 0 !important;
     }
-
     .cv-document {
       display: flex !important;
       flex-direction: row !important;
@@ -279,9 +279,6 @@
       padding: 0 !important;
       border-radius: 0 !important;
       box-shadow: none !important;
-      font-family: Calibri, 'Segoe UI', Arial, sans-serif !important;
-      font-size: 10pt !important;
-      line-height: 1.45 !important;
     }
 
     .cv-sidebar {
@@ -289,7 +286,7 @@
       min-height: 100vh !important;
       margin: 0 !important;
       padding: 28pt 18pt !important;
-      background: #1e2732 !important;
+      background: var(--cv-sidebar, #1e2732) !important;
       box-sizing: border-box !important;
     }
 
@@ -299,19 +296,6 @@
       padding: 28pt 32pt !important;
       box-sizing: border-box !important;
     }
-
-    .cv-name { font-size: 14pt !important; font-weight: 700 !important; }
-    .cv-job-title { font-size: 9.5pt !important; }
-    .cv-sidebar-heading { font-size: 8.5pt !important; letter-spacing: 0.08em !important; }
-    .cv-contact-item { font-size: 8pt !important; line-height: 1.4 !important; }
-    .cv-sidebar-tag { font-size: 8pt !important; line-height: 1.35 !important; }
-    .cv-main-heading { font-size: 11pt !important; letter-spacing: 0.06em !important; }
-    .cv-profile-text { font-size: 9.5pt !important; line-height: 1.55 !important; }
-    .cv-entry-title { font-size: 10pt !important; font-weight: 700 !important; }
-    .cv-entry-dates { font-size: 8.5pt !important; }
-    .cv-entry-sub { font-size: 9pt !important; }
-    .cv-bullets { font-size: 9pt !important; line-height: 1.5 !important; }
-    .cv-entry-link { font-size: 8.5pt !important; }
 
     .cv-photo, .cv-photo-placeholder {
       -webkit-print-color-adjust: exact !important;
@@ -334,7 +318,7 @@
     </div>
 </div>
 
-<div class="cv-page-grid grid xl:grid-cols-2 gap-6">
+<div class="cv-page-grid grid xl:grid-cols-2 gap-6" x-data="{ themeColor: '{{ $g('theme_color', '#1e2732') }}', themeFont: '{{ $g('theme_font', '\'Segoe UI\', system-ui, -apple-system, sans-serif') }}' }">
     <form method="POST" action="{{ route('profile.cv') }}" enctype="multipart/form-data"
           class="card p-6 space-y-5 no-print" id="cv-form">
         @csrf
@@ -343,6 +327,29 @@
                 @foreach($errors->all() as $e)<div>{{ $e }}</div>@endforeach
             </div>
         @endif
+
+        <section class="space-y-3">
+            <h3 class="font-extrabold text-primary border-b border-mist pb-2">تخصيص المظهر (Appearance)</h3>
+            <div class="grid sm:grid-cols-2 gap-3 p-4 rounded-lg bg-neutral border border-mist">
+                <div>
+                    <label class="block text-sm font-bold text-primary mb-1">اللون الرئيسي</label>
+                    <div class="flex items-center gap-2">
+                        <input type="color" name="theme_color" x-model="themeColor" class="h-10 w-14 cursor-pointer border-0 p-0 rounded bg-transparent">
+                        <input type="text" x-model="themeColor" class="input flex-1 !py-1 text-sm font-mono" dir="ltr">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-primary mb-1">نوع الخط</label>
+                    <select name="theme_font" x-model="themeFont" class="input !py-1">
+                        <option value="'Segoe UI', system-ui, -apple-system, sans-serif">الخط الافتراضي (System)</option>
+                        <option value="'Cairo', sans-serif">Cairo (عصري)</option>
+                        <option value="'Tajawal', sans-serif">Tajawal (رسمي)</option>
+                        <option value="'Almarai', sans-serif">Almarai (احترافي)</option>
+                        <option value="'IBM Plex Sans Arabic', sans-serif">IBM Plex (تقني)</option>
+                    </select>
+                </div>
+            </div>
+        </section>
 
         <section class="space-y-3">
             <h3 class="font-extrabold text-primary border-b border-mist pb-2">{{ __('general.cv_basic_info') }}</h3>
@@ -567,7 +574,7 @@
 
     {{-- CV Preview / Print --}}
     <div class="sticky top-20 self-start" id="cv-preview">
-        <div class="cv-document">
+        <div class="cv-document" :style="`--cv-sidebar: ${themeColor}; font-family: ${themeFont};`">
             <div class="cv-sidebar">
                 <div class="cv-photo-wrap">
                     @if($avatarDataUri)

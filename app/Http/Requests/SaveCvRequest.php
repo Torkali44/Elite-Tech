@@ -27,6 +27,8 @@ class SaveCvRequest extends FormRequest
             'years_experience'               => 'nullable|string|max:20',
             'availability'                   => 'nullable|string|max:80',
             'expected_salary'                => 'nullable|string|max:80',
+            'theme_color'                    => 'nullable|string|max:50',
+            'theme_font'                     => 'nullable|string|max:100',
             'join_forum'                     => 'nullable|boolean',
             'avatar'                         => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'experience_items'               => 'nullable|array|max:25',
