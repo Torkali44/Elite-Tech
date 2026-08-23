@@ -779,6 +779,7 @@
                             @endif
                         @endforeach
                     </section>
+                @endif
                     </td></tr></tbody>
                     <tfoot><tr><td class="cv-print-spacer-bottom"></td></tr></tfoot>
                 </table>
