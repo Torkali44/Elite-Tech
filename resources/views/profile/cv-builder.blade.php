@@ -851,59 +851,48 @@ function downloadCvPdf() {
     const prevScroll = window.scrollY;
     window.scrollTo(0, 0);
 
-    // Calculate page dimensions
-    const pxPerPage = (297 / 210) * 820; // A4 ratio * element width
-    const mainEl = el.querySelector('.cv-main');
-
-    // Insert spacer divs at page break positions inside cv-main for text safety margins
-    const spacers = [];
-    if (mainEl) {
-        const elTop = el.getBoundingClientRect().top;
-        const totalH = el.scrollHeight;
-        const numBreaks = Math.floor(totalH / pxPerPage);
-        for (let i = 1; i <= numBreaks; i++) {
-            const breakY = i * pxPerPage; // page break position relative to element top
-            // Find the child closest to this break point and add margin
-            const children = mainEl.querySelectorAll('.cv-main-section, .cv-entry');
-            let best = null, bestDist = Infinity;
-            children.forEach(child => {
-                const childTop = child.getBoundingClientRect().top - elTop;
-                const dist = Math.abs(childTop - breakY);
-                if (dist < bestDist && childTop > (breakY - 80) && childTop < (breakY + 80)) {
-                    bestDist = dist;
-                    best = child;
-                }
-            });
-            if (best) {
-                const spacer = document.createElement('div');
-                spacer.style.cssText = 'height:24px;flex-shrink:0;';
-                spacer.className = 'cv-pdf-spacer';
-                best.parentNode.insertBefore(spacer, best);
-                spacers.push(spacer);
-            }
-        }
-    }
-
-    // Recalculate after spacers and extend to fill complete pages
+    // Extend element to fill complete pages
+    const pxPerPage = (297 / 210) * 820;
     const pages = Math.ceil(el.scrollHeight / pxPerPage);
     const origMinHeight = el.style.minHeight;
     el.style.minHeight = (pages * pxPerPage - 2) + 'px';
 
+    // Get sidebar color
+    const sidebarHex = getComputedStyle(el).getPropertyValue('--cv-sidebar').trim() || '#1e2732';
+    const sr = parseInt(sidebarHex.slice(1,3), 16);
+    const sg = parseInt(sidebarHex.slice(3,5), 16);
+    const sb = parseInt(sidebarHex.slice(5,7), 16);
+
+    // Generate PDF with 8mm top/bottom margins for text safety
     html2pdf().set({
-        margin:      0,
+        margin:      [8, 0, 8, 0],
         filename:    fname + '_CV.pdf',
         image:       { type: 'jpeg', quality: 0.95 },
         html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0 },
         jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak:   { mode: ['css', 'legacy'] }
-    }).from(el).save().then(() => {
-        spacers.forEach(s => s.remove());
+    }).from(el).toPdf().get('pdf').then(pdf => {
+        // Draw sidebar color rectangles over the top/bottom margins on every page
+        const totalPages = pdf.internal.getNumberOfPages();
+        const pageW = pdf.internal.pageSize.getWidth();
+        const pageH = pdf.internal.pageSize.getHeight();
+        const sidebarW = pageW * 0.32;
+
+        for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i);
+            pdf.setFillColor(sr, sg, sb);
+            // Fill top margin area (sidebar column only)
+            pdf.rect(0, 0, sidebarW, 8, 'F');
+            // Fill bottom margin area (sidebar column only)
+            pdf.rect(0, pageH - 8, sidebarW, 8, 'F');
+        }
+
+        pdf.save(fname + '_CV.pdf');
         el.style.minHeight = origMinHeight;
         window.scrollTo(0, prevScroll);
         btn.disabled = false;
         btn.innerHTML = origText;
     }).catch(() => {
-        spacers.forEach(s => s.remove());
         el.style.minHeight = origMinHeight;
         window.scrollTo(0, prevScroll);
         btn.disabled = false;
