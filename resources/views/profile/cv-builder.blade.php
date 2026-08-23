@@ -852,7 +852,30 @@ function downloadCvPdf() {
         margin:      [10, 0, 10, 0],
         filename:    userName + '_CV.pdf',
         image:       { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 1.5, useCORS: true, scrollY: 0, windowWidth: 820 },
+        html2canvas: { 
+            scale: 1.5, 
+            useCORS: true, 
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: 820,
+            onclone: function(clonedDoc) {
+                // Fix sticky/fixed positioning that breaks html2canvas
+                const preview = clonedDoc.querySelector('#cv-preview');
+                if (preview) {
+                    preview.style.position = 'static';
+                    preview.style.top = 'auto';
+                }
+                const doc = clonedDoc.querySelector('.cv-document');
+                if (doc) {
+                    doc.style.overflow = 'visible';
+                    doc.style.maxWidth = '820px';
+                    doc.style.width = '820px';
+                }
+                // Hide the fixed background element
+                const bgFix = clonedDoc.querySelector('.sidebar-bg-fix');
+                if (bgFix) bgFix.style.display = 'none';
+            }
+        },
         jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak:   { mode: ['css', 'legacy'] }
     }).from(element).save().then(() => {
