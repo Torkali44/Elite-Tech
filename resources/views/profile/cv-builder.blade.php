@@ -236,11 +236,6 @@
     padding: 1rem;
     background: #fafbfc;
   }
-  /* Print margin table – invisible on screen, repeats margins on every printed page */
-  .cv-margin-table { width: 100%; border-collapse: collapse; }
-  .cv-margin-table td, .cv-margin-table th { padding: 0; border: 0; margin: 0; vertical-align: top; text-align: inherit; font-weight: normal; }
-  .cv-margin-top, .cv-margin-bottom { display: none; }
-
   .sidebar-bg-fix { display: none; }
 
   @media print {
@@ -329,15 +324,9 @@
     .cv-main {
       flex: 1 !important;
       margin: 0 !important;
-      padding: 0 24pt !important;
+      padding: 28pt 28pt !important;
       box-sizing: border-box !important;
       background: #fff !important;
-    }
-
-    /* Repeating margins on every printed page via thead/tfoot */
-    .cv-margin-top, .cv-margin-bottom {
-      display: block !important;
-      height: 12mm !important;
     }
 
     .cv-photo, .cv-photo-placeholder {
@@ -700,10 +689,6 @@
             </div>
 
             <div class="cv-main">
-                <table class="cv-margin-table">
-                    <thead><tr><td><div class="cv-margin-top"></div></td></tr></thead>
-                    <tfoot><tr><td><div class="cv-margin-bottom"></div></td></tr></tfoot>
-                    <tbody><tr><td>
 
                 @if($g('summary'))
                     <section class="cv-main-section">
@@ -785,9 +770,6 @@
                         @endforeach
                     </section>
                 @endif
-
-                    </td></tr></tbody>
-                </table>
             </div>
         </div>
     </div>
